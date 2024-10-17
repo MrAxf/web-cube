@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + TS</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100dvh;
+      }
+      input, button, textarea, select {
+        font: inherit;
+      }
+
+      p {
+        text-wrap: pretty;
+      }
+      h1, h2, h3, h4, h5, h6 {
+        text-wrap: balance;
+      }
+
+      img, video, svg {
+        height: auto;
+        max-width: 100%;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+          transition: none;
+        }
+      }
+
+      body {
+        display: flex;
+        padding: 1rem;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+
+        & aside {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          padding: 1rem;
+          width: 30%;
+          height: 100%;
+          background-color: #f0f0f0;
+          overflow-y: auto;
+          overflow-x: hidden;
+
+          & section {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+
+            & button {
+              padding: 0.5rem;
+              width: 100%;
+              background-color: #f8f8f8;
+              border: 1px solid #ccc;
+              border-radius: 0.25rem;
+              cursor: pointer;
+              transition: background-color 0.3s;
+
+              &:hover {
+                background-color: #f0f0f0;
+              }
+            }
+          }
+        }
+
+        & main {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 70%;
+          height: 100%;
+          background-color: #f8f8f8;
+        }
+      }
+      web-rubik {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <aside id="controls">
+      <h3>X</h3>
+      <section>
+        <button data-layer-btn data-axis="x" data-layer="0" data-angle="90">Rotate 0 90</button>
+        <button data-layer-btn data-axis="x" data-layer="1" data-angle="90">Rotate 1 90</button>
+        <button data-layer-btn data-axis="x" data-layer="2" data-angle="90">Rotate 2 90</button>
+      </section>
+      <section>
+        <button data-layer-btn data-axis="x" data-layer="0" data-angle="-90">Rotate 0 -90</button>
+        <button data-layer-btn data-axis="x" data-layer="1" data-angle="-90">Rotate 1 -90</button>
+        <button data-layer-btn data-axis="x" data-layer="2" data-angle="-90">Rotate 2 -90</button>
+      </section>
+      <section>
+        <button data-layer-btn data-axis="x" data-layer="0" data-angle="180">Rotate 0 180</button>
+        <button data-layer-btn data-axis="x" data-layer="1" data-angle="180">Rotate 1 180</button>
+        <button data-layer-btn data-axis="x" data-layer="2" data-angle="180">Rotate 2 180</button>
+      </section>
+      <section>
+        <button data-layer-btn data-axis="x" data-layer="0" data-angle="-180">Rotate 0 -180</button>
+        <button data-layer-btn data-axis="x" data-layer="1" data-angle="-180">Rotate 1 -180</button>
+        <button data-layer-btn data-axis="x" data-layer="2" data-angle="-180">Rotate 2 -180</button>
+      </section>
+      
+      <h3>Y</h3>
+      <section>
+        <button data-layer-btn data-axis="y" data-layer="0" data-angle="90">Rotate 0 90</button>
+        <button data-layer-btn data-axis="y" data-layer="1" data-angle="90">Rotate 1 90</button>
+        <button data-layer-btn data-axis="y" data-layer="2" data-angle="90">Rotate 2 90</button>
+      </section>
+      <section>
+        <button data-layer-btn data-axis="y" data-layer="0" data-angle="-90">Rotate 0 -90</button>
+        <button data-layer-btn data-axis="y" data-layer="1" data-angle="-90">Rotate 1 -90</button>
+        <button data-layer-btn data-axis="y" data-layer="2" data-angle="-90">Rotate 2 -90</button>
+      </section>
+      <section>
+        <button data-layer-btn data-axis="y" data-layer="0" data-angle="180">Rotate 0 180</button>
+        <button data-layer-btn data-axis="y" data-layer="1" data-angle="180">Rotate 1 180</button>
+        <button data-layer-btn data-axis="y" data-layer="2" data-angle="180">Rotate 2 180</button>
+      </section>
+      <section>
+        <button data-layer-btn data-axis="y" data-layer="0" data-angle="-180">Rotate 0 -180</button>
+        <button data-layer-btn data-axis="y" data-layer="1" data-angle="-180">Rotate 1 -180</button>
+        <button data-layer-btn data-axis="y" data-layer="2" data-angle="-180">Rotate 2 -180</button>
+      </section>
+
+      <h3>Z</h3>
+      <section>
+        <button data-layer-btn data-axis="z" data-layer="0" data-angle="90">Rotate 0 90</button>
+        <button data-layer-btn data-axis="z" data-layer="1" data-angle="90">Rotate 1 90</button>
+        <button data-layer-btn data-axis="z" data-layer="2" data-angle="90">Rotate 2 90</button>
+      </section>
+      <section>
+        <button data-layer-btn data-axis="z" data-layer="0" data-angle="-90">Rotate 0 -90</button>
+        <button data-layer-btn data-axis="z" data-layer="1" data-angle="-90">Rotate 1 -90</button>
+        <button data-layer-btn data-axis="z" data-layer="2" data-angle="-90">Rotate 2 -90</button>
+      </section>
+      <section>
+        <button data-layer-btn data-axis="z" data-layer="0" data-angle="180">Rotate 0 180</button>
+        <button data-layer-btn data-axis="z" data-layer="1" data-angle="180">Rotate 1 180</button>
+        <button data-layer-btn data-axis="z" data-layer="2" data-angle="180">Rotate 2 180</button>
+      </section>
+      <section>
+        <button data-layer-btn data-axis="z" data-layer="0" data-angle="-180">Rotate 0 -180</button>
+        <button data-layer-btn data-axis="z" data-layer="1" data-angle="-180">Rotate 1 -180</button>
+        <button data-layer-btn data-axis="z" data-layer="2" data-angle="-180">Rotate 2 -180</button>
+      </section>
+
+      <h3>Cube</h3>
+      <section>
+        <button id="rotate-x-cube-90">Rotate X 90</button>
+        <button id="rotate-y-cube-90">Rotate Y 90</button>
+        <button id="rotate-z-cube-90">Rotate Z 90</button>
+      </section>
+      <section>
+        <button id="rotate-x-cube--90">Rotate X -90</button>
+        <button id="rotate-y-cube--90">Rotate Y -90</button>
+        <button id="rotate-z-cube--90">Rotate Z -90</button>
+      </section>
+        <label for="rotate-x-cube">X</label>
+        <input type="range" min="0" max="360" step="1" value="0" data-axis="x" />
+        <label for="rotate-x-cube">Y</label>
+        <input type="range" min="0" max="360" step="1" value="0" data-axis="y" />
+        <label for="rotate-x-cube">Z</label>
+        <input type="range" min="0" max="360" step="1" value="0" data-axis="z" />
+    </aside>
+    <main>
+      <web-rubik size="3"></web-rubik>
+    </main>
+    <script type="module" src="/src/web-rubik.ts"></script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
