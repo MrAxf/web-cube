@@ -4,8 +4,12 @@ import {
     rotateX180,
     rotateX90,
     rotateX90Backwards,
+    rotateY180,
     rotateY90,
     rotateY90Backwards,
+    rotateZ180,
+    rotateZ90,
+    rotateZ90Backwards,
     setState,
     State,
 } from "./state";
@@ -14,11 +18,36 @@ import { createCubes } from "./utils/cube";
 import { createObservableContext, ObservableContext } from "./utils/observable";
 import styles from "./web-rubik.css?inline";
 
+const ROTATIONS = {
+    x: {
+        90: {
+            forward: rotateX90,
+            backwards: rotateX90Backwards,
+        },
+        180: rotateX180,
+    },
+    y: {
+        90: {
+            forward: rotateY90,
+            backwards: rotateY90Backwards,
+        },
+        180: rotateY180,
+    },
+    z: {
+        90: {
+            forward: rotateZ90,
+            backwards: rotateZ90Backwards,
+        },
+        180: rotateZ180,
+    },
+};
+
 export class WebRubik extends HTMLElement {
     #size: number = 3;
     #observableCtx: ObservableContext | null = null;
     #state: State | null = null;
-    #cubeGroups: Record<'x' | 'y' | 'z', HTMLDivElement[][]> | null = null
+    #cubeGroups: Record<"x" | "y" | "z", HTMLDivElement[][]> | null = null;
+    #isRotating: boolean = false;
 
     static observedAttributes = [
         "size",
@@ -111,58 +140,89 @@ export class WebRubik extends HTMLElement {
         });
     }
 
+    async rotateAxis(
+        axis: "x" | "y" | "z",
+        layer: number,
+        angle: 90 | 180,
+        backwards: boolean = false,
+    ) {
+        if (this.#isRotating) return;
+        this.#isRotating = true;
+        try {
+            let rotation: ((state: State, layer: number) => void) | null = null;
+            const posibleRotation = ROTATIONS[axis][angle];
+            if (angle === 90) {
+                rotation = backwards
+                    ? (posibleRotation as any).backwards
+                    : (posibleRotation as any).forward;
+            } else {
+                rotation = posibleRotation as any;
+            }
+            rotation!(this.#state!, layer);
+            this.#setCubesToRotate(axis, layer);
+            await animateDegCssVar(
+                this.style,
+                "--spin-angle",
+                0,
+                angle * (backwards ? -1 : 1),
+                1000,
+            );
+            this.#resetCubesRotate(axis, layer);
+            this.style.setProperty("--spin-angle", "0deg");
+            this.#observableCtx!.tick();
+        } catch (error) {
+            console.error(error);
+        } finally {
+            this.#isRotating = false;
+        }
+    }
+
     async rotateX90(layer: number) {
-        rotateX90(this.#state!, layer);
-        this.#setCubesToRotate("x", layer);
-        await animateDegCssVar(this.style, "--spin-angle", 0, 90, 500);
-        this.#resetCubesRotate("x", layer);
-        this.style.setProperty("--spin-angle", "0deg");
-        this.#observableCtx!.tick();
+        await this.rotateAxis("x", layer, 90, false);
     }
 
     async rotateX90Backwards(layer: number) {
-        rotateX90Backwards(this.#state!, layer);
-        this.#setCubesToRotate("x", layer);
-        await animateDegCssVar(this.style, "--spin-angle", 0, -90, 500);
-        this.#resetCubesRotate("x", layer);
-        this.style.setProperty("--spin-angle", "0deg");
-        this.#observableCtx!.tick();
+        await this.rotateAxis("x", layer, 90, true);
     }
 
     async rotateX180(layer: number) {
-        rotateX180(this.#state!, layer);
-        this.#setCubesToRotate("x", layer);
-        await animateDegCssVar(this.style, "--spin-angle", 0, 180, 500);
-        this.#resetCubesRotate("x", layer);
-        this.style.setProperty("--spin-angle", "0deg");
-        this.#observableCtx!.tick();
+        await this.rotateAxis("x", layer, 180, false);
     }
 
     async rotateX180Backwards(layer: number) {
-        rotateX180(this.#state!, layer);
-        this.#setCubesToRotate("x", layer);
-        await animateDegCssVar(this.style, "--spin-angle", 0, -180, 500);
-        this.#resetCubesRotate("x", layer);
-        this.style.setProperty("--spin-angle", "0deg");
-        this.#observableCtx!.tick();
+        await this.rotateAxis("x", layer, 180, true);
     }
 
     async rotateY90(layer: number) {
-        rotateY90(this.#state!, layer);
-        this.#setCubesToRotate("y", layer);
-        await animateDegCssVar(this.style, "--spin-angle", 0, 90, 500);
-        this.#resetCubesRotate("y", layer);
-        this.style.setProperty("--spin-angle", "0deg");
-        this.#observableCtx!.tick();
+        await this.rotateAxis("y", layer, 90, false);
     }
 
     async rotateY90Backwards(layer: number) {
-        rotateY90Backwards(this.#state!, layer);
-        this.#setCubesToRotate("y", layer);
-        await animateDegCssVar(this.style, "--spin-angle", 0, -90, 500);
-        this.#resetCubesRotate("y", layer);
-        this.style.setProperty("--spin-angle", "0deg");
-        this.#observableCtx!.tick();
+        await this.rotateAxis("y", layer, 90, true);
+    }
+
+    async rotateY180(layer: number) {
+        await this.rotateAxis("y", layer, 180, false);
+    }
+
+    async rotateY180Backwards(layer: number) {
+        await this.rotateAxis("y", layer, 180, true);
+    }
+
+    async rotateZ90(layer: number) {
+        await this.rotateAxis("z", layer, 90, false);
+    }
+
+    async rotateZ90Backwards(layer: number) {
+        await this.rotateAxis("z", layer, 90, true);
+    }
+
+    async rotateZ180(layer: number) {
+        await this.rotateAxis("z", layer, 180, false);
+    }
+
+    async rotateZ180Backwards(layer: number) {
+        await this.rotateAxis("z", layer, 180, true);
     }
 
     setCssVariable(name: string, value: string) {
