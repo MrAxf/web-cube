@@ -5,6 +5,7 @@ import {
     rotateX90,
     rotateX90Backwards,
     rotateY90,
+    rotateY90Backwards,
     setState,
     State,
 } from "./state";
@@ -150,6 +151,15 @@ export class WebRubik extends HTMLElement {
         rotateY90(this.#state!, layer);
         this.#setCubesToRotate("y", layer);
         await animateDegCssVar(this.style, "--spin-angle", 0, 90, 500);
+        this.#resetCubesRotate("y", layer);
+        this.style.setProperty("--spin-angle", "0deg");
+        this.#observableCtx!.tick();
+    }
+
+    async rotateY90Backwards(layer: number) {
+        rotateY90Backwards(this.#state!, layer);
+        this.#setCubesToRotate("y", layer);
+        await animateDegCssVar(this.style, "--spin-angle", 0, -90, 500);
         this.#resetCubesRotate("y", layer);
         this.style.setProperty("--spin-angle", "0deg");
         this.#observableCtx!.tick();

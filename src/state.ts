@@ -190,15 +190,15 @@ export function rotateY90Backwards(
     const oldState = getCurrentState(state);
     const size = oldState[Face.Up].length;
     for (let i = 0; i < size; i++) {
-        state[Face.Front][i][layer].value = oldState[Face.Left][i][layer];
-        state[Face.Right][i][layer].value = oldState[Face.Front][i][layer];
+        state[Face.Front][i][layer].value = oldState[Face.Right][i][layer];
+        state[Face.Right][i][layer].value = oldState[Face.Back][(size - 1) - i][(size - 1) - layer];
         state[Face.Back][(size - 1) - i][(size - 1) - layer].value =
-            oldState[Face.Right][i][layer];
-        state[Face.Left][i][layer].value = oldState[Face.Back][(size - 1) - i][(size - 1) - layer];
+            oldState[Face.Left][i][layer];
+        state[Face.Left][i][layer].value = oldState[Face.Front][i][layer];
     }
     if (layer === 0) {
-        rotateFace90(state, oldState, Face.Up);
+        rotateFaceNegative90(state, oldState, Face.Up);
     } else if (layer === size - 1) {
-        rotateFaceNegative90(state, oldState, Face.Down);
+        rotateFace90(state, oldState, Face.Down);
     }
 }
