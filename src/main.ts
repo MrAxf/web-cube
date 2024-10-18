@@ -28,6 +28,20 @@ $$layerBtns.forEach(($btn) => {
   $btn.addEventListener("click", layerButtonClickHandler);
 });
 
+const $$cubeBtns: NodeListOf<HTMLButtonElement> = $controls.querySelectorAll("button[data-cube-btn]");
+
+function cubeButtonClickHandler(e: MouseEvent) {
+  const target = e.target as HTMLElement;
+  const axis = target.dataset.axis! as "x" | "y" | "z";
+  const angle = parseInt(target.dataset.angle!);
+  // @ts-ignore
+  $webRubik[`rotateCube${axis.toUpperCase()}${Math.abs(angle)}${angle < 0 ? 'Backwards' : ''}`]();
+}
+
+$$cubeBtns.forEach(($btn) => {
+  $btn.addEventListener("click", cubeButtonClickHandler);
+});
+
 const $$cubeAnglesRanges: NodeListOf<HTMLInputElement> = $controls.querySelectorAll("input[type=range]");
 
 function cubeAngleRangeChangeHandler(e: Event) {

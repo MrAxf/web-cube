@@ -116,7 +116,11 @@ function rotateXLayer90(state: State, oldState: ReadonlyState, layer: number) {
     }
 }
 
-function rotateXLayer90Backwards(state: State, oldState: ReadonlyState, layer: number) {
+function rotateXLayer90Backwards(
+    state: State,
+    oldState: ReadonlyState,
+    layer: number,
+) {
     const size = oldState[Face.Up].length;
     for (let i = 0; i < size; i++) {
         state[Face.Up][layer][i].value = oldState[Face.Back][layer][i];
@@ -198,19 +202,63 @@ export function rotateCubeX90Backwards(state: State): void {
     rotateFace90(state, oldState, Face.Right);
 }
 
-export function rotateY90(
-    state: State,
-    layer: number,
-): void {
+export function rotateCubeX180(state: State): void {
     const oldState = getCurrentState(state);
+    const size = oldState[Face.Up].length;
+    for (let i = 0; i < size; i++) {
+        rotateXLayer180(state, oldState, i);
+    }
+    rotateFace180(state, oldState, Face.Left);
+    rotateFace180(state, oldState, Face.Right);
+}
+
+function rotateYLayer90(state: State, oldState: ReadonlyState, layer: number) {
     const size = oldState[Face.Up].length;
     for (let i = 0; i < size; i++) {
         state[Face.Front][i][layer].value = oldState[Face.Left][i][layer];
         state[Face.Right][i][layer].value = oldState[Face.Front][i][layer];
         state[Face.Back][(size - 1) - i][(size - 1) - layer].value =
             oldState[Face.Right][i][layer];
-        state[Face.Left][i][layer].value = oldState[Face.Back][(size - 1) - i][(size - 1) - layer];
+        state[Face.Left][i][layer].value =
+            oldState[Face.Back][(size - 1) - i][(size - 1) - layer];
     }
+}
+
+function rotateYLayer90Backwards(
+    state: State,
+    oldState: ReadonlyState,
+    layer: number,
+) {
+    const size = oldState[Face.Up].length;
+    for (let i = 0; i < size; i++) {
+        state[Face.Front][i][layer].value = oldState[Face.Right][i][layer];
+        state[Face.Right][i][layer].value =
+            oldState[Face.Back][(size - 1) - i][(size - 1) - layer];
+        state[Face.Back][(size - 1) - i][(size - 1) - layer].value =
+            oldState[Face.Left][i][layer];
+        state[Face.Left][i][layer].value = oldState[Face.Front][i][layer];
+    }
+}
+
+function rotateYLayer180(state: State, oldState: ReadonlyState, layer: number) {
+    const size = oldState[Face.Up].length;
+    for (let i = 0; i < size; i++) {
+        state[Face.Front][i][layer].value =
+            oldState[Face.Back][(size - 1) - i][(size - 1) - layer];
+        state[Face.Right][i][layer].value = oldState[Face.Left][i][layer];
+        state[Face.Back][(size - 1) - i][(size - 1) - layer].value =
+            oldState[Face.Front][i][layer];
+        state[Face.Left][i][layer].value = oldState[Face.Right][i][layer];
+    }
+}
+
+export function rotateY90(
+    state: State,
+    layer: number,
+): void {
+    const oldState = getCurrentState(state);
+    const size = oldState[Face.Up].length;
+    rotateYLayer90(state, oldState, layer);
     if (layer === 0) {
         rotateFace90(state, oldState, Face.Up);
     } else if (layer === size - 1) {
@@ -224,13 +272,7 @@ export function rotateY90Backwards(
 ): void {
     const oldState = getCurrentState(state);
     const size = oldState[Face.Up].length;
-    for (let i = 0; i < size; i++) {
-        state[Face.Front][i][layer].value = oldState[Face.Right][i][layer];
-        state[Face.Right][i][layer].value = oldState[Face.Back][(size - 1) - i][(size - 1) - layer];
-        state[Face.Back][(size - 1) - i][(size - 1) - layer].value =
-            oldState[Face.Left][i][layer];
-        state[Face.Left][i][layer].value = oldState[Face.Front][i][layer];
-    }
+    rotateYLayer90Backwards(state, oldState, layer);
     if (layer === 0) {
         rotateFaceNegative90(state, oldState, Face.Up);
     } else if (layer === size - 1) {
@@ -244,17 +286,87 @@ export function rotateY180(
 ): void {
     const oldState = getCurrentState(state);
     const size = oldState[Face.Up].length;
-    for (let i = 0; i < size; i++) {
-        state[Face.Front][i][layer].value = oldState[Face.Back][(size - 1) - i][(size - 1) - layer];
-        state[Face.Right][i][layer].value = oldState[Face.Left][i][layer];
-        state[Face.Back][(size - 1) - i][(size - 1) - layer].value =
-            oldState[Face.Front][i][layer];
-        state[Face.Left][i][layer].value = oldState[Face.Right][i][layer];
-    }
+    rotateYLayer180(state, oldState, layer);
     if (layer === 0) {
         rotateFace180(state, oldState, Face.Up);
     } else if (layer === size - 1) {
         rotateFace180(state, oldState, Face.Down);
+    }
+}
+
+export function rotateCubeY90(state: State): void {
+    const oldState = getCurrentState(state);
+    const size = oldState[Face.Up].length;
+    for (let i = 0; i < size; i++) {
+        rotateYLayer90(state, oldState, i);
+    }
+    rotateFace90(state, oldState, Face.Up);
+    rotateFaceNegative90(state, oldState, Face.Down);
+}
+
+export function rotateCubeY90Backwards(state: State): void {
+    const oldState = getCurrentState(state);
+    const size = oldState[Face.Up].length;
+    for (let i = 0; i < size; i++) {
+        rotateYLayer90Backwards(state, oldState, i);
+    }
+    rotateFaceNegative90(state, oldState, Face.Up);
+    rotateFace90(state, oldState, Face.Down);
+}
+
+export function rotateCubeY180(state: State): void {
+    const oldState = getCurrentState(state);
+    const size = oldState[Face.Up].length;
+    for (let i = 0; i < size; i++) {
+        rotateYLayer180(state, oldState, i);
+    }
+    rotateFace180(state, oldState, Face.Up);
+    rotateFace180(state, oldState, Face.Down);
+}
+
+function rotateZLayer90(state: State, oldState: ReadonlyState, layer: number) {
+    const size = oldState[Face.Up].length;
+    for (let i = 0; i < size; i++) {
+        state[Face.Up][(size - 1) - i][layer].value =
+            oldState[Face.Left][layer][i];
+        state[Face.Left][layer][i].value =
+            oldState[Face.Down][i][(size - 1) - layer];
+        state[Face.Down][i][(size - 1) - layer].value =
+            oldState[Face.Right][(size - 1) - layer][(size - 1) - i];
+        state[Face.Right][(size - 1) - layer][i].value =
+            oldState[Face.Up][i][layer];
+    }
+}
+
+function rotateZLayer90Backwards(
+    state: State,
+    oldState: ReadonlyState,
+    layer: number,
+) {
+    const size = oldState[Face.Up].length;
+    for (let i = 0; i < size; i++) {
+        state[Face.Up][(size - 1) - i][layer].value =
+            oldState[Face.Right][(size - 1) - layer][(size - 1) - i];
+        state[Face.Left][layer][i].value =
+            oldState[Face.Up][(size - 1) - i][layer];
+        state[Face.Down][i][(size - 1) - layer].value =
+            oldState[Face.Left][layer][i];
+        state[Face.Right][(size - 1) - layer][i].value =
+            oldState[Face.Down][(size - 1) - i][(size - 1) - layer];
+    }
+}
+
+function rotateZLayer180(state: State, oldState: ReadonlyState, layer: number) {
+    const size = oldState[Face.Up].length;
+    for (let i = 0; i < size; i++) {
+        state[Face.Up][(size - 1) - i][layer].value =
+            oldState[Face.Down][i][(size - 1) - layer];
+        state[Face.Left][layer][i].value =
+            oldState[Face.Right][(size - 1) - layer][(size - 1) - i];
+        state[Face.Down][i][(size - 1) - layer].value =
+            oldState[Face.Up][(size - 1) - i][layer];
+        state[Face.Right][(size - 1) - layer][(size - 1) - i].value =
+            oldState[Face.Left][layer][i];
     }
 }
 
@@ -264,12 +376,7 @@ export function rotateZ90(
 ): void {
     const oldState = getCurrentState(state);
     const size = oldState[Face.Up].length;
-    for (let i = 0; i < size; i++) {
-        state[Face.Up][(size - 1) - i][layer].value = oldState[Face.Left][layer][i];
-        state[Face.Left][layer][i].value = oldState[Face.Down][i][(size - 1) - layer];
-        state[Face.Down][i][(size - 1) - layer].value = oldState[Face.Right][(size - 1) - layer][(size - 1) - i];
-        state[Face.Right][(size - 1) - layer][i].value = oldState[Face.Up][i][layer];
-    }
+    rotateZLayer90(state, oldState, layer);
     if (layer === 0) {
         rotateFace90(state, oldState, Face.Back);
     } else if (layer === size - 1) {
@@ -283,12 +390,7 @@ export function rotateZ90Backwards(
 ): void {
     const oldState = getCurrentState(state);
     const size = oldState[Face.Up].length;
-    for (let i = 0; i < size; i++) {
-        state[Face.Up][(size - 1) - i][layer].value = oldState[Face.Right][(size - 1) - layer][(size - 1) - i];
-        state[Face.Left][layer][i].value = oldState[Face.Up][(size - 1) - i][layer];
-        state[Face.Down][i][(size - 1) - layer].value = oldState[Face.Left][layer][i];
-        state[Face.Right][(size - 1) - layer][i].value = oldState[Face.Down][(size - 1) - i][(size - 1) - layer];
-    }
+    rotateZLayer90Backwards(state, oldState, layer);
     if (layer === 0) {
         rotateFaceNegative90(state, oldState, Face.Back);
     } else if (layer === size - 1) {
@@ -302,15 +404,40 @@ export function rotateZ180(
 ): void {
     const oldState = getCurrentState(state);
     const size = oldState[Face.Up].length;
-    for (let i = 0; i < size; i++) {
-        state[Face.Up][(size - 1) - i][layer].value = oldState[Face.Down][i][(size - 1) - layer];
-        state[Face.Left][layer][i].value = oldState[Face.Right][(size - 1) - layer][(size - 1) - i];
-        state[Face.Down][i][(size - 1) - layer].value = oldState[Face.Up][(size - 1) - i][layer];
-        state[Face.Right][(size - 1) - layer][(size - 1) -i].value = oldState[Face.Left][layer][i];
-    }
+    rotateZLayer180(state, oldState, layer);
     if (layer === 0) {
         rotateFace180(state, oldState, Face.Back);
     } else if (layer === size - 1) {
         rotateFace180(state, oldState, Face.Front);
     }
+}
+
+export function rotateCubeZ90(state: State): void {
+    const oldState = getCurrentState(state);
+    const size = oldState[Face.Up].length;
+    for (let i = 0; i < size; i++) {
+        rotateZLayer90(state, oldState, i);
+    }
+    rotateFace90(state, oldState, Face.Back);
+    rotateFaceNegative90(state, oldState, Face.Front);
+}
+
+export function rotateCubeZ90Backwards(state: State): void {
+    const oldState = getCurrentState(state);
+    const size = oldState[Face.Up].length;
+    for (let i = 0; i < size; i++) {
+        rotateZLayer90Backwards(state, oldState, i);
+    }
+    rotateFaceNegative90(state, oldState, Face.Back);
+    rotateFace90(state, oldState, Face.Front);
+}
+
+export function rotateCubeZ180(state: State): void {
+    const oldState = getCurrentState(state);
+    const size = oldState[Face.Up].length;
+    for (let i = 0; i < size; i++) {
+        rotateZLayer180(state, oldState, i);
+    }
+    rotateFace180(state, oldState, Face.Back);
+    rotateFace180(state, oldState, Face.Front);
 }
