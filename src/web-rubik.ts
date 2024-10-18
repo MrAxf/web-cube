@@ -143,33 +143,35 @@ export class WebRubik extends HTMLElement {
     async #rotateAxis(
         axis: "x" | "y" | "z",
         layer: number,
-        angle: 90 | 180 | 270,
+        angle: 90 | 180 | 270 | 360,
         backwards: boolean = false,
     ) {
         if (this.#isRotating) return;
         this.#isRotating = true;
         try {
             let rotation: ((state: State, layer: number) => void) | null = null;
-            const realAngle = angle === 270 ? 90 : angle;
-            const realBackwards = angle === 270 ? !backwards : backwards;
             
-            const posibleRotation = ROTATIONS[axis][realAngle];
-            if (realAngle === 90) {
-                rotation = realBackwards
-                    ? (posibleRotation as any).backwards
-                    : (posibleRotation as any).forward;
-            } else {
-                rotation = posibleRotation as any;
+            if (angle !== 360) {
+                const realAngle = angle === 270 ? 90 : angle;
+                const realBackwards = angle === 270 ? !backwards : backwards;
+                const posibleRotation = ROTATIONS[axis][realAngle];
+                if (realAngle === 90) {
+                    rotation = realBackwards
+                        ? (posibleRotation as any).backwards
+                        : (posibleRotation as any).forward;
+                } else {
+                    rotation = posibleRotation as any;
+                }
+                
+                rotation!(this.#state!, layer);
             }
-            
-            rotation!(this.#state!, layer);
             this.#setCubesToRotate(axis, layer);
             await animateDegCssVar(
                 this.style,
                 "--spin-angle",
                 0,
                 angle * (backwards ? -1 : 1),
-                500,
+                500 * (Math.abs(angle) / 90),
             );
             this.#resetCubesRotate(axis, layer);
             this.style.setProperty("--spin-angle", "0deg");
@@ -205,6 +207,14 @@ export class WebRubik extends HTMLElement {
         await this.#rotateAxis("x", layer, 270, true);
     }
 
+    async rotateX360(layer: number) {
+        await this.#rotateAxis("x", layer, 360, false);
+    }
+
+    async rotateX360Backwards(layer: number) {
+        await this.#rotateAxis("x", layer, 360, true);
+    }
+
     async rotateY90(layer: number) {
         await this.#rotateAxis("y", layer, 90, false);
     }
@@ -229,6 +239,14 @@ export class WebRubik extends HTMLElement {
         await this.#rotateAxis("y", layer, 270, true);
     }
 
+    async rotateY360(layer: number) {
+        await this.#rotateAxis("y", layer, 360, false);
+    }
+
+    async rotateY360Backwards(layer: number) {
+        await this.#rotateAxis("y", layer, 360, true);
+    }
+
     async rotateZ90(layer: number) {
         await this.#rotateAxis("z", layer, 90, false);
     }
@@ -251,6 +269,14 @@ export class WebRubik extends HTMLElement {
 
     async rotateZ270Backwards(layer: number) {
         await this.#rotateAxis("z", layer, 270, true);
+    }
+
+    async rotateZ360(layer: number) {
+        await this.#rotateAxis("z", layer, 360, false);
+    }
+
+    async rotateZ360Backwards(layer: number) {
+        await this.#rotateAxis("z", layer, 360, true);
     }
 
     setCssVariable(name: string, value: string) {
