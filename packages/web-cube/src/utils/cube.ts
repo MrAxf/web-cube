@@ -1,5 +1,5 @@
-import { State } from "../state";
-import { Face } from "./faces";
+import { State } from "../state.ts";
+import { Face } from "./faces.ts";
 
 const colors = {
     [Face.Front]: "var(--color-front)",
@@ -10,18 +10,29 @@ const colors = {
     [Face.Down]: "var(--color-down)",
 };
 
+type CreateFaceParams = {
+    x: number;
+    y: number;
+    state: State;
+    face: Face;
+    isFace: boolean;
+    cubeLayerX: number;
+    cubeLayerY: number;
+    cubeLayerZ: number;
+};
+
 function createFace(
-    x: number,
-    y: number,
-    state: State,
-    face: Face,
-    isFace: boolean,
+    { x, y, state, face, isFace, cubeLayerX, cubeLayerY, cubeLayerZ }:
+        CreateFaceParams,
 ) {
     const $face = document.createElement("div");
     $face.classList.add("face");
     $face.dataset.face = face.toString();
     if (isFace) {
         $face.dataset.isFace = "";
+        $face.dataset.x = cubeLayerX.toString();
+        $face.dataset.y = cubeLayerY.toString();
+        $face.dataset.z = cubeLayerZ.toString();
         $face.classList.add("sticker");
         state[face][x][y].subscribe((face) => {
             $face.style.setProperty("--sticker-color", colors[face]);
@@ -42,32 +53,74 @@ function createCube(
     $cube.dataset.x = x.toString();
     $cube.dataset.y = y.toString();
     $cube.dataset.z = z.toString();
-    $cube.style.setProperty("--rotate-cube-x", '0deg');
-    $cube.style.setProperty("--rotate-cube-y", '0deg');
-    $cube.style.setProperty("--rotate-cube-z", '0deg');
+    $cube.style.setProperty("--rotate-cube-x", "0deg");
+    $cube.style.setProperty("--rotate-cube-y", "0deg");
+    $cube.style.setProperty("--rotate-cube-z", "0deg");
     $cube.style.transform =
         `rotateX(var(--rotate-cube-x)) rotateY(var(--rotate-cube-y)) rotateZ(var(--rotate-cube-z)) translateX(calc(var(--cube-start) + (var(--block-size) * ${x}))) translateY(calc(var(--cube-start) + (var(--block-size) * ${y}))) translateZ(calc(var(--cube-start) + (var(--block-size) * ${z})))`;
 
     const reversedSize = size - 1;
 
-    const $faceFront = createFace(x, y, state, Face.Front, z === size - 1);
-    const $faceRight = createFace(
-        reversedSize - z,
+    const $faceFront = createFace({
+        x,
         y,
         state,
-        Face.Right,
-        x === size - 1,
-    );
-    const faceBack = createFace(x, reversedSize - y, state, Face.Back, z === 0);
-    const $faceLeft = createFace(z, y, state, Face.Left, x === 0);
-    const $faceUp = createFace(x, z, state, Face.Up, y === 0);
-    const $faceDown = createFace(
-        x,
-        reversedSize - z,
+        face: Face.Front,
+        isFace: z === size - 1,
+        cubeLayerX: x,
+        cubeLayerY: y,
+        cubeLayerZ: z,
+    });
+    const $faceRight = createFace({
+        x: reversedSize - z,
+        y,
         state,
-        Face.Down,
-        y === size - 1,
-    );
+        face: Face.Right,
+        isFace: x === size - 1,
+        cubeLayerX: x,
+        cubeLayerY: y,
+        cubeLayerZ: z,
+    });
+    const faceBack = createFace({
+        x,
+        y: reversedSize - y,
+        state,
+        face: Face.Back,
+        isFace: z === 0,
+        cubeLayerX: x,
+        cubeLayerY: y,
+        cubeLayerZ: z,
+    });
+    const $faceLeft = createFace({
+        x: z,
+        y,
+        state,
+        face: Face.Left,
+        isFace: x === 0,
+        cubeLayerX: x,
+        cubeLayerY: y,
+        cubeLayerZ: z,
+    });
+    const $faceUp = createFace({
+        x,
+        y: z,
+        state,
+        face: Face.Up,
+        isFace: y === 0,
+        cubeLayerX: x,
+        cubeLayerY: y,
+        cubeLayerZ: z,
+    });
+    const $faceDown = createFace({
+        x,
+        y: reversedSize - z,
+        state,
+        face: Face.Down,
+        isFace: y === size - 1,
+        cubeLayerX: x,
+        cubeLayerY: y,
+        cubeLayerZ: z,
+    });
 
     $cube.append(
         $faceFront,
@@ -81,13 +134,16 @@ function createCube(
     return $cube;
 }
 
-export function createCubes(size: number, state: State): [HTMLDivElement[], Record<'x' | 'y' | 'z', HTMLDivElement[][]>] {
+export function createCubes(
+    size: number,
+    state: State,
+): [HTMLDivElement[], Record<"x" | "y" | "z", HTMLDivElement[][]>] {
     const cubes: HTMLDivElement[] = [];
     const cubeGroups = {
         x: Array.from({ length: size }, () => [] as HTMLDivElement[]),
         y: Array.from({ length: size }, () => [] as HTMLDivElement[]),
         z: Array.from({ length: size }, () => [] as HTMLDivElement[]),
-    }
+    };
 
     for (let x = 0; x < size; x++) {
         for (let y = 0; y < size; y++) {

@@ -21,11 +21,131 @@ import {
     rotateZ90Backwards,
     setState,
     State,
-} from "./state";
-import { animateDegCssVar } from "./utils/animate";
-import { createCubes } from "./utils/cube";
-import { createObservableContext, ObservableContext } from "./utils/observable";
-import styles from "./web-rubik.css?inline";
+} from "./state.ts";
+import { animateDegCssVar } from "./utils/animate.ts";
+import { createCubes } from "./utils/cube.ts";
+import { createObservableContext, ObservableContext } from "./utils/observable.ts";
+
+const styles = `
+:host {
+    --cube-size: 2;
+    --block-size: 150px;
+    --cube-start: -150px;
+
+    --color-background: #242424;
+    --color-up: #dd2020;
+    --color-down: #ff8c00;
+    --color-front: #ffffff;
+    --color-back: #e2f105;
+    --color-left: #1111aa;
+    --color-right: #00aa11;
+
+    --cube-rotation-x: 0deg;
+    --cube-rotation-y: 0deg;
+    --cube-rotation-z: 0deg;
+
+    --spin-angle: 0deg;
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+}
+
+.viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: block;
+    transform-style: preserve-3d;
+    perspective: 3000px;
+
+    --hola: var(--spinangle);
+
+    & .cube-contain {
+        position: absolute;
+        width: var(--block-size);
+        height: var(--block-size);
+        transform-style: preserve-3d;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%) rotateX(330deg)
+            rotateY(45deg);
+        & .main-cube {
+            position: absolute;
+            width: var(--block-size);
+            height: var(--block-size);
+            transform-style: preserve-3d;
+            top: 0;
+            left: 0;
+            transform: rotateX(var(--cube-rotation-x))
+                rotateY(var(--cube-rotation-y)) rotateZ(var(--cube-rotation-z));
+
+            & .cube {
+                position: absolute;
+                width: var(--block-size);
+                height: var(--block-size);
+                transform-style: preserve-3d;
+                top: 0;
+                left: 0;
+
+                & .face {
+                    position: absolute;
+                    background-color: var(--color-background);
+                    width: var(--block-size);
+                    height: var(--block-size);
+                    --sticker-color: var(--color-background);
+
+                    &:nth-child(1) {
+                        transform: rotateY(0deg)
+                            translateZ(calc(var(--block-size) / 2));
+                    }
+
+                    &:nth-child(2) {
+                        transform: rotateY(90deg)
+                            translateZ(calc(var(--block-size) / 2));
+                    }
+
+                    &:nth-child(3) {
+                        transform: rotateY(180deg)
+                            translateZ(calc(var(--block-size) / 2));
+                    }
+
+                    &:nth-child(4) {
+                        transform: rotateY(-90deg)
+                            translateZ(calc(var(--block-size) / 2));
+                    }
+
+                    &:nth-child(5) {
+                        transform: rotateX(90deg)
+                            translateZ(calc(var(--block-size) / 2));
+                    }
+
+                    &:nth-child(6) {
+                        transform: rotateX(-90deg)
+                            translateZ(calc(var(--block-size) / 2));
+                    }
+
+                    &.sticker {
+                        &::after {
+                            content: "";
+                            display: block;
+                            position: absolute;
+                            width: 80%;
+                            height: 80%;
+                            margin: 10%;
+                            border-radius: 10%;
+                            background-color: var(--sticker-color);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}`;
 
 const ROTATIONS = {
     x: {
@@ -135,6 +255,39 @@ export class WebRubik extends HTMLElement {
         $cubeContain.appendChild($mainCube);
         $viewport.appendChild($cubeContain);
 
+        $viewport.addEventListener("pointerdown", (ev) => {
+            ev.preventDefault();
+            if (!ev.isPrimary || ev.button !== 0) return;
+            this.#isRotating = true;
+            const self = this;
+            const $target = ev.target as HTMLElement;
+            const $closestFace = $target.closest(".face.sticker");
+
+            const viewportRect = $viewport.getBoundingClientRect();
+            const pointerX = ev.clientX - viewportRect.left;
+            const pointerY = ev.clientY - viewportRect.top;
+            const isCubeMovevent = $target.closest(".main-cube") === null;
+            
+            console.log(pointerX, pointerY, isCubeMovevent);
+
+            function handlePointerMove(ev: PointerEvent) {
+                ev.preventDefault();
+                console.log("move", ev.isPrimary);
+            }
+
+            function handlePointerUp(ev: PointerEvent) {
+                ev.preventDefault();
+                if (!ev.isPrimary || ev.button !== 0) return;
+                self.#isRotating = false;
+                console.log("up", ev);
+                window.removeEventListener("pointermove", handlePointerMove);
+                window.removeEventListener("pointerup", handlePointerUp);
+            }
+
+            window.addEventListener("pointermove", handlePointerMove);
+            window.addEventListener("pointerup", handlePointerUp);
+        });
+
         this.shadowRoot!.appendChild($viewport);
     }
 
@@ -184,7 +337,7 @@ export class WebRubik extends HTMLElement {
         this.#isRotating = true;
         try {
             let rotation: ((state: State, layer: number) => void) | null = null;
-            
+
             if (angle !== 360) {
                 const realAngle = angle === 270 ? 90 : angle;
                 const realBackwards = angle === 270 ? !backwards : backwards;
@@ -196,7 +349,7 @@ export class WebRubik extends HTMLElement {
                 } else {
                     rotation = posibleRotation as any;
                 }
-                
+
                 rotation!(this.#state!, layer);
             }
             this.#setCubesToRotate(axis, layer);
@@ -226,11 +379,11 @@ export class WebRubik extends HTMLElement {
         this.#isRotating = true;
         try {
             let rotation: ((state: State) => void) | null = null;
-            
+
             if (angle !== 360) {
                 const realAngle = angle === 270 ? 90 : angle;
                 const realBackwards = angle === 270 ? !backwards : backwards;
-                const posibleRotation = ROTATIONS['cube'][axis][realAngle];
+                const posibleRotation = ROTATIONS["cube"][axis][realAngle];
                 if (realAngle === 90) {
                     rotation = realBackwards
                         ? (posibleRotation as any).backwards
@@ -238,7 +391,7 @@ export class WebRubik extends HTMLElement {
                 } else {
                     rotation = posibleRotation as any;
                 }
-                
+
                 rotation!(this.#state!);
             }
             this.#mainCube!.style.setProperty(

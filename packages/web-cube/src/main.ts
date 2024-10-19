@@ -1,5 +1,5 @@
-import { Face } from "./utils/faces";
-import type { WebRubik } from "./web-rubik";
+import { Face } from "./utils/faces.ts";
+import type { WebRubik } from "./web-rubik.ts";
 
 const $webRubik = document.querySelector("web-rubik") as WebRubik;
 

@@ -1,5 +1,5 @@
-import { Face, faceList } from "./utils/faces";
-import { Observable, ObservableContext } from "./utils/observable";
+import { Face, faceList } from "./utils/faces.ts";
+import { Observable, ObservableContext } from "./utils/observable.ts";
 
 export type State = {
     [Face.Up]: Observable<Face>[][];
