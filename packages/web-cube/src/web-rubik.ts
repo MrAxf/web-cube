@@ -24,128 +24,11 @@ import {
 } from "./state.ts";
 import { animateDegCssVar } from "./utils/animate.ts";
 import { createCubes } from "./utils/cube.ts";
-import { createObservableContext, ObservableContext } from "./utils/observable.ts";
-
-const styles = `
-:host {
-    --cube-size: 2;
-    --block-size: 150px;
-    --cube-start: -150px;
-
-    --color-background: #242424;
-    --color-up: #dd2020;
-    --color-down: #ff8c00;
-    --color-front: #ffffff;
-    --color-back: #e2f105;
-    --color-left: #1111aa;
-    --color-right: #00aa11;
-
-    --cube-rotation-x: 0deg;
-    --cube-rotation-y: 0deg;
-    --cube-rotation-z: 0deg;
-
-    --spin-angle: 0deg;
-
-    * {
-        margin: 0;
-        padding: 0;
-    }
-    *, *::before, *::after {
-        box-sizing: border-box;
-    }
-}
-
-.viewport {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: block;
-    transform-style: preserve-3d;
-    perspective: 3000px;
-
-    --hola: var(--spinangle);
-
-    & .cube-contain {
-        position: absolute;
-        width: var(--block-size);
-        height: var(--block-size);
-        transform-style: preserve-3d;
-        top: 50%;
-        left: 50%;
-        transform: translateX(-50%) translateY(-50%) rotateX(330deg)
-            rotateY(45deg);
-        & .main-cube {
-            position: absolute;
-            width: var(--block-size);
-            height: var(--block-size);
-            transform-style: preserve-3d;
-            top: 0;
-            left: 0;
-            transform: rotateX(var(--cube-rotation-x))
-                rotateY(var(--cube-rotation-y)) rotateZ(var(--cube-rotation-z));
-
-            & .cube {
-                position: absolute;
-                width: var(--block-size);
-                height: var(--block-size);
-                transform-style: preserve-3d;
-                top: 0;
-                left: 0;
-
-                & .face {
-                    position: absolute;
-                    background-color: var(--color-background);
-                    width: var(--block-size);
-                    height: var(--block-size);
-                    --sticker-color: var(--color-background);
-
-                    &:nth-child(1) {
-                        transform: rotateY(0deg)
-                            translateZ(calc(var(--block-size) / 2));
-                    }
-
-                    &:nth-child(2) {
-                        transform: rotateY(90deg)
-                            translateZ(calc(var(--block-size) / 2));
-                    }
-
-                    &:nth-child(3) {
-                        transform: rotateY(180deg)
-                            translateZ(calc(var(--block-size) / 2));
-                    }
-
-                    &:nth-child(4) {
-                        transform: rotateY(-90deg)
-                            translateZ(calc(var(--block-size) / 2));
-                    }
-
-                    &:nth-child(5) {
-                        transform: rotateX(90deg)
-                            translateZ(calc(var(--block-size) / 2));
-                    }
-
-                    &:nth-child(6) {
-                        transform: rotateX(-90deg)
-                            translateZ(calc(var(--block-size) / 2));
-                    }
-
-                    &.sticker {
-                        &::after {
-                            content: "";
-                            display: block;
-                            position: absolute;
-                            width: 80%;
-                            height: 80%;
-                            margin: 10%;
-                            border-radius: 10%;
-                            background-color: var(--sticker-color);
-                        }
-                    }
-                }
-            }
-        }
-    }
-}`;
+import {
+    createObservableContext,
+    ObservableContext,
+} from "./utils/observable.ts";
+import { style } from "./style.ts";
 
 const ROTATIONS = {
     x: {
@@ -201,6 +84,7 @@ export class WebRubik extends HTMLElement {
     #mainCube: HTMLDivElement | null = null;
     #cubeGroups: Record<"x" | "y" | "z", HTMLDivElement[][]> | null = null;
     #isRotating: boolean = false;
+    #rotatingTime: number = 500;
 
     static observedAttributes = [
         "size",
@@ -218,7 +102,7 @@ export class WebRubik extends HTMLElement {
         this.#observableCtx.tick();
 
         const $style = document.createElement("style");
-        $style.textContent = styles;
+        $style.textContent = style;
         this.shadowRoot!.appendChild($style);
 
         this.style.setProperty("--cube-size", `${this.#size}`);
@@ -256,36 +140,99 @@ export class WebRubik extends HTMLElement {
         $viewport.appendChild($cubeContain);
 
         $viewport.addEventListener("pointerdown", (ev) => {
-            ev.preventDefault();
             if (!ev.isPrimary || ev.button !== 0) return;
+            ev.preventDefault();
+            if (this.#isRotating) return;
+
             this.#isRotating = true;
             const self = this;
             const $target = ev.target as HTMLElement;
             const $closestFace = $target.closest(".face.sticker");
 
             const viewportRect = $viewport.getBoundingClientRect();
-            const pointerX = ev.clientX - viewportRect.left;
-            const pointerY = ev.clientY - viewportRect.top;
-            const isCubeMovevent = $target.closest(".main-cube") === null;
-            
-            console.log(pointerX, pointerY, isCubeMovevent);
+            const originX = ev.clientX - viewportRect.left;
+            const originY = ev.clientY - viewportRect.top;
 
-            function handlePointerMove(ev: PointerEvent) {
-                ev.preventDefault();
-                console.log("move", ev.isPrimary);
+            if (!$closestFace) {
+                const xAxis = "y";
+                const yAxis = originX > viewportRect.width / 2 ? "x" : "z";
+                const xMultiplier = originY > viewportRect.height / 2 ? 1 : -1;
+
+                let axis: "x" | "y" | "z" | null = null;
+                let currentAngle = 0;
+
+                function handlePointerMove(ev: PointerEvent) {
+                    ev.preventDefault();
+
+                    const currentX = ev.clientX - viewportRect.left;
+                    const currentY = ev.clientY - viewportRect.top;
+
+                    if (!axis) {
+                        const xDistance = Math.abs(currentX - originX);
+                        const yDistance = Math.abs(currentY - originY);
+                        if (xDistance > 10 || yDistance > 10) {
+                            axis = xDistance > yDistance ? xAxis : yAxis;
+                        }
+
+                        self.#mainCube!.style.setProperty(
+                            `--cube-rotation-${axis}`,
+                            "var(--spin-angle)",
+                        );
+                    } else {
+                        currentAngle = Math.min(
+                            Math.max(
+                                (axis === "y")
+                                    ? ((currentX - originX) / 3) *
+                                        xMultiplier
+                                    : ((originY - currentY) / 3),
+                                -360,
+                            ),
+                            360,
+                        );
+                        globalThis.requestAnimationFrame(() => {
+                            self.style.setProperty(
+                                "--spin-angle",
+                                `${currentAngle}deg`,
+                            );
+                        });
+                    }
+                }
+
+                function handlePointerUp(ev: PointerEvent) {
+                    if (!ev.isPrimary || ev.button !== 0) return;
+                    ev.preventDefault();
+
+                    const targetAngle = Math.round(currentAngle / 90) * 90;
+
+                    if (!$closestFace) {
+                        self.#rotateAxisCube({
+                            axis: axis!,
+                            angle: Math.abs(targetAngle) as
+                                | 90
+                                | 180
+                                | 270
+                                | 360,
+                            backwards: targetAngle < 0,
+                            from: currentAngle,
+                        }).then(() => {
+                            self.#mainCube!.style.removeProperty(
+                                `--cube-rotation-${axis}`,
+                            );
+                            self.style.setProperty("--spin-angle", "0deg");
+                            self.#isRotating = false;
+                        });
+                    }
+
+                    window.removeEventListener(
+                        "pointermove",
+                        handlePointerMove,
+                    );
+                    window.removeEventListener("pointerup", handlePointerUp);
+                }
+
+                window.addEventListener("pointermove", handlePointerMove);
+                window.addEventListener("pointerup", handlePointerUp);
             }
-
-            function handlePointerUp(ev: PointerEvent) {
-                ev.preventDefault();
-                if (!ev.isPrimary || ev.button !== 0) return;
-                self.#isRotating = false;
-                console.log("up", ev);
-                window.removeEventListener("pointermove", handlePointerMove);
-                window.removeEventListener("pointerup", handlePointerUp);
-            }
-
-            window.addEventListener("pointermove", handlePointerMove);
-            window.addEventListener("pointerup", handlePointerUp);
         });
 
         this.shadowRoot!.appendChild($viewport);
@@ -307,6 +254,7 @@ export class WebRubik extends HTMLElement {
         this.#observableCtx!.tick();
     }
 
+    //#region Private totation methods
     #setCubesToRotate(axis: "x" | "y" | "z", layer: number) {
         const $$cubes = this.#cubeGroups![axis][layer];
         $$cubes.forEach(($cube) => {
@@ -328,10 +276,19 @@ export class WebRubik extends HTMLElement {
     }
 
     async #rotateAxisLayer(
-        axis: "x" | "y" | "z",
-        layer: number,
-        angle: 90 | 180 | 270 | 360,
-        backwards: boolean = false,
+        {
+            axis,
+            layer,
+            angle,
+            backwards = false,
+            from = 0,
+        }: {
+            axis: "x" | "y" | "z";
+            layer: number;
+            angle: 90 | 180 | 270 | 360;
+            backwards?: boolean;
+            from?: number;
+        },
     ) {
         if (this.#isRotating) return;
         this.#isRotating = true;
@@ -358,7 +315,7 @@ export class WebRubik extends HTMLElement {
                 "--spin-angle",
                 0,
                 angle * (backwards ? -1 : 1),
-                500 * (Math.abs(angle) / 90),
+                this.#rotatingTime * (Math.abs(angle - from) / 90),
             );
             this.#resetCubesRotate(axis, layer);
             this.style.setProperty("--spin-angle", "0deg");
@@ -371,43 +328,66 @@ export class WebRubik extends HTMLElement {
     }
 
     async #rotateAxisCube(
-        axis: "x" | "y" | "z",
-        angle: 90 | 180 | 270 | 360,
-        backwards: boolean = false,
+        {
+            axis,
+            angle,
+            backwards = false,
+            from = 0,
+        }: {
+            axis: "x" | "y" | "z";
+            angle: 0 | 90 | 180 | 270 | 360;
+            backwards?: boolean;
+            from?: number;
+        },
     ) {
+        let rotation: ((state: State) => void) | null = null;
+
+        if (angle !== 360 && angle !== 0) {
+            const realAngle = angle === 270 ? 90 : angle;
+            const realBackwards = angle === 270 ? !backwards : backwards;
+            const posibleRotation = ROTATIONS["cube"][axis][realAngle];
+            if (realAngle === 90) {
+                rotation = realBackwards
+                    ? (posibleRotation as any).backwards
+                    : (posibleRotation as any).forward;
+            } else {
+                rotation = posibleRotation as any;
+            }
+
+            rotation!(this.#state!);
+        }
+        this.#mainCube!.style.setProperty(
+            `--cube-rotation-${axis}`,
+            "var(--spin-angle)",
+        );
+
+        console.log({
+            fromAngle: from,
+            targetAngle: angle,
+            distance: Math.abs(angle - from),
+            multiplier: (Math.abs(angle - from) / 90),
+            time: this.#rotatingTime * (Math.abs(angle - from) / 90),
+        });
+
+        await animateDegCssVar(
+            this.style,
+            "--spin-angle",
+            from,
+            angle * (backwards ? -1 : 1),
+            this.#rotatingTime * (Math.abs(angle - from) / 90),
+        );
+        this.#mainCube!.style.removeProperty(`--cube-rotation-${axis}`);
+        this.style.setProperty("--spin-angle", "0deg");
+        this.#observableCtx!.tick();
+    }
+    //#endregion
+
+    //#region Cube rotations
+    async #withRotation(action: () => Promise<void>) {
         if (this.#isRotating) return;
         this.#isRotating = true;
         try {
-            let rotation: ((state: State) => void) | null = null;
-
-            if (angle !== 360) {
-                const realAngle = angle === 270 ? 90 : angle;
-                const realBackwards = angle === 270 ? !backwards : backwards;
-                const posibleRotation = ROTATIONS["cube"][axis][realAngle];
-                if (realAngle === 90) {
-                    rotation = realBackwards
-                        ? (posibleRotation as any).backwards
-                        : (posibleRotation as any).forward;
-                } else {
-                    rotation = posibleRotation as any;
-                }
-
-                rotation!(this.#state!);
-            }
-            this.#mainCube!.style.setProperty(
-                `--cube-rotation-${axis}`,
-                "var(--spin-angle)",
-            );
-            await animateDegCssVar(
-                this.style,
-                "--spin-angle",
-                0,
-                angle * (backwards ? -1 : 1),
-                500 * (Math.abs(angle) / 90),
-            );
-            this.#mainCube!.style.setProperty("--cube-rotation-x", "0deg");
-            this.style.setProperty("--spin-angle", "0deg");
-            this.#observableCtx!.tick();
+            await action();
         } catch (error) {
             console.error(error);
         } finally {
@@ -416,196 +396,475 @@ export class WebRubik extends HTMLElement {
     }
 
     async rotateCubeX90() {
-        await this.#rotateAxisCube("x", 90, false);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "x",
+                    angle: 90,
+                    backwards: false,
+                }),
+        );
     }
 
     async rotateCubeX90Backwards() {
-        await this.#rotateAxisCube("x", 90, true);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({ axis: "x", angle: 90, backwards: true }),
+        );
     }
 
     async rotateCubeX180() {
-        await this.#rotateAxisCube("x", 180, false);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "x",
+                    angle: 180,
+                    backwards: false,
+                }),
+        );
     }
 
     async rotateCubeX180Backwards() {
-        await this.#rotateAxisCube("x", 180, true);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "x",
+                    angle: 180,
+                    backwards: true,
+                }),
+        );
     }
 
     async rotateCubeX270() {
-        await this.#rotateAxisCube("x", 270, false);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "x",
+                    angle: 270,
+                    backwards: false,
+                }),
+        );
     }
 
     async rotateCubeX270Backwards() {
-        await this.#rotateAxisCube("x", 270, true);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "x",
+                    angle: 270,
+                    backwards: true,
+                }),
+        );
     }
 
     async rotateCubeX360() {
-        await this.#rotateAxisCube("x", 360, false);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "x",
+                    angle: 360,
+                    backwards: false,
+                }),
+        );
     }
 
     async rotateCubeX360Backwards() {
-        await this.#rotateAxisCube("x", 360, true);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "x",
+                    angle: 360,
+                    backwards: true,
+                }),
+        );
     }
 
     async rotateCubeY90() {
-        await this.#rotateAxisCube("y", 90, false);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "y",
+                    angle: 90,
+                    backwards: false,
+                }),
+        );
     }
 
     async rotateCubeY90Backwards() {
-        await this.#rotateAxisCube("y", 90, true);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({ axis: "y", angle: 90, backwards: true }),
+        );
     }
 
     async rotateCubeY180() {
-        await this.#rotateAxisCube("y", 180, false);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "y",
+                    angle: 180,
+                    backwards: false,
+                }),
+        );
     }
 
     async rotateCubeY180Backwards() {
-        await this.#rotateAxisCube("y", 180, true);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "y",
+                    angle: 180,
+                    backwards: true,
+                }),
+        );
     }
 
     async rotateCubeY270() {
-        await this.#rotateAxisCube("y", 270, false);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "y",
+                    angle: 270,
+                    backwards: false,
+                }),
+        );
     }
 
     async rotateCubeY270Backwards() {
-        await this.#rotateAxisCube("y", 270, true);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "y",
+                    angle: 270,
+                    backwards: true,
+                }),
+        );
     }
 
     async rotateCubeY360() {
-        await this.#rotateAxisCube("y", 360, false);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "y",
+                    angle: 360,
+                    backwards: false,
+                }),
+        );
     }
 
     async rotateCubeY360Backwards() {
-        await this.#rotateAxisCube("y", 360, true);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "y",
+                    angle: 360,
+                    backwards: true,
+                }),
+        );
     }
 
     async rotateCubeZ90() {
-        await this.#rotateAxisCube("z", 90, false);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "z",
+                    angle: 90,
+                    backwards: false,
+                }),
+        );
     }
 
     async rotateCubeZ90Backwards() {
-        await this.#rotateAxisCube("z", 90, true);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({ axis: "z", angle: 90, backwards: true }),
+        );
     }
 
     async rotateCubeZ180() {
-        await this.#rotateAxisCube("z", 180, false);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "z",
+                    angle: 180,
+                    backwards: false,
+                }),
+        );
     }
 
     async rotateCubeZ180Backwards() {
-        await this.#rotateAxisCube("z", 180, true);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "z",
+                    angle: 180,
+                    backwards: true,
+                }),
+        );
     }
 
     async rotateCubeZ270() {
-        await this.#rotateAxisCube("z", 270, false);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "z",
+                    angle: 270,
+                    backwards: false,
+                }),
+        );
     }
 
     async rotateCubeZ270Backwards() {
-        await this.#rotateAxisCube("z", 270, true);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "z",
+                    angle: 270,
+                    backwards: true,
+                }),
+        );
     }
 
     async rotateCubeZ360() {
-        await this.#rotateAxisCube("z", 360, false);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "z",
+                    angle: 360,
+                    backwards: false,
+                }),
+        );
     }
 
     async rotateCubeZ360Backwards() {
-        await this.#rotateAxisCube("z", 360, true);
+        await this.#withRotation(
+            () =>
+                this.#rotateAxisCube({
+                    axis: "z",
+                    angle: 360,
+                    backwards: true,
+                }),
+        );
     }
+    //#endregion
 
+    //#region Layer rotations
     async rotateX90(layer: number) {
-        await this.#rotateAxisLayer("x", layer, 90, false);
+        await this.#rotateAxisLayer({
+            axis: "x",
+            layer,
+            angle: 90,
+            backwards: false,
+        });
     }
 
     async rotateX90Backwards(layer: number) {
-        await this.#rotateAxisLayer("x", layer, 90, true);
+        await this.#rotateAxisLayer({
+            axis: "x",
+            layer,
+            angle: 90,
+            backwards: true,
+        });
     }
 
     async rotateX180(layer: number) {
-        await this.#rotateAxisLayer("x", layer, 180, false);
+        await this.#rotateAxisLayer({
+            axis: "x",
+            layer,
+            angle: 180,
+            backwards: false,
+        });
     }
 
     async rotateX180Backwards(layer: number) {
-        await this.#rotateAxisLayer("x", layer, 180, true);
+        await this.#rotateAxisLayer({
+            axis: "x",
+            layer,
+            angle: 180,
+            backwards: true,
+        });
     }
 
     async rotateX270(layer: number) {
-        await this.#rotateAxisLayer("x", layer, 270, false);
+        await this.#rotateAxisLayer({
+            axis: "x",
+            layer,
+            angle: 270,
+            backwards: false,
+        });
     }
 
     async rotateX270Backwards(layer: number) {
-        await this.#rotateAxisLayer("x", layer, 270, true);
+        await this.#rotateAxisLayer({
+            axis: "x",
+            layer,
+            angle: 270,
+            backwards: true,
+        });
     }
 
     async rotateX360(layer: number) {
-        await this.#rotateAxisLayer("x", layer, 360, false);
+        await this.#rotateAxisLayer({
+            axis: "x",
+            layer,
+            angle: 360,
+            backwards: false,
+        });
     }
 
     async rotateX360Backwards(layer: number) {
-        await this.#rotateAxisLayer("x", layer, 360, true);
+        await this.#rotateAxisLayer({
+            axis: "x",
+            layer,
+            angle: 360,
+            backwards: true,
+        });
     }
 
     async rotateY90(layer: number) {
-        await this.#rotateAxisLayer("y", layer, 90, false);
+        await this.#rotateAxisLayer({
+            axis: "y",
+            layer,
+            angle: 90,
+            backwards: false,
+        });
     }
 
     async rotateY90Backwards(layer: number) {
-        await this.#rotateAxisLayer("y", layer, 90, true);
+        await this.#rotateAxisLayer({
+            axis: "y",
+            layer,
+            angle: 90,
+            backwards: true,
+        });
     }
 
     async rotateY180(layer: number) {
-        await this.#rotateAxisLayer("y", layer, 180, false);
+        await this.#rotateAxisLayer({
+            axis: "y",
+            layer,
+            angle: 180,
+            backwards: false,
+        });
     }
 
     async rotateY180Backwards(layer: number) {
-        await this.#rotateAxisLayer("y", layer, 180, true);
+        await this.#rotateAxisLayer({
+            axis: "y",
+            layer,
+            angle: 180,
+            backwards: true,
+        });
     }
 
     async rotateY270(layer: number) {
-        await this.#rotateAxisLayer("y", layer, 270, false);
+        await this.#rotateAxisLayer({
+            axis: "y",
+            layer,
+            angle: 270,
+            backwards: false,
+        });
     }
 
     async rotateY270Backwards(layer: number) {
-        await this.#rotateAxisLayer("y", layer, 270, true);
+        await this.#rotateAxisLayer({
+            axis: "y",
+            layer,
+            angle: 270,
+            backwards: true,
+        });
     }
 
     async rotateY360(layer: number) {
-        await this.#rotateAxisLayer("y", layer, 360, false);
+        await this.#rotateAxisLayer({
+            axis: "y",
+            layer,
+            angle: 360,
+            backwards: false,
+        });
     }
 
     async rotateY360Backwards(layer: number) {
-        await this.#rotateAxisLayer("y", layer, 360, true);
+        await this.#rotateAxisLayer({
+            axis: "y",
+            layer,
+            angle: 360,
+            backwards: true,
+        });
     }
 
     async rotateZ90(layer: number) {
-        await this.#rotateAxisLayer("z", layer, 90, false);
+        await this.#rotateAxisLayer({
+            axis: "z",
+            layer,
+            angle: 90,
+            backwards: false,
+        });
     }
 
     async rotateZ90Backwards(layer: number) {
-        await this.#rotateAxisLayer("z", layer, 90, true);
+        await this.#rotateAxisLayer({
+            axis: "z",
+            layer,
+            angle: 90,
+            backwards: true,
+        });
     }
 
     async rotateZ180(layer: number) {
-        await this.#rotateAxisLayer("z", layer, 180, false);
+        await this.#rotateAxisLayer({
+            axis: "z",
+            layer,
+            angle: 180,
+            backwards: false,
+        });
     }
 
     async rotateZ180Backwards(layer: number) {
-        await this.#rotateAxisLayer("z", layer, 180, true);
+        await this.#rotateAxisLayer({
+            axis: "z",
+            layer,
+            angle: 180,
+            backwards: true,
+        });
     }
 
     async rotateZ270(layer: number) {
-        await this.#rotateAxisLayer("z", layer, 270, false);
+        await this.#rotateAxisLayer({
+            axis: "z",
+            layer,
+            angle: 270,
+            backwards: false,
+        });
     }
 
     async rotateZ270Backwards(layer: number) {
-        await this.#rotateAxisLayer("z", layer, 270, true);
+        await this.#rotateAxisLayer({
+            axis: "z",
+            layer,
+            angle: 270,
+            backwards: true,
+        });
     }
 
     async rotateZ360(layer: number) {
-        await this.#rotateAxisLayer("z", layer, 360, false);
+        await this.#rotateAxisLayer({
+            axis: "z",
+            layer,
+            angle: 360,
+            backwards: false,
+        });
     }
 
     async rotateZ360Backwards(layer: number) {
-        await this.#rotateAxisLayer("z", layer, 360, true);
+        await this.#rotateAxisLayer({
+            axis: "z",
+            layer,
+            angle: 360,
+            backwards: true,
+        });
     }
+    //#endregion
 
     setCssVariable(name: string, value: string) {
         this.style.setProperty(name, value);

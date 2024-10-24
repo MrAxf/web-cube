@@ -1,3 +1,4 @@
+export const style = `
 :host {
     --cube-size: 2;
     --block-size: 150px;
@@ -7,7 +8,7 @@
     --color-up: #dd2020;
     --color-down: #ff8c00;
     --color-front: #ffffff;
-    --color-back: #e2f105;
+    --color-back: #fff133;
     --color-left: #1111aa;
     --color-right: #00aa11;
 
@@ -116,4 +117,4 @@
             }
         }
     }
-}
+}`

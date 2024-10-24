@@ -3,14 +3,14 @@ import type { WebRubik } from "./web-rubik.ts";
 
 const $webRubik = document.querySelector("web-rubik") as WebRubik;
 
-$webRubik.setState({
-  [Face.Up]: [[Face.Up, Face.Down, Face.Left], [Face.Left, Face.Up, Face.Down], [Face.Down, Face.Left, Face.Up]],
-  [Face.Front]: [[Face.Left, Face.Up, Face.Down], [Face.Down, Face.Left, Face.Up], [Face.Down, Face.Down, Face.Left]],
-  [Face.Down]: [[Face.Down, Face.Left, Face.Up], [Face.Up, Face.Down, Face.Left], [Face.Left, Face.Up, Face.Down]],
-  [Face.Back]: [[Face.Up, Face.Down, Face.Left], [Face.Left, Face.Up, Face.Down], [Face.Down, Face.Left, Face.Up]],
-  [Face.Left]: [[Face.Up, Face.Down, Face.Left], [Face.Left, Face.Up, Face.Down], [Face.Down, Face.Left, Face.Up]],
-  [Face.Right]: [[Face.Down, Face.Left, Face.Up], [Face.Up, Face.Down, Face.Left], [Face.Left, Face.Up, Face.Down]],
-})
+// $webRubik.setState({
+//   [Face.Up]: [[Face.Up, Face.Down, Face.Left], [Face.Left, Face.Up, Face.Down], [Face.Down, Face.Left, Face.Up]],
+//   [Face.Front]: [[Face.Left, Face.Up, Face.Down], [Face.Down, Face.Left, Face.Up], [Face.Down, Face.Down, Face.Left]],
+//   [Face.Down]: [[Face.Down, Face.Left, Face.Up], [Face.Up, Face.Down, Face.Left], [Face.Left, Face.Up, Face.Down]],
+//   [Face.Back]: [[Face.Up, Face.Down, Face.Left], [Face.Left, Face.Up, Face.Down], [Face.Down, Face.Left, Face.Up]],
+//   [Face.Left]: [[Face.Up, Face.Down, Face.Left], [Face.Left, Face.Up, Face.Down], [Face.Down, Face.Left, Face.Up]],
+//   [Face.Right]: [[Face.Down, Face.Left, Face.Up], [Face.Up, Face.Down, Face.Left], [Face.Left, Face.Up, Face.Down]],
+// })
 
 const $controls = document.getElementById("controls") as HTMLDivElement;
 const $$layerBtns: NodeListOf<HTMLButtonElement> = $controls.querySelectorAll("button[data-layer-btn]");

@@ -136,7 +136,7 @@ function rotateXLayer180(state: State, oldState: ReadonlyState, layer: number) {
         state[Face.Up][layer][i].value = oldState[Face.Down][layer][i];
         state[Face.Front][layer][i].value = oldState[Face.Back][layer][i];
         state[Face.Down][layer][i].value = oldState[Face.Up][layer][i];
-        state[Face.Back][layer][i].value = oldState[Face.Up][layer][i];
+        state[Face.Back][layer][i].value = oldState[Face.Front][layer][i];
     }
 }
 
