@@ -18,6 +18,8 @@ export const style = `
 
     --spin-angle: 0deg;
 
+    touch-action: none;
+
     * {
         margin: 0;
         padding: 0;
