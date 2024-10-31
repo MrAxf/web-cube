@@ -159,7 +159,7 @@ export class WebRubik extends HTMLElement {
                 ? parseInt($closestFace.dataset.face!)
                 : null;
 
-            if (!currentFace) {
+            if (currentFace === null) {
                 const xAxis = "y";
                 const yAxis = originX > viewportRect.width / 2 ? "x" : "z";
                 const xMultiplier = originY > viewportRect.height / 2 ? 1 : -1;
