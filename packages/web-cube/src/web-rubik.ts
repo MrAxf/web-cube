@@ -22,14 +22,11 @@ import {
     setState,
     State,
 } from "./state.ts";
-import { animateDegCssVar } from "./utils/animate.ts";
-import { createCubes } from "./utils/cube.ts";
-import {
-    createObservableContext,
-    ObservableContext,
-} from "./utils/observable.ts";
+import { animateDegCssVar } from "./animate.ts";
+import { createCubes } from "./cube.ts";
+import { createObservableContext, ObservableContext } from "./observable.ts";
 import { style } from "./style.ts";
-import { Face } from "./utils/faces.ts";
+import { Face } from "./utils.ts";
 
 const ROTATIONS = {
     x: {
@@ -79,13 +76,21 @@ const ROTATIONS = {
 };
 
 export class WebRubik extends HTMLElement {
+    // Attributes
     #size: number = 3;
-    #observableCtx: ObservableContext | null = null;
-    #state: State | null = null;
-    #mainCube: HTMLDivElement | null = null;
-    #cubeGroups: Record<"x" | "y" | "z", HTMLDivElement[][]> | null = null;
-    #isRotating: boolean = false;
     #rotatingTime: number = 500;
+
+    // HTML Elements
+    #$viewport: HTMLDivElement | null = null;
+    #$mainCube: HTMLDivElement | null = null;
+    #cubeGroups: Record<"x" | "y" | "z", HTMLDivElement[][]> | null = null;
+
+    #resizeObserver: ResizeObserver | null = null;
+
+    // State
+    #state: State | null = null;
+    #isRotating: boolean = false;
+    #observableCtx: ObservableContext | null = null;
 
     static observedAttributes = [
         "size",
@@ -97,20 +102,40 @@ export class WebRubik extends HTMLElement {
     }
 
     connectedCallback() {
+        const $style = document.createElement("style");
+        $style.textContent = style;
+        this.shadowRoot!.appendChild($style);
+
+        this.#createCube();
+    }
+
+    disconnectedCallback() {
+        this.#diposeCube();
+    }
+
+    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+        if (oldValue === newValue) return;
+        if (name === "size") {
+            this.#size = parseInt(newValue, 10);
+            if (this.#$viewport) {
+                this.#diposeCube();
+                this.#createCube();
+            }
+        }
+    }
+
+    #createCube() {
+        this.style.setProperty("--cube-size", `${this.#size}`);
+
         this.#observableCtx = createObservableContext();
         this.#state = createState(this.#observableCtx, this.#size);
 
         this.#observableCtx.tick();
 
-        const $style = document.createElement("style");
-        $style.textContent = style;
-        this.shadowRoot!.appendChild($style);
-
-        this.style.setProperty("--cube-size", `${this.#size}`);
-
-        const $viewport = document.createElement("div");
+        this.#$viewport = document.createElement("div");
+        this.#$viewport.setAttribute("data-viewport", "");
         let previousSize = 0;
-        const resizeObserver = new ResizeObserver((entries) => {
+        this.#resizeObserver = new ResizeObserver((entries) => {
             const entrie = entries[0];
             const { width, height } = entrie.contentRect;
             const size = Math.min(width, height);
@@ -123,24 +148,40 @@ export class WebRubik extends HTMLElement {
                 `${(blockSize * this.#size / -2) + (blockSize / 2)}px`,
             );
         });
-        resizeObserver.observe($viewport);
-        $viewport.classList.add("viewport");
+        this.#resizeObserver.observe(this.#$viewport);
+        this.#$viewport.classList.add("viewport");
 
         const $cubeContain = document.createElement("div");
         $cubeContain.classList.add("cube-contain");
 
         const $mainCube = document.createElement("div");
         $mainCube.classList.add("main-cube");
-        this.#mainCube = $mainCube;
+        this.#$mainCube = $mainCube;
 
         const [cubes, cubeGroups] = createCubes(this.#size, this.#state!);
         this.#cubeGroups = cubeGroups;
         $mainCube.append(...cubes);
 
         $cubeContain.appendChild($mainCube);
-        $viewport.appendChild($cubeContain);
+        this.#$viewport.appendChild($cubeContain);
 
-        $viewport.addEventListener("pointerdown", (ev) => {
+        this.#createPointerEvents();
+
+        this.shadowRoot!.appendChild(this.#$viewport);
+    }
+
+    #diposeCube() {
+        if (this.#resizeObserver) {
+            this.#resizeObserver.disconnect();
+            this.#resizeObserver = null;
+        }
+
+        this.#$viewport?.remove();
+        this.#$viewport = null;
+    }
+
+    #createPointerEvents() {
+        this.#$viewport!.addEventListener("pointerdown", (ev) => {
             ev.preventDefault();
 
             if (this.#isRotating) return;
@@ -152,7 +193,7 @@ export class WebRubik extends HTMLElement {
                 | HTMLElement
                 | null;
 
-            const viewportRect = $viewport.getBoundingClientRect();
+            const viewportRect = this.#$viewport!.getBoundingClientRect();
             const originX = ev.clientX - viewportRect.left;
             const originY = ev.clientY - viewportRect.top;
             const currentFace = $closestFace
@@ -179,7 +220,7 @@ export class WebRubik extends HTMLElement {
                         if (xDistance > 10 || yDistance > 10) {
                             axis = xDistance > yDistance ? xAxis : yAxis;
 
-                            self.#mainCube!.style.setProperty(
+                            self.#$mainCube!.style.setProperty(
                                 `--cube-rotation-${axis}`,
                                 "var(--spin-angle)",
                             );
@@ -219,7 +260,7 @@ export class WebRubik extends HTMLElement {
                         backwards: targetAngle < 0,
                         from: currentAngle,
                     }).then(() => {
-                        self.#mainCube!.style.removeProperty(
+                        self.#$mainCube!.style.removeProperty(
                             `--cube-rotation-${axis}`,
                         );
                         self.style.setProperty("--spin-angle", "0deg");
@@ -400,24 +441,6 @@ export class WebRubik extends HTMLElement {
                 this.#isRotating = false;
             }
         });
-
-        this.shadowRoot!.appendChild($viewport);
-    }
-
-    disconnectedCallback() {
-        console.log("WebRubik disconnected");
-    }
-
-    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-        if (oldValue === newValue) return;
-        if (name === "size") {
-            this.#size = parseInt(newValue, 10);
-        }
-    }
-
-    setState(newState: ReadonlyState) {
-        setState(this.#state!, newState);
-        this.#observableCtx!.tick();
     }
 
     #setCubesToRotate(axis: "x" | "y" | "z", layer: number) {
@@ -518,7 +541,7 @@ export class WebRubik extends HTMLElement {
 
             rotation!(this.#state!);
         }
-        this.#mainCube!.style.setProperty(
+        this.#$mainCube!.style.setProperty(
             `--cube-rotation-${axis}`,
             "var(--spin-angle)",
         );
@@ -531,7 +554,7 @@ export class WebRubik extends HTMLElement {
             this.#rotatingTime *
                 (Math.abs(realAngle - from) / 90),
         );
-        this.#mainCube!.style.removeProperty(`--cube-rotation-${axis}`);
+        this.#$mainCube!.style.removeProperty(`--cube-rotation-${axis}`);
         this.style.setProperty("--spin-angle", "0deg");
         this.#observableCtx!.tick();
     }
@@ -546,6 +569,11 @@ export class WebRubik extends HTMLElement {
         } finally {
             this.#isRotating = false;
         }
+    }
+
+    setState(newState: ReadonlyState) {
+        setState(this.#state!, newState);
+        this.#observableCtx!.tick();
     }
 
     async rotateCube({
@@ -608,5 +636,3 @@ export class WebRubik extends HTMLElement {
         this.style.setProperty(name, value);
     }
 }
-
-globalThis.customElements.define("web-rubik", WebRubik);

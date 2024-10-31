@@ -1,5 +1,5 @@
-import { State } from "../state.ts";
-import { Face } from "./faces.ts";
+import { State } from "./state.ts";
+import { Face } from "./utils.ts";
 
 const colors = {
     [Face.Front]: "var(--color-front)",

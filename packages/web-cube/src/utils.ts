@@ -4,7 +4,7 @@ export enum Face {
     Left,
     Right,
     Up,
-    Down
+    Down,
 }
 
 export const faceList = [
@@ -13,5 +13,5 @@ export const faceList = [
     Face.Left,
     Face.Right,
     Face.Front,
-    Face.Back
+    Face.Back,
 ];
