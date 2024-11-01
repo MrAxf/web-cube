@@ -1,5 +1,5 @@
 {
-  "name": "web-cube",
+  "name": "@web-cube/web-cube",
   "version": "0.1.0",
   "type": "module",
   "description": "A web component to display a 3D rubik's cube",
@@ -15,7 +15,7 @@
     "library",
     "web"
   ],
-  "author": "Juan Andrés García Cañadas",
+  "author": "Axford",
   "license": "MIT",
   "devDependencies": {
     "typescript": "5.6.3",
