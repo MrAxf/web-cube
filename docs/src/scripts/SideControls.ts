@@ -1,8 +1,8 @@
-import type { WebRubik } from "./web-rubik.ts";
+import type { WebCube } from "web-cube/web-cube";
 
-const $webRubik = document.querySelector("web-rubik") as WebRubik;
+const $webCube = document.querySelector("web-cube") as WebCube;
 
-// $webRubik.setState({
+// $webCube.setState({
 //   [Face.Up]: [[Face.Up, Face.Down, Face.Left], [Face.Left, Face.Up, Face.Down], [Face.Down, Face.Left, Face.Up]],
 //   [Face.Front]: [[Face.Left, Face.Up, Face.Down], [Face.Down, Face.Left, Face.Up], [Face.Down, Face.Down, Face.Left]],
 //   [Face.Down]: [[Face.Down, Face.Left, Face.Up], [Face.Up, Face.Down, Face.Left], [Face.Left, Face.Up, Face.Down]],
@@ -13,58 +13,56 @@ const $webRubik = document.querySelector("web-rubik") as WebRubik;
 
 const $controls = document.getElementById("controls") as HTMLDivElement;
 const $$layerBtns: NodeListOf<HTMLButtonElement> = $controls.querySelectorAll(
-  "button[data-layer-btn]",
+    "button[data-layer-btn]",
 );
 
 function layerButtonClickHandler(e: MouseEvent) {
-  const target = e.target as HTMLElement;
-  const axis = target.dataset.axis! as "x" | "y" | "z";
-  const layer = parseInt(target.dataset.layer!);
-  const angle = parseInt(target.dataset.angle!);
+    const target = e.target as HTMLElement;
+    const axis = target.dataset.axis! as "x" | "y" | "z";
+    const layer = parseInt(target.dataset.layer!);
+    const angle = parseInt(target.dataset.angle!);
 
-  console.log({ axis, layer, angle });
-
-  $webRubik.rotateLayer({
-    axis,
-    layer,
-    angle: Math.abs(angle) as any,
-    backwards: angle < 0,
-  });
+    $webCube.rotateLayer({
+        axis,
+        layer,
+        angle: Math.abs(angle) as any,
+        backwards: angle < 0,
+    });
 }
 
 $$layerBtns.forEach(($btn) => {
-  $btn.addEventListener("click", layerButtonClickHandler);
+    $btn.addEventListener("click", layerButtonClickHandler);
 });
 
 const $$cubeBtns: NodeListOf<HTMLButtonElement> = $controls.querySelectorAll(
-  "button[data-cube-btn]",
+    "button[data-cube-btn]",
 );
 
 function cubeButtonClickHandler(e: MouseEvent) {
-  const target = e.target as HTMLElement;
-  const axis = target.dataset.axis! as "x" | "y" | "z";
-  const angle = parseInt(target.dataset.angle!);
-  $webRubik.rotateCube({
-    axis,
-    angle: Math.abs(angle) as any,
-    backwards: angle < 0,
-  });
+    const target = e.target as HTMLElement;
+    const axis = target.dataset.axis! as "x" | "y" | "z";
+    const angle = parseInt(target.dataset.angle!);
+    $webCube.rotateCube({
+        axis,
+        angle: Math.abs(angle) as any,
+        backwards: angle < 0,
+    });
 }
 
 $$cubeBtns.forEach(($btn) => {
-  $btn.addEventListener("click", cubeButtonClickHandler);
+    $btn.addEventListener("click", cubeButtonClickHandler);
 });
 
 const $$cubeAnglesRanges: NodeListOf<HTMLInputElement> = $controls
-  .querySelectorAll("input[type=range]");
+    .querySelectorAll("input[type=range]");
 
 function cubeAngleRangeChangeHandler(e: Event) {
-  const target = e.target as HTMLInputElement;
-  const axis = target.dataset.axis! as "x" | "y" | "z";
-  const angle = parseInt(target.value);
-  $webRubik.setCssVariable(`--cube-rotation-${axis}`, `${angle}deg`);
+    const target = e.target as HTMLInputElement;
+    const axis = target.dataset.axis! as "x" | "y" | "z";
+    const angle = parseInt(target.value);
+    $webCube.setCssVariable(`--cube-rotation-${axis}`, `${angle}deg`);
 }
 
 $$cubeAnglesRanges.forEach(($range) => {
-  $range.addEventListener("input", cubeAngleRangeChangeHandler);
+    $range.addEventListener("input", cubeAngleRangeChangeHandler);
 });

@@ -75,7 +75,11 @@ const ROTATIONS = {
     },
 };
 
-export class WebRubik extends HTMLElement {
+/**
+ * The `WebCube` class represents a custom HTML element that renders and manages a 3D Rubik's cube.
+ * It handles the creation, manipulation, and rotation of the cube and its layers.
+ */
+export class WebCube extends HTMLElement {
     // Attributes
     #size: number = 3;
     #rotatingTime: number = 500;
@@ -96,11 +100,17 @@ export class WebRubik extends HTMLElement {
         "size",
     ];
 
+    /**
+     * Creates a new `WebCube` instance.
+     */
     constructor() {
         super();
         this.attachShadow({ mode: "open" });
     }
 
+    /**
+     * Called when the element is connected to the DOM.
+     */
     connectedCallback() {
         const $style = document.createElement("style");
         $style.textContent = style;
@@ -109,10 +119,19 @@ export class WebRubik extends HTMLElement {
         this.#createCube();
     }
 
+    /**
+     * Called when the element is disconnected from the DOM.
+     */
     disconnectedCallback() {
         this.#diposeCube();
     }
 
+    /**
+     * Called when an observed attribute changes.
+     * @param {string} name The name of the attribute that changed.
+     * @param {string} oldValue The previous value of the attribute.
+     * @param {string} newValue The new value of the attribute.
+     */
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
         if (oldValue === newValue) return;
         if (name === "size") {
@@ -571,11 +590,19 @@ export class WebRubik extends HTMLElement {
         }
     }
 
+    /**
+     * Sets the state of the cube.
+     * @param newState The new state of the cube.
+     */
     setState(newState: ReadonlyState) {
         setState(this.#state!, newState);
         this.#observableCtx!.tick();
     }
 
+    /**
+     * Gets the current state of the cube.
+     * @returns The current state of the cube.
+     */
     async rotateCube({
         axis,
         angle,
@@ -584,7 +611,7 @@ export class WebRubik extends HTMLElement {
         axis: "x" | "y" | "z";
         angle: 90 | 180 | 270 | 360;
         backwards?: boolean;
-    }) {
+    }): Promise<void> {
         if (["x", "y", "z"].includes(axis) === false) {
             throw new Error(`Invalid axis ${axis}`);
         }
@@ -601,6 +628,13 @@ export class WebRubik extends HTMLElement {
         );
     }
 
+    /**
+     * Rotates a layer of the cube.
+     * @param axis The axis of the layer to rotate.
+     * @param layer The index of the layer to rotate.
+     * @param angle The angle to rotate the layer.
+     * @param backwards Whether to rotate the layer backwards.
+     */
     async rotateLayer({
         axis,
         layer,
@@ -630,9 +664,5 @@ export class WebRubik extends HTMLElement {
                     backwards,
                 }),
         );
-    }
-
-    setCssVariable(name: string, value: string) {
-        this.style.setProperty(name, value);
     }
 }

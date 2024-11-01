@@ -1,0 +1,22 @@
+---
+import "@fontsource-variable/open-sans";
+import "../styles/index.css";
+---
+
+<html
+	lang="en"
+	class="dark:bg-gray-900 dark:text-gray-100 size-full overflow-hidden"
+>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Web Cube</title>
+	</head>
+	<body
+		class="font-openSans antialiased min-h-screen overflow-y-auto overflow-x-hidden"
+	>
+		<slot />
+	</body>
+</html>

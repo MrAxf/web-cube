@@ -5,12 +5,12 @@ export const style = `
     --cube-start: -150px;
 
     --color-background: #242424;
-    --color-up: #dd2020;
-    --color-down: #ff8c00;
+    --color-up: #BA0C2F;
+    --color-down: #FE5000;
     --color-front: #ffffff;
-    --color-back: #fff133;
-    --color-left: #1111aa;
-    --color-right: #00aa11;
+    --color-back: #FFD700;
+    --color-left: #003DA5;
+    --color-right: #009A44;
 
     --cube-rotation-x: 0deg;
     --cube-rotation-y: 0deg;

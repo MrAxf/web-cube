@@ -1,8 +1,8 @@
 {
   "name": "web-cube",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
-  "description": "A simple rubik's cube in the browser",
+  "description": "A web component to display a 3D rubik's cube",
   
   "scripts": {
     "dev": "vite",
@@ -26,5 +26,25 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
-  ]
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./utils": {
+      "import": {
+        "types": "./dist/utils.d.ts",
+        "default": "./dist/utils.js"
+      }
+    },
+    "./web-cube": {
+      "import": {
+        "types": "./dist/web-cube.d.ts",
+        "default": "./dist/web-cube.js"
+      }
+    }
+  }
 }

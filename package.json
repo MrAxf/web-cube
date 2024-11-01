@@ -6,6 +6,7 @@
     "./docs"
   ],
   "scripts": {
-    "dev": "npm run --workspace=web-cube dev"
+    "dev": "npm run --workspace=web-cube dev",
+    "build": "npm run --workspace=web-cube build"
   }
 }

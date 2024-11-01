@@ -1,3 +1,3 @@
-import { WebRubik } from "./web-rubik";
+import { WebCube } from "./web-cube";
 
-globalThis.customElements.define("web-rubik", WebRubik);
+globalThis.customElements.define("web-cube", WebCube);

@@ -7,7 +7,7 @@ export default defineConfig({
             entry: {
                 index: "./src/index.ts",
                 utils: "./src/utils.ts",
-                "web-rubik": "./src/web-rubik.ts",
+                "web-cube": "./src/web-cube.ts",
             },
             name: "WebCube",
             formats: ["es"],
