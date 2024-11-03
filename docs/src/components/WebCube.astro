@@ -8,5 +8,7 @@ const { size = 3 } = Astro.props;
 
 <web-cube size={size} class="w-full h-[75dvh] block"></web-cube>
 <script>
-    import "web-cube";
+    import { define } from "web-cube";
+
+    define();
 </script>

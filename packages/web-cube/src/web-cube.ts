@@ -1,6 +1,7 @@
 import {
     createState,
-    ReadonlyState,
+    FlatState,
+    getCurrentState,
     rotateCubeX180,
     rotateCubeX90,
     rotateCubeX90Backwards,
@@ -128,9 +129,9 @@ export class WebCube extends HTMLElement {
 
     /**
      * Called when an observed attribute changes.
-     * @param {string} name The name of the attribute that changed.
-     * @param {string} oldValue The previous value of the attribute.
-     * @param {string} newValue The new value of the attribute.
+     * @param name The name of the attribute that changed.
+     * @param oldValue The previous value of the attribute.
+     * @param newValue The new value of the attribute.
      */
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
         if (oldValue === newValue) return;
@@ -594,7 +595,7 @@ export class WebCube extends HTMLElement {
      * Sets the state of the cube.
      * @param newState The new state of the cube.
      */
-    setState(newState: ReadonlyState) {
+    setState(newState: FlatState) {
         setState(this.#state!, newState);
         this.#observableCtx!.tick();
     }
@@ -602,6 +603,17 @@ export class WebCube extends HTMLElement {
     /**
      * Gets the current state of the cube.
      * @returns The current state of the cube.
+     */
+    getState(): FlatState {
+        return getCurrentState(this.#state!);
+    }
+
+    /**
+     * Rotates the entire cube.
+     * @param params The parameters Object for the rotation.
+     * @param params.axis The axis to rotate the cube. Must be "x", "y", or "z".
+     * @param params.angle The angle to rotate the cube. Must be 90, 180, 270, or 360.
+     * @returns A Promise that resolves when the rotation is complete.
      */
     async rotateCube({
         axis,
@@ -630,10 +642,12 @@ export class WebCube extends HTMLElement {
 
     /**
      * Rotates a layer of the cube.
-     * @param axis The axis of the layer to rotate.
-     * @param layer The index of the layer to rotate.
-     * @param angle The angle to rotate the layer.
-     * @param backwards Whether to rotate the layer backwards.
+     * @param params The parameters Object for the rotation.
+     * @param params.axis The axis of the layer to rotate. Must be "x", "y", or "z".
+     * @param params.layer The index of the layer to rotate. Must be between 0 and the size of the cube.
+     * @param params.angle The angle to rotate the layer. Must be 90, 180, 270, or 360.
+     * @param params.backwards Whether to rotate the layer backwards. Defaults to false.
+     * @returns A Promise that resolves when the rotation is complete.
      */
     async rotateLayer({
         axis,
@@ -645,7 +659,7 @@ export class WebCube extends HTMLElement {
         layer: number;
         angle: 90 | 180 | 270 | 360;
         backwards?: boolean;
-    }) {
+    }): Promise<void> {
         if (["x", "y", "z"].includes(axis) === false) {
             throw new Error(`Invalid axis ${axis}`);
         }

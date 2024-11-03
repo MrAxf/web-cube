@@ -26,25 +26,5 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
-  ],
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
-    },
-    "./utils": {
-      "import": {
-        "types": "./dist/utils.d.ts",
-        "default": "./dist/utils.js"
-      }
-    },
-    "./web-cube": {
-      "import": {
-        "types": "./dist/web-cube.d.ts",
-        "default": "./dist/web-cube.js"
-      }
-    }
-  }
+  ]
 }

@@ -1,4 +1,45 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --color-cube-bg: #242424;
+    --color-cube-up: #ba0c2f;
+    --color-cube-down: #fe5000;
+    --color-cube-front: #ffffff;
+    --color-cube-back: #ffd700;
+    --color-cube-left: #003da5;
+    --color-cube-right: #009a44;
+}
+
+@layer base {
+    html {
+        width: 100%;
+        height: 100%;
+        font-size: 16px;
+        overflow: hidden;
+    }
+    body {
+        width: 100%;
+        min-height: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        @apply font-opensans;
+    }
+}
+
+@layer components {
+    .main-title {
+        background: linear-gradient(
+            to bottom right,
+            var(--color-cube-up),
+            var(--color-cube-right)
+        );
+        background-clip: text;
+        color: transparent;
+        filter: drop-shadow(0 0 0.75rem rgba(0, 0, 0, 0.5));
+    }
+}
