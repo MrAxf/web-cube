@@ -83,6 +83,7 @@ const ROTATIONS = {
 export class WebCube extends HTMLElement {
     // Attributes
     #size: number = 3;
+    #disabledPointerEvents: boolean = false;
     #rotatingTime: number = 500;
 
     // HTML Elements
@@ -91,6 +92,7 @@ export class WebCube extends HTMLElement {
     #cubeGroups: Record<"x" | "y" | "z", HTMLDivElement[][]> | null = null;
 
     #resizeObserver: ResizeObserver | null = null;
+    #viewportPointerEvent: ((ev: PointerEvent) => void) | null = null;
 
     // State
     #state: State | null = null;
@@ -99,6 +101,7 @@ export class WebCube extends HTMLElement {
 
     static observedAttributes = [
         "size",
+        "disabled-pointer-events",
     ];
 
     /**
@@ -136,10 +139,27 @@ export class WebCube extends HTMLElement {
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
         if (oldValue === newValue) return;
         if (name === "size") {
-            this.#size = parseInt(newValue, 10);
+            try {
+                this.#size = parseInt(newValue, 10);
+            } catch (error) {
+                this.#size = 3;
+            }
+            if (this.#size <= 0) {
+                this.#size = 1;
+            }
             if (this.#$viewport) {
                 this.#diposeCube();
                 this.#createCube();
+            }
+        }
+        if (name === "disabled-pointer-events") {
+            this.#disabledPointerEvents = Boolean(newValue);
+            if (this.#$viewport) {
+                if (this.#disabledPointerEvents) {
+                    this.#diposePointerEvents();
+                } else {
+                    this.#createPointerEvents();
+                }
             }
         }
     }
@@ -185,7 +205,9 @@ export class WebCube extends HTMLElement {
         $cubeContain.appendChild($mainCube);
         this.#$viewport.appendChild($cubeContain);
 
-        this.#createPointerEvents();
+        if (!this.#disabledPointerEvents) {
+            this.#createPointerEvents();
+        }
 
         this.shadowRoot!.appendChild(this.#$viewport);
     }
@@ -201,7 +223,7 @@ export class WebCube extends HTMLElement {
     }
 
     #createPointerEvents() {
-        this.#$viewport!.addEventListener("pointerdown", (ev) => {
+        this.#viewportPointerEvent = (ev) => {
             ev.preventDefault();
 
             if (this.#isRotating) return;
@@ -460,7 +482,19 @@ export class WebCube extends HTMLElement {
             } else {
                 this.#isRotating = false;
             }
-        });
+        };
+        this.#$viewport!.addEventListener(
+            "pointerdown",
+            this.#viewportPointerEvent,
+        );
+    }
+
+    #diposePointerEvents() {
+        this.#$viewport!.removeEventListener(
+            "pointerdown",
+            this.#viewportPointerEvent!,
+        );
+        this.#viewportPointerEvent = null;
     }
 
     #setCubesToRotate(axis: "x" | "y" | "z", layer: number) {

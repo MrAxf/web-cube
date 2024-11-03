@@ -1,12 +1,16 @@
 ---
 interface Props {
     size?: number;
+    disabledPointerEvents?: boolean;
 }
 
-const { size = 3 } = Astro.props;
+const { size = 3, disabledPointerEvents = false } = Astro.props;
 ---
 
-<web-cube size={size} class="w-full h-[75dvh] block"></web-cube>
+<web-cube
+    size={size}
+    disabled-pointer-events={disabledPointerEvents || null}
+    class="w-full h-[75dvh] block"></web-cube>
 <script>
     import { define } from "web-cube";
 

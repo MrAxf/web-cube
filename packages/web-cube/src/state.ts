@@ -10,6 +10,9 @@ export type State = {
     [Face.Back]: Observable<Face>[][];
 };
 
+/**
+ * A flat representation of the state of a cube.
+ */
 export type FlatState = {
     [Face.Up]: Face[][];
     [Face.Down]: Face[][];

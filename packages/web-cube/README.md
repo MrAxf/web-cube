@@ -39,7 +39,7 @@ Here's a simple example to get you started:
 Add a JS file with the following
 
 ```javascript
-import { Cube } from "@web-cube/webcube";
+import { define } from "@web-cube/webcube";
 
 define();
 ```
