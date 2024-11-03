@@ -17,5 +17,41 @@ web environment.
 You can install the package using npm:
 
 ```bash
-npm install web-cube
+npm install @web-cube/webcube
+```
+
+or from JSR with Deno:
+
+```bash
+deno add jsr:@web-cube/webcube
+```
+
+or NPM:
+
+```bash
+npx jsr add @web-cube/webcube
+```
+
+## Quickstart
+
+Here's a simple example to get you started:
+
+Add a JS file with the following
+
+```javascript
+import { Cube } from "@web-cube/webcube";
+
+define();
+```
+
+and a HTML with:
+
+```html
+<web-cube></web-cube>
+```
+
+Also you can specify the size with the `size` attribute:
+
+```html
+<web-cube size="4"></web-cube>
 ```
