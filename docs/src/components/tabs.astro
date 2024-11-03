@@ -1,0 +1,94 @@
+---
+interface Props {
+    headings: { key: string; title: string; icon?: string }[];
+    containerClass?: string;
+    activeTab?: string;
+}
+
+const { headings, containerClass = "", activeTab } = Astro.props;
+const defaultActiveTab = activeTab ?? headings[0].key;
+---
+
+<tab-list class:list={["w-full block", containerClass]}>
+    <header
+        class="w-full flex border-b-2 border-slate-500/70 flex-wrap"
+        role="tablist"
+    >
+        {
+            headings.map(({ key, title, icon }) => (
+                <button
+                    class:list={[
+                        "flex gap-2 items-center px-4 py-2 border-b-2 border-transparent mb-[-2px] text-slate-900/50 dark:text-slate-100/50 transition-colors",
+                        "aria-selected:text-slate-900/90 dark:aria-selected:text-slate-100/90 aria-selected:border-cyan-700 dark:aria-selected:border-cyan-400",
+                        "hover:text-slate-900/90 dark:hover:text-slate-100/90 hover:border-cyan-700/90 dark:hover:border-cyan-400/90",
+                    ]}
+                    aria-label={title}
+                    aria-controls={`${key}-panel`}
+                    title="title"
+                    aria-selected={key === defaultActiveTab ? "true" : "false"}
+                >
+                    {icon && <span class={icon} />}
+                    <span>{title}</span>
+                </button>
+            ))
+        }
+    </header>
+    <div data-tabs-container>
+        <slot />
+    </div>
+</tab-list>
+
+<script type="module">
+    class TabList extends HTMLElement {
+        constructor() {
+            super();
+        }
+        connectedCallback() {
+            this.buttons = this.shadowRoot
+                ? this.shadowRoot.querySelectorAll("[role='tablist'] > button")
+                : this.querySelectorAll(":scope > [role='tablist'] > button");
+
+            const tabButtons = this.buttons;
+
+            this.tabs = this.shadowRoot
+                ? this.shadowRoot.querySelectorAll(
+                      "[data-tabs-container] > [data-tab-content]",
+                  )
+                : this.querySelectorAll(
+                      ":scope > [data-tabs-container] > [data-tab-content]",
+                  );
+
+            this.tabs.forEach((tab, index) => {
+                const tabHeading = tab.getAttribute("data-tab-content");
+                const tabId = `${tabHeading}-panel`;
+
+                tab.id = tabId;
+                tab.setAttribute("aria-labelledby", tabId);
+                tab.setAttribute("role", "tabpanel");
+                tab.setAttribute("aria-hidden", index === 0 ? "false" : "true");
+                tab.classList.toggle("hidden", index !== 0);
+            });
+
+            this.buttons.forEach((button) => {
+                button.addEventListener("click", () => {
+                    console.log("click");
+
+                    const tabName = button.getAttribute("aria-controls");
+
+                    this.tabs.forEach((tab) => {
+                        const isSelected = tab.id === tabName;
+                        tab.setAttribute("aria-hidden", !isSelected);
+                        tab.classList.toggle("hidden", !isSelected);
+                    });
+
+                    tabButtons.forEach((btn) => {
+                        const isCurrentButton = btn === button;
+                        btn.setAttribute("aria-selected", isCurrentButton);
+                    });
+                });
+            });
+        }
+    }
+
+    customElements.define("tab-list", TabList);
+</script>

@@ -2,32 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-    --color-cube-bg: #242424;
-    --color-cube-up: #ba0c2f;
-    --color-cube-down: #fe5000;
-    --color-cube-front: #ffffff;
-    --color-cube-back: #ffd700;
-    --color-cube-left: #003da5;
-    --color-cube-right: #009a44;
-}
-
 @layer base {
+    :root {
+        --color-cube-bg: #242424;
+        --color-cube-up: #ba0c2f;
+        --color-cube-down: #fe5000;
+        --color-cube-front: #ffffff;
+        --color-cube-back: #ffd700;
+        --color-cube-left: #003da5;
+        --color-cube-right: #009a44;
+    
+        --color-background: theme('colors.slate.100');
+        --color-text: theme('colors.slate.900');
+    }
+    
+    .dark {
+        --color-background: theme('colors.slate.900');
+        --color-text: theme('colors.slate.100');
+    }
+
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: theme('colors.slate.500') transparent;
+    }
+
     html {
         width: 100%;
-        height: 100%;
+        min-height: 100%;
         font-size: 16px;
-        overflow: hidden;
     }
+
     body {
         width: 100%;
         min-height: 100%;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        overflow-y: auto;
-        overflow-x: hidden;
+        background-color: var(--color-background);
+        color: var(--color-text);
 
-        @apply font-opensans;
+        @apply font-opensans transition-colors;
     }
 }
 
@@ -41,5 +54,18 @@
         background-clip: text;
         color: transparent;
         filter: drop-shadow(0 0 0.75rem rgba(0, 0, 0, 0.5));
+    }
+
+    .icon-button {
+        @apply opacity-70 hover:opacity-90 active:opacity-100 transition-opacity size-4 md:size-6 lg:size-8 grid place-items-center;
+        & > span {
+            @apply lg:text-3xl md:text-2xl text-xl;
+        }
+    }
+}
+
+@layer utilities {
+    .text-content {
+        @apply prose dark:prose-invert prose-slate md:prose-lg lg:prose-xl;
     }
 }

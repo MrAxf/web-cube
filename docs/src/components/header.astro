@@ -1,0 +1,50 @@
+---
+import ThemeButton from "./theme-button.astro";
+---
+
+<header
+    id="main-header"
+    class="transition-colors h-14 md:h-16 lg:h-20 flex items-center justify-between px-8 md:px-12 lg:px-16 sticky top-0 z-10 bg-slate-100 dark:bg-slate-900 backdrop-blur-xl border-b border-slate-500"
+    style="
+    --tw-bg-opacity:
+    0; --tw-border-opacity: 0;"
+>
+    <a href="/" class="flex items-center gap-4">
+        <figure>
+            <img
+                src="/favicon.svg"
+                alt="Web Cube logo"
+                class="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12"
+            />
+        </figure>
+        <span class="font-bold text-xl uppercase md:text-2xl">Web Cube</span>
+    </a>
+    <div class="flex items-center gap-4">
+        <ThemeButton />
+        <span class="opacity-50">|</span>
+        <a
+            href="https://github.com/MrAxf/web-cube"
+            target="_blank"
+            class="icon-button"
+            aria-label="GitHub repository"
+            title="GitHub repository"
+        >
+            <span class="i-simple-icons-github"></span>
+        </a>
+    </div>
+</header>
+
+<script type="module">
+    const $header = document.getElementById("main-header");
+
+    window.addEventListener("scroll", () => {
+        $header.style.setProperty(
+            "--tw-bg-opacity",
+            window.scrollY > 0 ? 0.7 : 0,
+        );
+        $header.style.setProperty(
+            "--tw-border-opacity",
+            window.scrollY > 0 ? 0.7 : 0,
+        );
+    });
+</script>

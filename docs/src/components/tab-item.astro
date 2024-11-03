@@ -1,0 +1,12 @@
+---
+interface Props {
+    key: string;
+    containerClass?: string;
+}
+
+const { key, containerClass = "" } = Astro.props;
+---
+
+<div data-tab-content={key} class={containerClass}>
+    <slot />
+</div>

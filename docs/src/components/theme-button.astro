@@ -1,0 +1,26 @@
+<button
+    id="theme-button"
+    class="icon-button"
+    aria-label="Toggle theme"
+    title="Toggle theme"
+>
+    <span class="i-heroicons-sun"></span>
+</button>
+
+<script type="module">
+    const $themeButton = document.getElementById("theme-button");
+
+    const theme = localStorage.getItem("theme") ?? "light";
+    const icon = (theme) =>
+        theme === "dark" ? "i-heroicons-sun" : "i-heroicons-moon";
+    $themeButton.querySelector("span").className = icon(theme);
+
+    $themeButton.addEventListener("click", () => {
+        document.documentElement.classList.toggle("dark");
+        const theme = document.documentElement.classList.contains("dark")
+            ? "dark"
+            : "light";
+        localStorage.setItem("theme", theme);
+        $themeButton.querySelector("span").className = icon(theme);
+    });
+</script>

@@ -1,0 +1,22 @@
+---
+interface Props {
+    initialTheme?: "light" | "dark";
+}
+
+const { initialTheme = "light" } = Astro.props;
+---
+
+<script is:inline define:vars={{ initialTheme }}>
+    const theme = localStorage.getItem("theme") ?? initialTheme;
+
+    if (
+        theme === "dark" ||
+        (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)
+    ) {
+        localStorage.setItem("theme", "dark");
+        document.documentElement.classList.add("dark");
+    } else {
+        localStorage.setItem("theme", "light");
+        document.documentElement.classList.remove("dark");
+    }
+</script>

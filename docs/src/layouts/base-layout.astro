@@ -1,0 +1,38 @@
+---
+import "@fontsource-variable/open-sans";
+import "../styles/index.css";
+
+import ThemeScript from "../components/theme-script.astro";
+import Header from "../components/header.astro";
+import Footer from "../components/footer.astro";
+
+interface Props {
+	title?: string;
+	mainClass?: string;
+}
+
+const { title, mainClass = "" } = Astro.props;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{`${title ? `${title} | ` : ""}Web Cube`}</title>
+		<ThemeScript />
+	</head>
+	<body class="flex flex-col">
+		<Header />
+		<main
+			class:list={[
+				"container mx-auto py-8 px-4 md:px-6 lg:px-8 grow",
+				mainClass,
+			]}
+		>
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>
