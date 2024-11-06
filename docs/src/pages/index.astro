@@ -1,5 +1,5 @@
 ---
-import { Code } from "astro:components";
+import { Code } from "astro-expressive-code/components";
 import WebCube from "../components/web-cube.astro";
 import BaseLayout from "../layouts/base-layout.astro";
 import Tabs from "../components/tabs.astro";
@@ -50,39 +50,39 @@ import TabItem from "../components/tab-item.astro";
                 { key: "bun", title: "bun", icon: "i-simple-icons-bun" },
             ]}
         >
-            <TabItem key="npm" containerClass="text-content">
+            <TabItem key="npm" containerClass="text-content py-4">
                 <Code
                     code="npm install @web-cube/web-cube"
                     lang="bash"
-                    theme="dracula"
+                    frame="terminal"
                 />
             </TabItem>
-            <TabItem key="yarn" containerClass="text-content">
+            <TabItem key="yarn" containerClass="text-content py-4" hidden>
                 <Code
                     code="yarn add @web-cube/web-cube"
                     lang="bash"
-                    theme="dracula"
+                    frame="terminal"
                 />
             </TabItem>
-            <TabItem key="pnpm" containerClass="text-content">
+            <TabItem key="pnpm" containerClass="text-content py-4" hidden>
                 <Code
                     code="pnpm add @web-cube/web-cube"
                     lang="bash"
-                    theme="dracula"
+                    frame="terminal"
                 />
             </TabItem>
-            <TabItem key="deno" containerClass="text-content">
+            <TabItem key="deno" containerClass="text-content py-4" hidden>
                 <Code
                     code="deno add @web-cube/web-cube"
                     lang="bash"
-                    theme="dracula"
+                    frame="terminal"
                 />
             </TabItem>
-            <TabItem key="bun" containerClass="text-content">
+            <TabItem key="bun" containerClass="text-content py-4" hidden>
                 <Code
                     code="bun add @web-cube/web-cube"
                     lang="bash"
-                    theme="dracula"
+                    frame="terminal"
                 />
             </TabItem>
         </Tabs>
@@ -93,15 +93,15 @@ import TabItem from "../components/tab-item.astro";
                 to define the <strong>web-cube</strong> custom element.
             </p>
             <Code
+                title="index.ts"
                 code="import { define } from '@web-cube/web-cube';\n\ndefine();"
                 lang="typescript"
-                theme="dracula"
             />
             <p>
                 Now you can use the <strong>web-cube</strong> custom element in your
                 HTML.
             </p>
-            <Code code="<web-cube></web-cube>" lang="html" theme="dracula" />
+            <Code title="index.html" code="<web-cube></web-cube>" lang="html" />
         </article>
     </section>
     <section class="text-content">
@@ -111,6 +111,19 @@ import TabItem from "../components/tab-item.astro";
                 Now let's see how to use the <strong>web-cube</strong> custom element.
             </p>
             <h3>Attributes</h3>
+            <p>
+                The <strong>web-cube</strong> custom element has the following attributes:
+            </p>
+            <ul>
+                <li>
+                    <strong>size</strong>: The size of the cube. The default
+                    value is 3.
+                </li>
+                <li>
+                    <strong>disabled-pointer-events</strong>: A boolean
+                    attribute that disables pointer events on the cube.
+                </li>
+            </ul>
         </article>
     </section>
 </BaseLayout>

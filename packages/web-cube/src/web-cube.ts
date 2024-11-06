@@ -116,9 +116,9 @@ export class WebCube extends HTMLElement {
      * Called when the element is connected to the DOM.
      */
     connectedCallback() {
-        const $style = document.createElement("style");
-        $style.textContent = style;
-        this.shadowRoot!.appendChild($style);
+        const css = new CSSStyleSheet();
+        css.replaceSync(style);
+        this.shadowRoot!.adoptedStyleSheets = [css];
 
         this.#createCube();
     }

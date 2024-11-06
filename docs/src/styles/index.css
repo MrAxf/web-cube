@@ -11,19 +11,19 @@
         --color-cube-back: #ffd700;
         --color-cube-left: #003da5;
         --color-cube-right: #009a44;
-    
-        --color-background: theme('colors.slate.100');
-        --color-text: theme('colors.slate.900');
+
+        --color-background: theme("colors.slate.100");
+        --color-text: theme("colors.slate.900");
     }
-    
+
     .dark {
-        --color-background: theme('colors.slate.900');
-        --color-text: theme('colors.slate.100');
+        --color-background: theme("colors.slate.900");
+        --color-text: theme("colors.slate.100");
     }
 
     * {
         scrollbar-width: thin;
-        scrollbar-color: theme('colors.slate.500') transparent;
+        scrollbar-color: theme("colors.slate.500") transparent;
     }
 
     html {
@@ -57,7 +57,8 @@
     }
 
     .icon-button {
-        @apply opacity-70 hover:opacity-90 active:opacity-100 transition-opacity size-4 md:size-6 lg:size-8 grid place-items-center;
+        @apply opacity-70 hover:opacity-90 active:opacity-100 transition-opacity
+            size-4 md:size-6 lg:size-8 grid place-items-center;
         & > span {
             @apply lg:text-3xl md:text-2xl text-xl;
         }
@@ -66,6 +67,7 @@
 
 @layer utilities {
     .text-content {
-        @apply prose dark:prose-invert prose-slate md:prose-lg lg:prose-xl;
+        @apply prose dark:prose-invert prose-slate md:prose-lg lg:prose-xl
+            xl:prose-xl;
     }
 }

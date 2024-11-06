@@ -13,6 +13,9 @@ export default defineConfig({
       nesting: true,
       applyBaseStyles: false,
     }),
+    expressiveCode({
+      themes: ["dracula"],
+    }),
     mdx(),
   ],
 });

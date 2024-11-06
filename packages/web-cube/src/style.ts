@@ -1,4 +1,4 @@
-export const style = `
+export const style = /* css */ `
 :host {
     --cube-size: 2;
     --block-size: 150px;
@@ -36,8 +36,6 @@ export const style = `
     display: block;
     transform-style: preserve-3d;
     perspective: 3000px;
-
-    --hola: var(--spinangle);
 
     & .cube-contain {
         position: absolute;
