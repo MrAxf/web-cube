@@ -12,4 +12,8 @@ export default defineConfig({
         },
     },
     plugins: [dts()],
+    // Agregar configuración de servidor
+    server: {
+        open: "/playground/index.html",
+    },
 });

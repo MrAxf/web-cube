@@ -1,9 +1,1 @@
-<svg fill="none" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-    <rect x="0" y="0" width="120" height="120" rx="15" ry="15" fill="#f1f5f9"/>
-    <g transform="translate(10,10)">
-        <polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" fill="#242424"/>
-        <polygon points="50,5 84.64,25 50,45 15.36,25" fill="#ba0c2f" stroke="#ba0c2f" stroke-width="2" stroke-linejoin="round"/>
-        <polygon points="50,5 84.64,25 50,45 15.36,25" fill="#ffffff" stroke="#ffffff" stroke-width="2" stroke-linejoin="round" transform="rotate(120 50 50)"/>
-        <polygon points="50,5 84.64,25 50,45 15.36,25" fill="#003da5" stroke="#003da5" stroke-width="2" stroke-linejoin="round" transform="rotate(240 50 50)"/>
-    </g>
-</svg>
+<svg fill="none" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" rx="15" ry="15" fill="#f1f5f9"/><path fill="#242424" d="m60 10 43.3 25v50L60 110 16.7 85V35z"/><path fill="#ba0c2f" stroke="#ba0c2f" stroke-width="2" stroke-linejoin="round" d="m60 15 34.64 20L60 55 25.36 35z"/><path fill="#fff" stroke="#fff" stroke-width="2" stroke-linejoin="round" d="m98.971 82.5-34.64 20v-40l34.64-20z"/><path fill="#003da5" stroke="#003da5" stroke-width="2" stroke-linejoin="round" d="M21.029 82.5v-40l34.64 20v40z"/></svg>

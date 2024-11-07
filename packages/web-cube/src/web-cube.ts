@@ -83,8 +83,8 @@ const ROTATIONS = {
 export class WebCube extends HTMLElement {
     // Attributes
     #size: number = 3;
+    #speed: number = 500;
     #disabledPointerEvents: boolean = false;
-    #rotatingTime: number = 500;
 
     // HTML Elements
     #$viewport: HTMLDivElement | null = null;
@@ -101,6 +101,7 @@ export class WebCube extends HTMLElement {
 
     static observedAttributes = [
         "size",
+        "speed",
         "disabled-pointer-events",
     ];
 
@@ -146,6 +147,20 @@ export class WebCube extends HTMLElement {
             }
             if (this.#size <= 0) {
                 this.#size = 1;
+            }
+            if (this.#$viewport) {
+                this.#diposeCube();
+                this.#createCube();
+            }
+        }
+        if (name === "speed") {
+            try {
+                this.#speed = parseInt(newValue, 10);
+            } catch (error) {
+                this.#speed = 500;
+            }
+            if (this.#speed <= 0) {
+                this.#size = 500;
             }
             if (this.#$viewport) {
                 this.#diposeCube();
@@ -525,12 +540,14 @@ export class WebCube extends HTMLElement {
             angle,
             backwards = false,
             from = 0,
+            speed = this.#speed,
         }: {
             axis: "x" | "y" | "z";
             layer: number;
             angle: 0 | 90 | 180 | 270 | 360;
             backwards?: boolean;
             from?: number;
+            speed?: number;
         },
     ) {
         let rotation: ((state: State, layer: number) => void) | null = null;
@@ -557,7 +574,7 @@ export class WebCube extends HTMLElement {
             "--spin-angle",
             from,
             realAngle,
-            this.#rotatingTime * (Math.abs(realAngle - from) / 90),
+            speed * (Math.abs(realAngle - from) / 90),
         );
         this.#resetCubesRotate(axis, layer);
         this.style.setProperty("--spin-angle", "0deg");
@@ -570,11 +587,13 @@ export class WebCube extends HTMLElement {
             angle,
             backwards = false,
             from = 0,
+            speed = this.#speed,
         }: {
             axis: "x" | "y" | "z";
             angle: 0 | 90 | 180 | 270 | 360;
             backwards?: boolean;
             from?: number;
+            speed?: number;
         },
     ) {
         let rotation: ((state: State) => void) | null = null;
@@ -605,7 +624,7 @@ export class WebCube extends HTMLElement {
             "--spin-angle",
             from,
             realAngle,
-            this.#rotatingTime *
+            speed *
                 (Math.abs(realAngle - from) / 90),
         );
         this.#$mainCube!.style.removeProperty(`--cube-rotation-${axis}`);
@@ -653,10 +672,12 @@ export class WebCube extends HTMLElement {
         axis,
         angle,
         backwards = false,
+        speed = this.#speed,
     }: {
         axis: "x" | "y" | "z";
         angle: 90 | 180 | 270 | 360;
         backwards?: boolean;
+        speed?: number;
     }): Promise<void> {
         if (["x", "y", "z"].includes(axis) === false) {
             throw new Error(`Invalid axis ${axis}`);
@@ -664,12 +685,16 @@ export class WebCube extends HTMLElement {
         if ([90, 180, 270, 360].includes(angle) === false) {
             throw new Error(`Invalid angle ${angle}`);
         }
+        if (speed <= 0) {
+            throw new Error(`Invalid speed ${speed}`);
+        }
         await this.#withRotation(
             () =>
                 this.#rotateAxisCube({
                     axis,
                     angle,
                     backwards,
+                    speed,
                 }),
         );
     }
@@ -688,11 +713,13 @@ export class WebCube extends HTMLElement {
         layer,
         angle,
         backwards = false,
+        speed = this.#speed,
     }: {
         axis: "x" | "y" | "z";
         layer: number;
         angle: 90 | 180 | 270 | 360;
         backwards?: boolean;
+        speed?: number;
     }): Promise<void> {
         if (["x", "y", "z"].includes(axis) === false) {
             throw new Error(`Invalid axis ${axis}`);
@@ -703,6 +730,9 @@ export class WebCube extends HTMLElement {
         if (layer < 0 || layer >= this.#size) {
             throw new Error(`Invalid layer ${layer}`);
         }
+        if (speed <= 0) {
+            throw new Error(`Invalid speed ${speed}`);
+        }
         await this.#withRotation(
             () =>
                 this.#rotateAxisLayer({
@@ -710,6 +740,7 @@ export class WebCube extends HTMLElement {
                     layer,
                     angle,
                     backwards,
+                    speed,
                 }),
         );
     }
