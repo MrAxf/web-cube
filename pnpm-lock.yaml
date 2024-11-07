@@ -35,8 +35,8 @@ importers:
         specifier: ^0.5.15
         version: 0.5.15(tailwindcss@3.4.14)
       '@web-cube/web-cube':
-        specifier: workspace:*
-        version: link:../packages/web-cube
+        specifier: 0.3.0
+        version: 0.3.0
       astro:
         specifier: 5.0.0-beta.5
         version: 5.0.0-beta.5(rollup@4.24.4)(typescript@5.6.3)
@@ -873,6 +873,9 @@ packages:
 
   '@vue/shared@3.5.12':
     resolution: {integrity: sha512-L2RPSAwUFbgZH20etwrXyVyCBu9OxRSi8T/38QsvnkJyvq2LufW2lDCOzm7t/U9C1mkhJGWYfCuFBCmIuNivrg==}
+
+  '@web-cube/web-cube@0.3.0':
+    resolution: {integrity: sha512-0H6Amh5MffqK9g4ZwFhSKM95B1HBMQMyHD75kBBHP+Tp7S85OPwVdcMQcp81S+RTgAD5bgC8UYBYKGXe6Sgo6A==}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -3378,6 +3381,8 @@ snapshots:
       typescript: 5.6.3
 
   '@vue/shared@3.5.12': {}
+
+  '@web-cube/web-cube@0.3.0': {}
 
   acorn-jsx@5.3.2(acorn@8.14.0):
     dependencies:
