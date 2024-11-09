@@ -196,7 +196,7 @@ export class WebCube extends HTMLElement {
             const size = Math.min(width, height);
             if (previousSize === size) return;
             previousSize = size;
-            const blockSize = Math.floor((size * 0.5) / this.#size);
+            const blockSize = Math.floor((size * 0.45) / this.#size);
             this.style.setProperty("--block-size", `${blockSize}px`);
             this.style.setProperty(
                 "--cube-start",

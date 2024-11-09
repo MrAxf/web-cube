@@ -1,6 +1,6 @@
 export const style = /* css */ `
 :host {
-    --cube-size: 2;
+    --cube-size: 3;
     --block-size: 150px;
     --cube-start: -150px;
 
@@ -44,7 +44,7 @@ export const style = /* css */ `
         transform-style: preserve-3d;
         top: 50%;
         left: 50%;
-        transform: translateX(-50%) translateY(-50%) rotateX(330deg)
+        transform: translateZ(calc(var(--block-size) * (var(--cube-size) / 2))) translateX(-50%) translateY(-50%) rotateX(330deg)
             rotateY(45deg);
         & .main-cube {
             position: absolute;

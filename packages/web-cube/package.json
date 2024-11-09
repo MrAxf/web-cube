@@ -1,6 +1,6 @@
 {
   "name": "@web-cube/web-cube",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "type": "module",
   "description": "A web component to display a 3D rubik's cube",
   
