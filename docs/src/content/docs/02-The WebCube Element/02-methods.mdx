@@ -1,0 +1,177 @@
+---
+id: methods
+title: Methods
+group: The WebCube Element
+order: 2
+path: the-webcube-element/methods
+---
+
+The **Web Cube** element has a few methods that you can use to interact with the cube.
+
+## `setState`
+
+Sets the state of the cube. You can use the [`Face`](/docs/others/types#face-enum) enum to represent the faces of the cube to help you set the state.
+
+### Parameters
+
+#### `newState` 
+
+The new state of the cube.
+
+- Type: [`FlatState`](/docs/others/types#flatstate-type)
+- Required: Yes
+
+### Example
+
+```typescript title="index.ts"
+import { WebCube, Face } from "@web-cube/web-cube";
+const $cube = document.querySelector("web-cube") as WebCube;
+$cube.setState({
+    [Face.Up]: [
+        [Face.Up, Face.Up],
+        [Face.Up, Face.Down],
+    ],
+    [Face.Down]: [
+        [Face.Down, Face.Down],
+        [Face.Down, Face.Up],
+    ],
+    [Face.Left]: [
+        [Face.Left, Face.Left],
+        [Face.Left, Face.Right],
+    ],
+    [Face.Right]: [
+        [Face.Right, Face.Right],
+        [Face.Right, Face.Left],
+    ],
+    [Face.Front]: [
+        [Face.Front, Face.Front],
+        [Face.Front, Face.Back],
+    ],
+    [Face.Back]: [
+        [Face.Back, Face.Back],
+        [Face.Back, Face.Front],
+});
+```
+
+## `getState`
+
+Gets the state of the cube.
+
+### Returns
+
+- Type: [`FlatState`](/docs/others/types#flatstate-type)
+
+## `rotateCube`
+
+Rotates the entire cube with an animation.
+
+### Parameters
+
+#### `options`
+
+An `Object` with the following properties:
+
+##### `axis`
+
+The axis to rotate the cube. Must be set to "x", "y", or "z" otherwise it will throw an error.
+
+- type: `string`
+- required: Yes
+
+##### `angle`
+
+The angle to rotate the cube. Must be set to `90`, `180`, `270`, or `360` otherwise it will throw an error.
+
+- type: `number`
+- required: Yes
+
+##### `backwards`
+
+Whether to rotate the cube backwards.
+
+- type: `boolean`
+- required: No
+- default: `false`
+
+##### `speed`
+
+If sets overwrites the speed property for this rotation.
+
+- type: `number`
+- required: No
+- default: Current instance speed
+
+### Returns
+
+- Type: `Promise<void>`
+
+### Example
+
+```typescript title="index.ts"
+import { WebCube } from "@web-cube/web-cube";
+
+const $cube = document.querySelector("web-cube") as WebCube;
+
+$cube.rotateCube({ axis: "x", angle: 90 });
+```
+
+## `rotateLayer`
+
+Rotates a layer of the cube.
+
+### Parameters
+
+#### `options`
+
+An `Object` with the following properties:
+
+##### `axis`
+
+The axis of the layer to rotate. Must be "x", "y", or "z" otherwise it will throw an error.
+
+- type: `string`
+- required: Yes
+
+##### `layer`
+
+The index of the layer to rotate. Must be between 0 and the size of the cube otherwise it will throw an error.
+
+- type: `number`
+- required: Yes
+
+##### `angle`
+
+The angle to rotate the layer. Must be `90`, `180`, `270`, or `360` otherwise it will throw an error.
+
+- type: `number`
+- required: Yes
+
+##### `backwards`
+
+Whether to rotate the layer backwards.
+
+- type: `boolean`
+- required: No
+- default: `false`
+
+##### `speed`
+
+If sets overwrites the speed property for this rotation.
+
+- type: `number`
+- required: No
+- default: Current instance speed
+
+### Returns
+
+- Type: `Promise<void>`
+
+### Example
+
+```typescript title="index.ts"
+import { WebCube } from "@web-cube/web-cube";
+
+const $cube = document.querySelector("web-cube") as WebCube;
+
+$cube.rotateLayer({ axis: "x", layer: 0, angle: 90 });
+```

@@ -71,8 +71,6 @@ const defaultActiveTab = activeTab ?? headings[0].key;
 
             this.buttons.forEach((button) => {
                 button.addEventListener("click", () => {
-                    console.log("click");
-
                     const tabName = button.getAttribute("aria-controls");
 
                     this.tabs.forEach((tab) => {
@@ -90,5 +88,6 @@ const defaultActiveTab = activeTab ?? headings[0].key;
         }
     }
 
-    customElements.define("tab-list", TabList);
+    if (!customElements.get("tab-list"))
+        customElements.define("tab-list", TabList);
 </script>

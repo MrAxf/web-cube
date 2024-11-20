@@ -1,0 +1,31 @@
+---
+id: types
+title: Types
+group: Others
+order: 1
+path: others/types
+---
+
+Types reference for the Web Cube element.
+
+## `Face` Enum
+
+The `Face` enum represents the faces of a cube. It includes the following values:
+
+- `Face.Front`: Represents the front face of the cube. Has a value of `0`.
+- `Face.Back`: Represents the back face of the cube. Has a value of `1`.
+- `Face.Left`: Represents the left face of the cube. Has a value of `2`.
+- `Face.Right`: Represents the right face of the cube. Has a value of `3`.
+- `Face.Up`: Represents the top face of the cube. Has a value of `4`.
+- `Face.Down`: Represents the bottom face of the cube. Has a value of `5`.
+
+## `FlatState` Type
+
+The `FlatState` type is an object that represents a flat representation of the state of a cube. It includes the following properties:
+
+- `[Face.Up]`: A 2D array of [`Face`](#face-enum) values representing the top face of the cube.
+- `[Face.Down]`: A 2D array of [`Face`](#face-enum) values representing the bottom face of the cube.
+- `[Face.Left]`: A 2D array of [`Face`](#face-enum) values representing the left face of the cube.
+- `[Face.Right]`: A 2D array of [`Face`](#face-enum) values representing the right face of the cube.
+- `[Face.Front]`: A 2D array of [`Face`](#face-enum) values representing the front face of the cube.
+- `[Face.Back]`: A 2D array of [`Face`](#face-enum) values representing the back face of the cube.

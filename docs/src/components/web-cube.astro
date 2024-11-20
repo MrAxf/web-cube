@@ -2,17 +2,23 @@
 interface Props {
     size?: number;
     disabledPointerEvents?: boolean;
+    speed?: number;
 }
 
-const { size = 3, disabledPointerEvents = false } = Astro.props;
+const { size = 3, disabledPointerEvents = false, speed = 500 } = Astro.props;
 ---
 
 <web-cube
     size={size}
     disabled-pointer-events={disabledPointerEvents || null}
+    speed={speed}
     class="w-full h-[75dvh] block"></web-cube>
 <script>
-    import { define } from "@web-cube/web-cube";
+    import { define, Face } from "@web-cube/web-cube";
 
-    define();
+    if (customElements.get("web-cube") === undefined) {
+        define();
+    }
+
+    console.log(Face);
 </script>

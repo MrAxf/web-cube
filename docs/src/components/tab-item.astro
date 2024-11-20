@@ -1,13 +1,16 @@
 ---
 interface Props {
-    key: string;
+    tabKey: string;
     containerClass?: string;
     hidden?: boolean;
 }
 
-const { key, containerClass = "", hidden = false } = Astro.props;
+const { tabKey, containerClass = "", hidden = false } = Astro.props;
 ---
 
-<div data-tab-content={key} class:list={[containerClass, hidden && "hidden"]}>
+<div
+    data-tab-content={tabKey}
+    class:list={[containerClass, hidden && "hidden"]}
+>
     <slot />
 </div>

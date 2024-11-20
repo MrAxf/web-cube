@@ -1,0 +1,51 @@
+---
+import { getCollection } from "astro:content";
+import { twMerge } from "tailwind-merge";
+
+const docs = await getCollection("docs");
+
+const groupedDocs = docs
+    .sort((a, b) => a.data.order - b.data.order)
+    .reduce((acc: { [key: string]: typeof docs }, doc) => {
+        const group = doc.data.group;
+        if (!acc[group]) {
+            acc[group] = [];
+        }
+        acc[group].push(doc);
+        return acc;
+    }, {});
+const path = Astro.url.pathname;
+---
+
+<aside
+    class="sticky hidden md:block top-14 md:top-16 lg:top-20 h-[calc(100dvh-3.5rem)] md:h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-5rem)] w-64 border-r border-slate-500 p-4 shrink-0"
+>
+    <nav class="sticky top-0">
+        {
+            Object.entries(groupedDocs).map(([group, docs]) => (
+                <div>
+                    <h2 class="text-xl font-bold mb-4">{group}</h2>
+                    <ul class="mb-4">
+                        {docs
+                            .sort((a, b) => a.data.order - b.data.order)
+                            .map((doc) => (
+                                <li class="ps-4">
+                                    <a
+                                        href={`/docs/${doc.data.path}`}
+                                        data-active={
+                                            path === `/docs/${doc.data.path}`
+                                                ? "true"
+                                                : null
+                                        }
+                                        class="block py-0.5 px-2 opacity-70 rounded-lg hover:opacity-100 transition-all data-[active]:text-slate-100 data-[active]:bg-indigo-600 data-[active]:opacity-100"
+                                    >
+                                        {doc.data.title}
+                                    </a>
+                                </li>
+                            ))}
+                    </ul>
+                </div>
+            ))
+        }
+    </nav>
+</aside>

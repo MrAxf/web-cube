@@ -1,0 +1,100 @@
+---
+id: installation
+title: Installation
+order: 2
+group: Get started
+path: get-started/installation
+---
+import Tabs from '@components/tabs.astro'
+import TabItem from '@components/tab-item.astro'
+
+You can install **Web Cube** using multiple options.
+
+## Using NPM
+
+You can install **Web Cube** using **NPM** package manager.
+
+<Tabs 
+    headings={[
+        { key: "npm", title: "npm", icon: "i-simple-icons-npm" },
+        { key: "yarn", title: "yarn", icon: "i-simple-icons-yarn" },
+        { key: "pnpm", title: "pnpm", icon: "i-simple-icons-pnpm" },
+        { key: "deno", title: "deno", icon: "i-simple-icons-deno" },
+        { key: "bun", title: "bun", icon: "i-simple-icons-bun" },
+]}>
+    <TabItem tabKey="npm" containerClass="py-4">
+        ```bash
+        npm install @web-cube/web-cube
+        ```
+    </TabItem>
+    <TabItem tabKey="yarn" containerClass="py-4" hidden>
+        ```bash
+        yarn add @web-cube/web-cube
+        ```
+    </TabItem>
+    <TabItem tabKey="pnpm" containerClass="py-4" hidden>
+        ```bash
+        pnpm add @web-cube/web-cube
+        ```
+    </TabItem>
+    <TabItem tabKey="deno" containerClass="py-4" hidden>
+        ```bash
+        deno add npm:@web-cube/web-cube
+        ```
+    </TabItem>
+    <TabItem tabKey="bun" containerClass="py-4" hidden>
+        ```bash
+        bun add @web-cube/web-cube
+        ```
+    </TabItem>
+</Tabs>
+
+## Using JSR
+
+You can install **Web Cube** using **JSR** package manager.
+
+<Tabs 
+    headings={[
+        { key: "npm", title: "npm", icon: "i-simple-icons-npm" },
+        { key: "yarn", title: "yarn", icon: "i-simple-icons-yarn" },
+        { key: "pnpm", title: "pnpm", icon: "i-simple-icons-pnpm" },
+        { key: "deno", title: "deno", icon: "i-simple-icons-deno" },
+        { key: "bun", title: "bun", icon: "i-simple-icons-bun" },
+]}>
+    <TabItem tabKey="npm" containerClass="py-4">
+        ```bash
+        npx jsr add @web-cube/web-cube
+        ```
+    </TabItem>
+    <TabItem tabKey="yarn" containerClass="py-4" hidden>
+        ```bash
+        yarn dlx jsr add @web-cube/web-cube
+        ```
+    </TabItem>
+    <TabItem tabKey="pnpm" containerClass="py-4" hidden>
+        ```bash
+        pnpm dlx jsr add @web-cube/web-cube
+        ```
+    </TabItem>
+    <TabItem tabKey="deno" containerClass="py-4" hidden>
+        ```bash
+        deno add jsr:@web-cube/web-cube
+        ```
+    </TabItem>
+    <TabItem tabKey="bun" containerClass="py-4" hidden>
+        ```bash
+        bunx jsr add @web-cube/web-cube
+        ```
+    </TabItem>
+</Tabs>
+
+## Using CDN
+
+You can also use **Web Cube** using **CDN** directly in your HTML file.
+
+```html title="index.html"
+<script type="module">
+    import { define } from "https://esm.sh/@web-cube/web-cube"
+    ...
+</script>
+```

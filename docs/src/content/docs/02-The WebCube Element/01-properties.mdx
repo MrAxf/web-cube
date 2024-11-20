@@ -1,0 +1,61 @@
+---
+id: properties
+title: Properties
+group: The WebCube Element
+order: 1
+path: the-webcube-element/properties
+---
+
+import WebCube from "@components/web-cube.astro"
+
+The Web Cube element has a few properties that you can use to customize the cube.
+
+## size
+
+You can change the size of the cube by setting the `size` property.
+
+Has default value of `3`.
+
+If size is set to `0`, below `0` or `NaN`, the size will be set to the default value.
+
+```html title="index.html"
+<web-cube size="4"></web-cube>
+```
+
+<div class="rounded-lg overflow-hidden bg-slate-300 dark:bg-slate-700 my-8">
+    <WebCube size={4} />
+</div>
+
+## speed
+
+You can change the speed of the cube for animations by setting the `speed` property.
+
+The speed is in milliseconds and represents the time it takes for the cube to rotate 90 degrees.
+
+Has default value of `500`.
+
+If speed is set to `0`, below `0` or `NaN`, the speed will be set to the default value.
+
+```html title="index.html"
+<web-cube speed="5000"></web-cube>
+```
+
+<div class="rounded-lg overflow-hidden bg-slate-300 dark:bg-slate-700 my-8">
+    <WebCube size={2} speed={5000} />
+</div>
+
+## disabled-pointer-events
+
+You can disable pointer events on the cube by setting the `disable-pointer-events` property.
+
+The pointer events will be disabled while this property is present and is not set to `false`.
+
+```html title="index.html"
+<web-cube disabled-pointer-events></web-cube>
+```
+
+<div class="rounded-lg overflow-hidden bg-slate-300 dark:bg-slate-700 my-8">
+    <WebCube disabledPointerEvents size={2} />
+</div>
+
+

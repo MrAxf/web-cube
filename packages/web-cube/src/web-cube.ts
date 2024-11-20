@@ -168,7 +168,11 @@ export class WebCube extends HTMLElement {
             }
         }
         if (name === "disabled-pointer-events") {
-            this.#disabledPointerEvents = Boolean(newValue);
+            console.log(oldValue, newValue);
+
+            this.#disabledPointerEvents = newValue === null ||
+                newValue !== "false";
+            console.log(this.#disabledPointerEvents);
             if (this.#$viewport) {
                 if (this.#disabledPointerEvents) {
                     this.#diposePointerEvents();
@@ -666,6 +670,8 @@ export class WebCube extends HTMLElement {
      * @param params The parameters Object for the rotation.
      * @param params.axis The axis to rotate the cube. Must be "x", "y", or "z".
      * @param params.angle The angle to rotate the cube. Must be 90, 180, 270, or 360.
+     * @param params.backwards Whether to rotate the cube backwards. Defaults to false.
+     * @param params.speed The speed of the rotation in milliseconds. Defaults to the instance speed.
      * @returns A Promise that resolves when the rotation is complete.
      */
     async rotateCube({
@@ -706,6 +712,7 @@ export class WebCube extends HTMLElement {
      * @param params.layer The index of the layer to rotate. Must be between 0 and the size of the cube.
      * @param params.angle The angle to rotate the layer. Must be 90, 180, 270, or 360.
      * @param params.backwards Whether to rotate the layer backwards. Defaults to false.
+     * @param params.speed The speed of the rotation in milliseconds. Defaults to the instance speed.
      * @returns A Promise that resolves when the rotation is complete.
      */
     async rotateLayer({

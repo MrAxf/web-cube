@@ -2,11 +2,12 @@
 import { Code } from "astro-expressive-code/components";
 import WebCube from "../components/web-cube.astro";
 import BaseLayout from "../layouts/base-layout.astro";
-import Tabs from "../components/tabs.astro";
-import TabItem from "../components/tab-item.astro";
+import BackgroundGradients from "../components/background-gradients.astro";
+import Footer from "@components/footer.astro";
 ---
 
-<BaseLayout title="Web Cube" mainClass="gap-12 flex flex-col">
+<BaseLayout title="Web Cube" mainClass="gap-12 flex flex-col w-full">
+    <BackgroundGradients />
     <section
         class="text-content mx-auto text-center my-[5dvh] md:my-[7.5dvh] lg:my-[10dvh]"
     >
@@ -17,6 +18,14 @@ import TabItem from "../components/tab-item.astro";
             <strong>Web Cube</strong> is a web component that allows you to create
             and customize your own rubik's cube.
         </p>
+        <div class="not-prose mt-16">
+            <a
+                href="/docs/get-started/quick-start"
+                class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors"
+            >
+                Get Started
+            </a>
+        </div>
     </section>
 
     <section class="flex flex-col gap-4">
@@ -33,102 +42,5 @@ import TabItem from "../components/tab-item.astro";
             <WebCube size={3} />
         </article>
     </section>
-
-    <section>
-        <article class="text-content">
-            <h2>Quick start</h2>
-            <p>
-                You can install <strong>Web Cube</strong> using various package managers.
-            </p>
-        </article>
-        <Tabs
-            headings={[
-                { key: "npm", title: "npm", icon: "i-simple-icons-npm" },
-                { key: "yarn", title: "yarn", icon: "i-simple-icons-yarn" },
-                { key: "pnpm", title: "pnpm", icon: "i-simple-icons-pnpm" },
-                { key: "deno", title: "deno", icon: "i-simple-icons-deno" },
-                { key: "bun", title: "bun", icon: "i-simple-icons-bun" },
-            ]}
-        >
-            <TabItem key="npm" containerClass="text-content py-4">
-                <Code
-                    code="npm install @web-cube/web-cube"
-                    lang="bash"
-                    frame="terminal"
-                />
-            </TabItem>
-            <TabItem key="yarn" containerClass="text-content py-4" hidden>
-                <Code
-                    code="yarn add @web-cube/web-cube"
-                    lang="bash"
-                    frame="terminal"
-                />
-            </TabItem>
-            <TabItem key="pnpm" containerClass="text-content py-4" hidden>
-                <Code
-                    code="pnpm add @web-cube/web-cube"
-                    lang="bash"
-                    frame="terminal"
-                />
-            </TabItem>
-            <TabItem key="deno" containerClass="text-content py-4" hidden>
-                <Code
-                    code="deno add @web-cube/web-cube"
-                    lang="bash"
-                    frame="terminal"
-                />
-            </TabItem>
-            <TabItem key="bun" containerClass="text-content py-4" hidden>
-                <Code
-                    code="bun add @web-cube/web-cube"
-                    lang="bash"
-                    frame="terminal"
-                />
-            </TabItem>
-        </Tabs>
-
-        <article class="text-content">
-            <p>
-                Then you can import the <strong>define</strong> method from the package
-                to define the <strong>web-cube</strong> custom element.
-            </p>
-            <Code
-                title="index.ts"
-                code="import { define } from '@web-cube/web-cube';\n\ndefine();"
-                lang="typescript"
-            />
-            <p>
-                Now you can use the <strong>web-cube</strong> custom element in your
-                HTML.
-            </p>
-            <Code title="index.html" code="<web-cube></web-cube>" lang="html" />
-        </article>
-    </section>
-    <section class="text-content">
-        <article>
-            <h2>Usage</h2>
-            <p>
-                Now let's see how to use the <strong>web-cube</strong> custom element.
-            </p>
-            <h3>Attributes</h3>
-            <p>
-                The <strong>web-cube</strong> custom element has the following attributes:
-            </p>
-            <ul>
-                <li>
-                    <strong>size</strong>: The size of the cube. The default
-                    value is 3.
-                </li>
-                <li>
-                    <strong>disabled-pointer-events</strong>: A boolean
-                    attribute that disables pointer events on the cube.
-                </li>
-                <li>
-                    <strong>speed</strong>: The time in milliseconds that takes
-                    to rotate 90 degrees a face or the cube. The default value
-                    is 500.
-                </li>
-            </ul>
-        </article>
-    </section>
+    <Footer />
 </BaseLayout>

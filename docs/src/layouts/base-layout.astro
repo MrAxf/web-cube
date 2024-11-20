@@ -2,10 +2,12 @@
 import "@fontsource-variable/open-sans";
 import "../styles/index.css";
 
-import ThemeScript from "../components/theme-script.astro";
-import Header from "../components/header.astro";
-import Footer from "../components/footer.astro";
+import { ClientRouter } from "astro:transitions";
 
+import ThemeScript from "@components/theme-script.astro";
+import Header from "@components/header.astro";
+
+import { twMerge } from "tailwind-merge";
 interface Props {
 	title?: string;
 	mainClass?: string;
@@ -21,18 +23,18 @@ const { title, mainClass = "" } = Astro.props;
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{`${title ? `${title} | ` : ""}Web Cube`}</title>
-		<ThemeScript />
+		<ClientRouter />
+		<ThemeScript transition:persist />
 	</head>
-	<body class="flex flex-col">
-		<Header />
+	<body class="flex flex-col relative overflow-x-hidden">
+		<Header transition:persist />
 		<main
-			class:list={[
+			class:list={twMerge(
 				"container mx-auto py-8 px-4 md:px-6 lg:px-8 grow",
 				mainClass,
-			]}
+			)}
 		>
 			<slot />
 		</main>
-		<Footer />
 	</body>
 </html>

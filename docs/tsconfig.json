@@ -6,5 +6,15 @@
   ],
   "exclude": [
     "dist"
-  ]
+  ],
+  "compilerOptions": {
+    "strictNullChecks": true, // add if using `base` template
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": [
+        "src/components/*"
+      ],
+    }
+  }
 }

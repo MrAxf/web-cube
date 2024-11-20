@@ -1,22 +1,20 @@
----
-interface Props {
-    initialTheme?: "light" | "dark";
-}
+<script is:inline>
+    function setTheme() {
+        const theme = localStorage.getItem("theme");
 
-const { initialTheme = "light" } = Astro.props;
----
-
-<script is:inline define:vars={{ initialTheme }}>
-    const theme = localStorage.getItem("theme") ?? initialTheme;
-
-    if (
-        theme === "dark" ||
-        (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ) {
-        localStorage.setItem("theme", "dark");
-        document.documentElement.classList.add("dark");
-    } else {
-        localStorage.setItem("theme", "light");
-        document.documentElement.classList.remove("dark");
+        if (
+            theme === "dark" ||
+            (!theme &&
+                window.matchMedia("(prefers-color-scheme: dark)").matches)
+        ) {
+            localStorage.setItem("theme", "dark");
+            document.documentElement.classList.add("dark");
+        } else {
+            localStorage.setItem("theme", "light");
+            document.documentElement.classList.remove("dark");
+        }
     }
+
+    setTheme();
+    document.addEventListener("astro:after-swap", setTheme);
 </script>

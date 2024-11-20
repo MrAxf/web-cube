@@ -1,0 +1,53 @@
+---
+id: set-up
+title: Set Up
+group: Get started
+order: 3
+path: get-started/set-up
+---
+
+import WebCube from "@components/web-cube.astro"
+
+## Register the custom element
+
+You can register the custom element using the `define` function from the `@web-cube/web-cube` package.
+
+```typescript title="index.ts"
+import { define } from "@web-cube/web-cube";
+define();
+```
+
+### Using a custom tag name
+
+You can use a custom tag name to define the custom element.
+
+By default, the custom element is defined with the tag name `web-cube`.
+
+```typescript title="index.ts"
+import { define } from "@web-cube/web-cube";
+define("custom-cube");
+```
+
+## Embed in your page
+
+Once the custom element is defined, you can easily embed **Web Cube** in your existing project or start a new project using the following code.
+
+```html title="index.html"
+<web-cube></web-cube>
+````
+
+Also is possible to you must add some styles to the custom element to adjust the size and position.
+
+```css title="index.css"
+web-cube {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+```
+
+The cube will automatically adjust to the size of container.
+
+<div class="rounded-lg overflow-hidden bg-slate-300 dark:bg-slate-700 my-8">
+    <WebCube />
+</div>

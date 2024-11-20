@@ -1,0 +1,46 @@
+---
+id: quick-start
+title: Quick Start
+group: Get started
+order: 1
+path: get-started/quick-start
+---
+
+import WebCube from "@components/web-cube.astro"
+
+> The documentation is still in progress.
+
+## Embed in your page
+
+You can easily embed **Web Cube** in your existing project or start a new project using the following code.
+
+```html title="index.html"
+<web-cube></web-cube>
+<script type="module">
+    import { define } from "https://esm.sh/@web-cube/web-cube"
+    define();
+</script>
+<style>
+    web-cube {
+        display: block;
+        width: 100%;
+        height: 100vh;
+    }
+</style>
+```
+
+<div class="rounded-lg overflow-hidden bg-slate-300 dark:bg-slate-700 my-8">
+    <WebCube />
+</div>
+
+## Change the size
+
+You can change the size of the cube by setting the `size` property.
+
+```html title="index.html"
+<web-cube size="2"></web-cube>
+```
+
+<div class="rounded-lg overflow-hidden bg-slate-300 dark:bg-slate-700 my-8">
+    <WebCube size={2} />
+</div>

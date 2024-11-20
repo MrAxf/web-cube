@@ -15,12 +15,13 @@
     "@egoist/tailwindcss-icons": "^1.8.1",
     "@fontsource-variable/open-sans": "^5.1.0",
     "@iconify-json/heroicons": "^1.2.1",
-    "@iconify-json/simple-icons": "^1.2.11",
+    "@iconify-json/simple-icons": "^1.2.12",
     "@tailwindcss/typography": "^0.5.15",
+    "@web-cube/web-cube": "0.4.1",
     "astro": "5.0.0-beta.5",
-    "astro-expressive-code": "^0.38.2",
-    "tailwindcss": "^3.4.14",
-    "typescript": "5.6.3",
-    "@web-cube/web-cube": "0.3.0"
+    "astro-expressive-code": "^0.38.3",
+    "tailwind-merge": "^2.5.4",
+    "tailwindcss": "^3.4.15",
+    "typescript": "5.6.3"
   }
 }
