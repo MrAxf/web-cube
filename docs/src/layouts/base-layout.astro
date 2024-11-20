@@ -23,6 +23,15 @@ const { title, mainClass = "" } = Astro.props;
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{`${title ? `${title} | ` : ""}Web Cube`}</title>
+		<meta property="og:title" content="Web Cube" />
+		<meta property="og:type" content="website" />
+		<meta property="og:image" content="/og.avif" />
+		<meta property="og:url" content={Astro.url} />
+		<meta
+			property="og:description"
+			content="Web Cube<is a web component that allows you to create
+            and customize your own rubik's cube."
+		/>
 		<ClientRouter />
 		<ThemeScript transition:persist />
 	</head>
