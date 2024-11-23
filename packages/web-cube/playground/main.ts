@@ -16,8 +16,6 @@ function layerButtonClickHandler(e: MouseEvent) {
     const layer = parseInt(target.dataset.layer!);
     const angle = parseInt(target.dataset.angle!);
 
-    console.log({ axis, layer, angle });
-
     $webRubik.rotateLayer({
         axis,
         layer,

@@ -38,8 +38,11 @@ const defaultActiveTab = activeTab ?? headings[0].key;
     </div>
 </tab-list>
 
-<script type="module">
+<script>
     class TabList extends HTMLElement {
+        private buttons: NodeListOf<HTMLButtonElement> | null = null;
+        private tabs: NodeListOf<HTMLElement> | null = null;
+
         constructor() {
             super();
         }
@@ -73,15 +76,21 @@ const defaultActiveTab = activeTab ?? headings[0].key;
                 button.addEventListener("click", () => {
                     const tabName = button.getAttribute("aria-controls");
 
-                    this.tabs.forEach((tab) => {
+                    this.tabs!.forEach((tab) => {
                         const isSelected = tab.id === tabName;
-                        tab.setAttribute("aria-hidden", !isSelected);
+                        tab.setAttribute(
+                            "aria-hidden",
+                            !isSelected ? "true" : "false",
+                        );
                         tab.classList.toggle("hidden", !isSelected);
                     });
 
                     tabButtons.forEach((btn) => {
                         const isCurrentButton = btn === button;
-                        btn.setAttribute("aria-selected", isCurrentButton);
+                        btn.setAttribute(
+                            "aria-selected",
+                            isCurrentButton ? "true" : "false",
+                        );
                     });
                 });
             });

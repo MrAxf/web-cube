@@ -1,15 +1,16 @@
 ---
-import ThemeButton from "./theme-button.astro";
+import SearchButton from "@/components/search-button.astro";
+import ThemeButton from "@/components/theme-button.astro";
 ---
 
 <header
     id="main-header"
-    class="transition-colors h-14 md:h-16 lg:h-20 flex items-center justify-between px-8 md:px-12 lg:px-16 sticky top-0 z-10 bg-slate-100 dark:bg-slate-900 backdrop-blur-xl border-b border-slate-500"
+    class="transition-colors h-14 md:h-16 lg:h-20 flex items-center justify-between px-6 md:px-12 lg:px-16 sticky top-0 z-10 bg-slate-100 dark:bg-slate-900 backdrop-blur-xl border-b border-slate-500"
     style="
     --tw-bg-opacity:
     var(--header-bg-opacity); --tw-border-opacity: var(--header-border-opacity);"
 >
-    <a href="/" class="flex items-center gap-4">
+    <a href="/" class="flex items-center gap-4 shrink-0">
         <figure>
             <img
                 src="/favicon.svg"
@@ -19,13 +20,15 @@ import ThemeButton from "./theme-button.astro";
         </figure>
         <span class="font-bold text-xl uppercase md:text-2xl">Web Cube</span>
     </a>
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+        <SearchButton />
+        <span class="opacity-50 shrink-0">|</span>
         <ThemeButton />
-        <span class="opacity-50">|</span>
+        <span class="opacity-50 shrink-0">|</span>
         <a
             href="https://github.com/MrAxf/web-cube"
             target="_blank"
-            class="icon-button"
+            class="icon-button shrink-0"
             aria-label="GitHub repository"
             title="GitHub repository"
         >
@@ -34,15 +37,15 @@ import ThemeButton from "./theme-button.astro";
     </div>
 </header>
 
-<script type="module">
+<script>
     window.addEventListener("scroll", () => {
         document.documentElement.style.setProperty(
             "--header-bg-opacity",
-            window.scrollY > 0 ? 0.7 : 0,
+            window.scrollY > 0 ? "0.7" : "0",
         );
         document.documentElement.style.setProperty(
             "--header-border-opacity",
-            window.scrollY > 0 ? 0.7 : 0,
+            window.scrollY > 0 ? "0.7" : "0",
         );
     });
 </script>

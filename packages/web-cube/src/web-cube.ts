@@ -168,11 +168,8 @@ export class WebCube extends HTMLElement {
             }
         }
         if (name === "disabled-pointer-events") {
-            console.log(oldValue, newValue);
-
             this.#disabledPointerEvents = newValue === null ||
                 newValue !== "false";
-            console.log(this.#disabledPointerEvents);
             if (this.#$viewport) {
                 if (this.#disabledPointerEvents) {
                     this.#diposePointerEvents();

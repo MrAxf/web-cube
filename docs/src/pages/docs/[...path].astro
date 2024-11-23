@@ -1,9 +1,11 @@
 ---
-import Footer from "@components/footer.astro";
-import PageNavigation from "@components/page-navigation.astro";
-import SideNavigation from "@components/side-navigation.astro";
 import { getCollection, render } from "astro:content";
-import BaseLayout from "src/layouts/base-layout.astro";
+
+import BaseLayout from "@/layouts/base-layout.astro";
+
+import Footer from "@/components/footer.astro";
+import PageNavigation from "@/components/page-navigation.astro";
+import SideNavigation from "@/components/side-navigation.astro";
 
 export async function getStaticPaths() {
     const docs = await getCollection("docs");
@@ -25,7 +27,9 @@ const { Content, headings } = await render(doc);
 <BaseLayout title={doc.data.title} mainClass="gap-12 flex flex-col py-0">
     <section class="flex justify-between gap-4">
         <SideNavigation />
-        <article class="text-content-sm grow py-8 w-full overflow-x-hidden">
+        <article
+            class="text-content-sm grow py-8 w-full overflow-x-hidden mx-auto"
+        >
             <h1>{doc.data.title}</h1>
             <Content />
             <div

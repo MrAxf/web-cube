@@ -14,11 +14,9 @@ const { size = 3, disabledPointerEvents = false, speed = 500 } = Astro.props;
     speed={speed}
     class="w-full h-[75dvh] block"></web-cube>
 <script>
-    import { define, Face } from "@web-cube/web-cube";
+    import { define } from "@web-cube/web-cube";
 
     if (customElements.get("web-cube") === undefined) {
         define();
     }
-
-    console.log(Face);
 </script>

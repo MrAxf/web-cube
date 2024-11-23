@@ -25,7 +25,7 @@ const { headings } = Astro.props as Props;
                     >
                         <a
                             data-heading-link
-                            class="opacity-70 hover:opacity-100 transition-all [&.active]:text-indigo-700 [&.active]:opacity-100 dark:[&.active]:text-indigo-300"
+                            class="opacity-70 hover:opacity-100 transition-all [&.active]:text-blue-700 [&.active]:opacity-100 dark:[&.active]:text-blue-300"
                             href={`#${heading.slug}`}
                         >
                             {heading.text}
@@ -36,8 +36,8 @@ const { headings } = Astro.props as Props;
         </ul>
     </nav>
 
-    <script type="module">
-        let intersetionObserver = null;
+    <script>
+        let intersetionObserver: IntersectionObserver | null = null;
         const init = () => {
             if (intersetionObserver) {
                 intersetionObserver.disconnect();
@@ -51,7 +51,6 @@ const { headings } = Astro.props as Props;
                 (entries) => {
                     entries.forEach((entry) => {
                         if (entry.isIntersecting) {
-                            console.log(entry.target.id);
                             links.forEach((link) => {
                                 link.classList.remove("active");
                             });
@@ -59,7 +58,7 @@ const { headings } = Astro.props as Props;
                             const link = document.querySelector(
                                 `[href="#${entry.target.id}"]`,
                             );
-                            link.classList.add("active");
+                            link!.classList.add("active");
                         }
                     });
                 },
@@ -69,7 +68,7 @@ const { headings } = Astro.props as Props;
             );
 
             headings.forEach((heading) => {
-                intersetionObserver.observe(heading);
+                intersetionObserver!.observe(heading);
             });
         };
         init();

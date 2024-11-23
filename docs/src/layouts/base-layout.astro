@@ -1,13 +1,13 @@
 ---
 import "@fontsource-variable/open-sans";
-import "../styles/index.css";
-
-import { ClientRouter } from "astro:transitions";
-
-import ThemeScript from "@components/theme-script.astro";
-import Header from "@components/header.astro";
-
 import { twMerge } from "tailwind-merge";
+
+import "@/styles/index.css";
+
+import ThemeScript from "@/components/theme-script.astro";
+import Header from "@/components/header.astro";
+import SearchDialog from "@/components/search-dialog.astro";
+
 interface Props {
 	title?: string;
 	mainClass?: string;
@@ -35,7 +35,6 @@ const { title, mainClass = "" } = Astro.props;
 			content="Web Cube is a web component that allows you to create
             and customize your own rubik's cube."
 		/>
-		<ClientRouter />
 		<ThemeScript transition:persist />
 	</head>
 	<body class="flex flex-col relative overflow-x-hidden">
@@ -48,5 +47,6 @@ const { title, mainClass = "" } = Astro.props;
 		>
 			<slot />
 		</main>
+		<SearchDialog transition:persist />
 	</body>
 </html>

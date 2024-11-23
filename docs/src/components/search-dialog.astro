@@ -1,0 +1,151 @@
+---
+import "@pagefind/default-ui/css/ui.css";
+---
+
+<dialog
+    id="search-dialog"
+    class="bg-[--color-background] overflow-y-auto w-[100vw] h-[100vh] md:h-[max-content] md:max-w-[50vw] md:max-h-[60vh] m-0 top-1/2 md:top-[20vh] left-1/2 transform -translate-x-1/2 -translate-y-1/2 md:translate-y-0 fixed z-50 border border-slate-500 rounded-lg"
+>
+    <div id="search-content" class="p-8 size-full"></div>
+    <button
+        id="close-dialog-button"
+        class="absolute icon-button top-1 right-1 text-[--color-text] size-6"
+        aria-label="Close search dialog"
+        title="Close search dialog"
+    >
+        <span class="i-heroicons-x-mark size-6"></span>
+    </button>
+</dialog>
+
+<script>
+    function init() {
+        const $searchDialog = document.getElementById(
+            "search-dialog",
+        ) as HTMLDialogElement;
+        const $searchButton = document.getElementById(
+            "search-button",
+        ) as HTMLButtonElement;
+        const $closeDialogButton = document.getElementById(
+            "close-dialog-button",
+        ) as HTMLButtonElement;
+
+        const toggleSearchDialog = () => {
+            if ($searchDialog.open) {
+                $searchDialog.close();
+            } else {
+                $searchDialog.showModal();
+                document.body.style.overflow = "hidden";
+            }
+        };
+
+        $searchDialog.addEventListener("close", () => {
+            document.body.style.overflow = "";
+        });
+
+        $searchDialog.addEventListener("click", (e) => {
+            if (e.target === $searchDialog) {
+                $searchDialog.close();
+            }
+        });
+
+        $searchButton.addEventListener("click", toggleSearchDialog);
+
+        $closeDialogButton.addEventListener("click", () => {
+            $searchDialog.close();
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+                e.preventDefault();
+                toggleSearchDialog();
+            }
+        });
+
+        window.addEventListener("DOMContentLoaded", () => {
+            if (import.meta.env.DEV) {
+                const $content = document.getElementById("search-content")!;
+                $content.classList.add(
+                    "text-center",
+                    "text-lg",
+                    "p-8",
+                    "text-[--color-text]",
+                );
+                $content.innerHTML = "Search is disabled in development mode.";
+                return;
+            }
+            const onIdle =
+                window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
+            onIdle(async () => {
+                // @ts-expect-error
+                const { PagefindUI } = await import("@pagefind/default-ui");
+                new PagefindUI({
+                    element: "#search-content",
+                    baseUrl: import.meta.env.BASE_URL,
+                    bundlePath:
+                        import.meta.env.BASE_URL.replace(/\/$/, "") +
+                        "/pagefind/",
+                    showImages: false,
+                    showSubResults: true,
+                    translations: {},
+                });
+            });
+        });
+    }
+
+    init();
+    document.addEventListener("astro:after-swap", init);
+</script>
+
+<style>
+    #search-dialog {
+        --pagefind-ui-scale: 1;
+        --pagefind-ui-primary: var(--color-text);
+        --pagefind-ui-text: var(--color-text);
+        --pagefind-ui-background: var(--color-background);
+        --pagefind-ui-border: theme("colors.slate.500");
+        --pagefind-ui-tag: theme("colors.slate.500");
+        --pagefind-ui-border-width: 2px;
+        --pagefind-ui-border-radius: 8px;
+        --pagefind-ui-image-border-radius: 8px;
+        --pagefind-ui-image-box-ratio: 3 / 2;
+        --pagefind-ui-font: "Open Sans", sans-serif;
+    }
+
+    #search-dialog[open] {
+        opacity: 1;
+    }
+
+    #search-dialog {
+        opacity: 0;
+        transition:
+            opacity 0.3s ease-out,
+            overlay 0.3s ease-out allow-discrete,
+            display 0.3s ease-out allow-discrete;
+    }
+
+    @starting-style {
+        #search-dialog[open] {
+            opacity: 0;
+        }
+    }
+
+    #search-dialog::backdrop {
+        opacity: 0;
+        background-color: transparent;
+        @apply backdrop-blur-lg bg-slate-900/60;
+        transition:
+            display 0.3s allow-discrete,
+            overlay 0.3s allow-discrete,
+            opacity 0.3s ease-out;
+    }
+
+    #search-dialog[open]::backdrop {
+        opacity: 1;
+    }
+
+    @starting-style {
+        #search-dialog[open]::backdrop {
+            opacity: 0;
+        }
+    }
+</style>

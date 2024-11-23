@@ -12,11 +12,8 @@
     "allowJs": true,
     "baseUrl": ".",
     "paths": {
-      "@components/*": [
-        "src/components/*"
-      ],
-      "@layouts/*": [
-        "src/layouts/*"
+      "@/*": [
+        "src/*"
       ],
     }
   }

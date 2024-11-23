@@ -1,6 +1,5 @@
 ---
 import { getCollection } from "astro:content";
-import { twMerge } from "tailwind-merge";
 
 const docs = await getCollection("docs");
 
@@ -33,11 +32,11 @@ const path = Astro.url.pathname;
                                     <a
                                         href={`/docs/${doc.data.path}`}
                                         data-active={
-                                            path === `/docs/${doc.data.path}`
+                                            path.includes(doc.data.path)
                                                 ? "true"
                                                 : null
                                         }
-                                        class="block py-0.5 px-2 opacity-70 rounded-lg hover:opacity-100 transition-all data-[active]:text-slate-100 data-[active]:bg-indigo-600 data-[active]:opacity-100"
+                                        class="block py-0.5 px-2 opacity-70 rounded-lg hover:opacity-100 transition-all data-[active]:text-slate-100 data-[active]:bg-[--color-cube-left] data-[active]:opacity-100"
                                     >
                                         {doc.data.title}
                                     </a>
