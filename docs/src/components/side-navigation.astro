@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import ThemeButton from "./theme-button.astro";
 
 const docs = await getCollection("docs");
 
@@ -17,9 +18,16 @@ const path = Astro.url.pathname;
 ---
 
 <aside
-    class="sticky hidden md:block top-14 md:top-16 lg:top-20 h-[calc(100dvh-3.5rem)] md:h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-5rem)] w-64 border-r border-slate-500 p-4 shrink-0"
+    id="side-navigation"
+    class:list={[
+        "fixed md:sticky",
+        "hidden data-[open]:flex md:flex flex-col justify-start items-start",
+        "top-14 md:top-16 lg:top-20 left-0",
+        "h-[calc(100dvh-3.5rem)] md:h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-5rem)] w-full md:w-64",
+        "border-none md:border-r border-slate-500 p-4 shrink-0 bg-[--color-background] z-[2]",
+    ]}
 >
-    <nav class="sticky top-0">
+    <nav class="grow overflow-y-auto">
         {
             Object.entries(groupedDocs).map(([group, docs]) => (
                 <div>
@@ -47,4 +55,35 @@ const path = Astro.url.pathname;
             ))
         }
     </nav>
+    <footer class="flex md:hidden gap-4">
+        <ThemeButton id="theme-button-aside" />
+        <span class="opacity-50 shrink-0">|</span>
+        <a
+            href="https://github.com/MrAxf/web-cube"
+            target="_blank"
+            class="icon-button shrink-0"
+            aria-label="GitHub repository"
+            title="GitHub repository"
+        >
+            <span class="i-simple-icons-github"></span>
+        </a>
+    </footer>
+
+    <script>
+        const init = () => {
+            const $sideNavigation = document.getElementById("side-navigation");
+            const $menuButton = document.getElementById("menu-button");
+
+            $menuButton!.addEventListener("click", () => {
+                if ($sideNavigation!.hasAttribute("data-open")) {
+                    $sideNavigation!.removeAttribute("data-open");
+                } else {
+                    $sideNavigation!.setAttribute("data-open", "");
+                }
+            });
+        };
+
+        init();
+        document.addEventListener("astro:after-swap", init);
+    </script>
 </aside>

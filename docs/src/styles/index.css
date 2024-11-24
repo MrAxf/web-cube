@@ -47,7 +47,7 @@
         color: var(--color-text);
         overflow-x: hidden;
 
-        @apply font-opensans transition-colors;
+        @apply font-opensans transition-colors overflow-y-auto has-[#side-navigation[data-open]]:overflow-y-hidden md:has-[#side-navigation[data-open]]:overflow-y-auto;
     }
 }
 

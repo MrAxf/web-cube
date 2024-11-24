@@ -1,28 +1,39 @@
+---
+import { twMerge } from "tailwind-merge";
+
+interface Props {
+    class?: string;
+    id?: string;
+}
+
+const { class: className = "", id = "theme-button" } = Astro.props;
+---
+
 <button
-    id="theme-button"
-    class="icon-button shrink-0"
+    id={id}
+    class:list={twMerge("icon-button shrink-0", className)}
     aria-label="Toggle theme"
     title="Toggle theme"
 >
     <span class="i-heroicons-sun"></span>
 </button>
 
-<script>
+<script is:inline define:vars={{ id }}>
     const init = () => {
-        const $themeButton = document.getElementById("theme-button");
+        const $themeButton = document.getElementById(id);
 
         const theme = localStorage.getItem("theme") ?? "light";
-        const icon = (theme: string) =>
+        const icon = (theme) =>
             theme === "dark" ? "i-heroicons-sun" : "i-heroicons-moon";
-        $themeButton!.querySelector("span")!.className = icon(theme);
+        $themeButton.querySelector("span").className = icon(theme);
 
-        $themeButton!.addEventListener("click", () => {
+        $themeButton.addEventListener("click", () => {
             document.documentElement.classList.toggle("dark");
             const theme = document.documentElement.classList.contains("dark")
                 ? "dark"
                 : "light";
             localStorage.setItem("theme", theme);
-            $themeButton!.querySelector("span")!.className = icon(theme);
+            $themeButton.querySelector("span").className = icon(theme);
         });
     };
     init();
