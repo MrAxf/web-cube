@@ -1,6 +1,8 @@
 ---
 import SearchButton from "@/components/search-button.astro";
 import ThemeButton from "@/components/theme-button.astro";
+
+const isDocsPage = Astro.url.pathname.startsWith("/docs");
 ---
 
 <header
@@ -23,24 +25,36 @@ import ThemeButton from "@/components/theme-button.astro";
     <div class="flex items-center gap-2 sm:gap-4 shrink-0">
         <SearchButton />
         <span class="opacity-50 shrink-0">|</span>
-        <ThemeButton class="hidden md:grid" />
-        <span class="opacity-50 shrink-0 hidden md:inline">|</span>
+        <ThemeButton class={isDocsPage ? "hidden md:grid" : ""} />
+        <span
+            class:list={[
+                "opacity-50 shrink-0",
+                isDocsPage && "hidden md:inline",
+            ]}>|</span
+        >
         <a
             href="https://github.com/MrAxf/web-cube"
             target="_blank"
-            class="icon-button shrink-0 hidden md:grid"
+            class:list={[
+                "icon-button shrink-0",
+                isDocsPage && "hidden md:grid",
+            ]}
             aria-label="GitHub repository"
             title="GitHub repository"
         >
             <span class="i-simple-icons-github"></span>
         </a>
-        <button
-            id="menu-button"
-            class="icon-button grid md:hidden"
-            title="Open menu"
-        >
-            <span class="i-heroicons-bars-3"></span>
-        </button>
+        {
+            isDocsPage && (
+                <button
+                    id="menu-button"
+                    class="icon-button grid md:hidden"
+                    title="Open menu"
+                >
+                    <span class="i-heroicons-bars-3" />
+                </button>
+            )
+        }
     </div>
 </header>
 

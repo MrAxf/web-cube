@@ -18,8 +18,8 @@
   "author": "Axford",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "5.6.3",
-    "vite": "5.4.11",
+    "typescript": "5.7.2",
+    "vite": "6.0.1",
     "vite-plugin-dts": "^4.3.0"
   },
   "main": "./dist/index.js",
