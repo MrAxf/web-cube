@@ -28,6 +28,15 @@ import { createCubes } from "./cube.ts";
 import { createObservableContext, ObservableContext } from "./observable.ts";
 import { style } from "./style.ts";
 import { Face } from "./utils.ts";
+import {
+    afterCubeRotate,
+    afterLayerRotate,
+    afterRotate,
+    beforeCubeRotate,
+    beforeLayerRotate,
+    beforeRotate,
+    RotationEventDetail,
+} from "./cube-events.ts";
 
 const ROTATIONS = {
     x: {
@@ -569,6 +578,21 @@ export class WebCube extends HTMLElement {
 
             rotation!(this.#state!, layer);
         }
+
+        const evDetail: RotationEventDetail = {
+            type: "layer",
+            axis,
+            layer,
+            angle,
+            fromAngle: from,
+            toAngle: realAngle,
+            backwards: backwards,
+            speed,
+        };
+
+        this.dispatchEvent(beforeRotate(evDetail));
+        this.dispatchEvent(beforeLayerRotate(evDetail));
+
         this.#setCubesToRotate(axis, layer);
         await animateDegCssVar(
             this.style,
@@ -580,6 +604,9 @@ export class WebCube extends HTMLElement {
         this.#resetCubesRotate(axis, layer);
         this.style.setProperty("--spin-angle", "0deg");
         this.#observableCtx!.tick();
+
+        this.dispatchEvent(afterRotate(evDetail));
+        this.dispatchEvent(afterLayerRotate(evDetail));
     }
 
     async #rotateAxisCube(
@@ -615,6 +642,20 @@ export class WebCube extends HTMLElement {
 
             rotation!(this.#state!);
         }
+
+        const evDetail: RotationEventDetail = {
+            type: "cube",
+            axis,
+            angle,
+            fromAngle: from,
+            toAngle: realAngle,
+            backwards: backwards,
+            speed,
+        };
+
+        this.dispatchEvent(beforeRotate(evDetail));
+        this.dispatchEvent(beforeCubeRotate(evDetail));
+
         this.#$mainCube!.style.setProperty(
             `--cube-rotation-${axis}`,
             "var(--spin-angle)",
@@ -631,6 +672,9 @@ export class WebCube extends HTMLElement {
         this.#$mainCube!.style.removeProperty(`--cube-rotation-${axis}`);
         this.style.setProperty("--spin-angle", "0deg");
         this.#observableCtx!.tick();
+
+        this.dispatchEvent(afterRotate(evDetail));
+        this.dispatchEvent(afterCubeRotate(evDetail));
     }
 
     async #withRotation(action: () => Promise<void>) {

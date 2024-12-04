@@ -47,3 +47,27 @@ function cubeButtonClickHandler(e: MouseEvent) {
 $$cubeBtns.forEach(($btn) => {
     $btn.addEventListener("click", cubeButtonClickHandler);
 });
+
+$webRubik.addEventListener("web-cube:before-rotate", (ev) => {
+    console.log("web-cube:before-rotate", ev);
+});
+
+$webRubik.addEventListener("web-cube:after-rotate", (ev) => {
+    console.log("web-cube:after-rotate", ev);
+});
+
+$webRubik.addEventListener("web-cube:before-cube-rotate", (ev) => {
+    console.log("web-cube:before-cube-rotate", ev);
+});
+
+$webRubik.addEventListener("web-cube:after-cube-rotate", (ev) => {
+    console.log("web-cube:after-cube-rotate", ev);
+});
+
+$webRubik.addEventListener("web-cube:before-layer-rotate", (ev) => {
+    console.log("web-cube:before-layer-rotate", ev);
+});
+
+$webRubik.addEventListener("web-cube:after-layer-rotate", (ev) => {
+    console.log("web-cube:after-layer-rotate", ev);
+});
