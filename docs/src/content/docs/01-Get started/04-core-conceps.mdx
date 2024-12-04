@@ -1,0 +1,144 @@
+---
+id: core-concepts
+title: Core Concepts
+group: Get started
+order: 4
+path: get-started/core-concepts
+---
+import WebCube from "@/components/web-cube.astro";
+
+import CoordsSvg from "@/components/svg/coords.astro";
+import FacesSvg from "@/components/svg/faces.astro";
+import LayerXSvg from "@/components/svg/layer-x.astro";
+import LayerYSvg from "@/components/svg/layer-y.astro";
+import LayerZSvg from "@/components/svg/layer-z.astro";
+import StateFaceSvg from "@/components/svg/state-face.astro";
+import StateSvg from "@/components/svg/state.astro";
+
+## Coordinates axis
+
+The cube has three axes: X, Y, and Z. Each axis has a range of 0 to the cube size.
+
+The following image shows the coordinates axis with the direction of each axis and his positive rotation direction.
+
+<figure>
+    <CoordsSvg />
+</figure>
+
+## Cube Layers
+
+The Rubik's Cube consists of several layers in each axis that can rotate independently. Each layer is identified by its orientation relative to the coordinate axes.
+
+- **X axis layers**: Layers parallel to the X axis.
+<figure>
+  <LayerXSvg />
+</figure>
+- **Y axis layers**: Layers parallel to the Y axis.
+<figure>
+  <LayerYSvg />
+</figure>
+- **Z axis layers**: Layers parallel to the Z axis.
+<figure>
+  <LayerZSvg />
+</figure>
+
+## Cube Faces
+
+The cube has six faces, Up, Down, Front, Back, Left, and Right. Each face is identified by its orientation relative to the coordinate axes.
+
+Each face is represented by a number from 0 to 5. You can easily identify the face usin the [`Face`](/docs/others/types#face-enum) enum.
+
+<figure>
+    <FacesSvg />
+</figure>
+
+## Cube State
+
+The state of the cube is represented by the colors of the stickers on each face. There are 6 types of stickers, one for each face.
+
+Each rotation, both cube and layer, changes the state of the cube.
+
+The following image shows how the cube is unfolded to display the state of each face.
+
+<figure>
+    <StateSvg />
+</figure>
+
+The state of the cube is implemented as an object where each key is the face number and the value is a 2D array of colors. See [`FlatState`](/docs/others/types#flatstate-type) for more information.
+
+Each 2D array follow the following structure:
+
+<figure>
+  <StateFaceSvg />
+</figure>
+
+### Example
+
+A cube with a size of 2 with the following state:
+
+```typescript title=index.ts
+import { Face } from '@web-cube/web-cube';
+
+$cube.setState({
+  [Face.Front]: [
+    [Face.Front, Face.Front],
+    [Face.Front, Face.Back ]
+  ],
+  [Face.Back]: [
+    [Face.Back, Face.Back],
+    [Face.Back, Face.Left]
+  ],
+  [Face.Left]: [
+    [Face.Left, Face.Left ],
+    [Face.Left, Face.Right]
+  ],
+  [Face.Right]: [
+    [Face.Right, Face.Right],
+    [Face.Right, Face.Up   ]
+  ],
+  [Face.Up]: [
+    [Face.Up, Face.Up  ],
+    [Face.Up, Face.Down]
+  ],
+  [Face.Down]: [
+    [Face.Down, Face.Down ],
+    [Face.Down, Face.Front]
+  ]
+});
+```
+
+<div class="rounded-lg overflow-hidden bg-slate-300 dark:bg-slate-700 my-8">
+  <WebCube id="example-core-conceps" size={2} >
+    <script type="module">
+    {`
+      const $cube = document.getElementById('example-core-conceps');
+      $cube.setState({
+        0: [
+          [0, 0],
+          [0, 1]
+        ],
+        1: [
+          [1, 1],
+          [1, 2]
+        ],
+        2: [
+          [2, 2],
+          [2, 3]
+        ],
+        3: [
+          [3, 3],
+          [3, 4]
+        ],
+        4: [
+          [4, 4],
+          [4, 5]
+        ],
+        5: [
+          [5, 5],
+          [5, 0]
+        ]
+      });
+    `}
+    </script>
+  </WebCube>
+</div>

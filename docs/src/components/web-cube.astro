@@ -3,12 +3,19 @@ interface Props {
     size?: number;
     disabledPointerEvents?: boolean;
     speed?: number;
+    id?: string;
 }
 
-const { size = 3, disabledPointerEvents = false, speed = 500 } = Astro.props;
+const {
+    size = 3,
+    disabledPointerEvents = false,
+    speed = 500,
+    id = null,
+} = Astro.props;
 ---
 
 <web-cube
+    id={id}
     size={size}
     disabled-pointer-events={disabledPointerEvents || null}
     speed={speed}
@@ -20,3 +27,4 @@ const { size = 3, disabledPointerEvents = false, speed = 500 } = Astro.props;
         define();
     }
 </script>
+<slot />
