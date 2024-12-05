@@ -57,6 +57,24 @@ export const faceList = [
 ];
 
 /**
+ * Get the state of the cube.
+ * @param $cube The cube to get the state from.
+ * @returns The state of the cube.
+ */
+export function getState($cube: WebCube): FlatState {
+    return $cube.getState();
+}
+
+/**
+ * Set the state of the cube.
+ * @param $cube The cube to set the state of.
+ * @param state The state to set.
+ */
+export function setState($cube: WebCube, state: FlatState): void {
+    $cube.setState(state);
+}
+
+/**
  * Create a base face state of the given size.
  * @param size The size of the face.
  * @param face The face to fill the state.
