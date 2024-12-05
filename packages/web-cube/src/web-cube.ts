@@ -792,4 +792,12 @@ export class WebCube extends HTMLElement {
                 }),
         );
     }
+
+    /**
+     * The size of the cube.
+     * @type {number}
+     */
+    get size() {
+        return this.#size;
+    }
 }
