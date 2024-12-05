@@ -27,7 +27,7 @@ import { animateDegCssVar } from "./animate.ts";
 import { createCubes } from "./cube.ts";
 import { createObservableContext, ObservableContext } from "./observable.ts";
 import { style } from "./style.ts";
-import { Face } from "./utils.ts";
+import { CubeRotationOptions, Face, LayerRotationOptions } from "./utils.ts";
 import {
     afterCubeRotate,
     afterLayerRotate,
@@ -720,12 +720,7 @@ export class WebCube extends HTMLElement {
         angle,
         backwards = false,
         speed = this.#speed,
-    }: {
-        axis: "x" | "y" | "z";
-        angle: 90 | 180 | 270 | 360;
-        backwards?: boolean;
-        speed?: number;
-    }): Promise<void> {
+    }: CubeRotationOptions): Promise<void> {
         if (["x", "y", "z"].includes(axis) === false) {
             throw new Error(`Invalid axis ${axis}`);
         }
@@ -762,13 +757,7 @@ export class WebCube extends HTMLElement {
         angle,
         backwards = false,
         speed = this.#speed,
-    }: {
-        axis: "x" | "y" | "z";
-        layer: number;
-        angle: 90 | 180 | 270 | 360;
-        backwards?: boolean;
-        speed?: number;
-    }): Promise<void> {
+    }: LayerRotationOptions): Promise<void> {
         if (["x", "y", "z"].includes(axis) === false) {
             throw new Error(`Invalid axis ${axis}`);
         }
