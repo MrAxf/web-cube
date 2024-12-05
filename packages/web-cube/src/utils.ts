@@ -24,6 +24,15 @@ export type LayerRotationOptions = _BaseRotationOptions & {
 };
 
 /**
+ * The options for a rotation.
+ */
+export type RotationOptions =
+    | (CubeRotationOptions & {
+        type: "cube";
+    })
+    | (LayerRotationOptions & { type: "layer" });
+
+/**
  * Enum for the faces of a cube.
  */
 export enum Face {
@@ -157,6 +166,69 @@ export function rotateLayer(
 }
 
 /**
+ * Rotate the cube or a layer of the cube.
+ * @param $cube The cube to rotate.
+ * @param options The options for the rotation.
+ * @param options.type The type of rotation. Must be "cube" or "layer".
+ * @param options.axis The axis to rotate the cube. Must be "x", "y", or "z".
+ * @param options.layer The index of the layer to rotate. Must be between 0 and the size of the cube.
+ * @param options.angle The angle to rotate the cube. Must be 90, 180, 270, or 360.
+ * @param options.backwards Whether to rotate the cube backwards. Defaults to false.
+ * @param options.speed The speed of the rotation in milliseconds. Defaults to the instance speed.
+ * @returns A Promise that resolves when the rotation is complete.
+ */
+export function rotate(
+    $cube: WebCube,
+    options: RotationOptions,
+): Promise<void> {
+    if (options.type === "cube") {
+        return rotateCube($cube, options as CubeRotationOptions);
+    } else {
+        return rotateLayer($cube, options as LayerRotationOptions);
+    }
+}
+
+/**
+ * Create a random cube rotation options.
+ * @param size The size of the cube.
+ * @param options The not random options for the rotation.
+ * @returns
+ */
+export function createRandomRotationOptions(
+    size: number,
+    options?: Partial<RotationOptions>,
+): RotationOptions {
+    const type = options?.type ?? (Math.random() < 0.5 ? "cube" : "layer");
+    const axis = options?.axis ??
+        ["x", "y", "z"][Math.floor(Math.random() * 3)] as "x" | "y" | "z";
+    const angle = options?.angle ??
+        [90, 180, 270, 360][Math.floor(Math.random() * 4)] as
+            | 90
+            | 180
+            | 270
+            | 360;
+    const backwards = options?.backwards ?? Math.random() < 0.5;
+    if (type === "layer") {
+        return {
+            type,
+            axis,
+            layer: (options as Partial<LayerRotationOptions>)?.layer ??
+                Math.floor(Math.random() * size),
+            angle,
+            backwards,
+            speed: options?.speed,
+        };
+    }
+    return {
+        type,
+        axis,
+        angle,
+        backwards,
+        speed: options?.speed,
+    };
+}
+
+/**
  * Perform a random rotation on the cube.
  * @param $cube The cube to rotate.
  * @param options The parameters Object for the rotation.
@@ -170,19 +242,13 @@ export function rotateCubeRandomly(
     $cube: WebCube,
     options?: Partial<CubeRotationOptions>,
 ): Promise<void> {
-    const axis = options?.axis ??
-        ["x", "y", "z"][Math.floor(Math.random() * 3)] as
-            | "x"
-            | "y"
-            | "z";
-    const angle = options?.angle ??
-        [90, 180, 270, 360][Math.floor(Math.random() * 4)] as
-            | 90
-            | 180
-            | 270
-            | 360;
-    const backwards = options?.backwards ?? Math.random() < 0.5;
-    return rotateCube($cube, { axis, angle, backwards, speed: options?.speed });
+    return rotateCube(
+        $cube,
+        createRandomRotationOptions($cube.size, {
+            ...options,
+            type: "cube",
+        }) as CubeRotationOptions,
+    );
 }
 
 /**
@@ -200,27 +266,28 @@ export function rotateLayerRandomly(
     $cube: WebCube,
     options?: Partial<LayerRotationOptions>,
 ): Promise<void> {
-    const axis = options?.axis ??
-        ["x", "y", "z"][Math.floor(Math.random() * 3)] as
-            | "x"
-            | "y"
-            | "z";
-    const layer = options?.layer ?? Math.floor(Math.random() * $cube.size);
-    const angle = options?.angle ??
-        [90, 180, 270, 360][Math.floor(Math.random() * 4)] as
-            | 90
-            | 180
-            | 270
-            | 360;
-    const backwards = options?.backwards ?? Math.random() < 0.5;
+    return rotateLayer(
+        $cube,
+        createRandomRotationOptions($cube.size, {
+            ...options,
+            type: "layer",
+        }) as LayerRotationOptions,
+    );
+}
 
-    console.log({ axis, layer, angle, backwards });
-
-    return rotateLayer($cube, {
-        axis,
-        layer,
-        angle,
-        backwards,
-        speed: options?.speed,
-    });
+/**
+ * Enqueue a list of rotations.
+ * @param $cube The cube to rotate.
+ * @param rotations The list of rotations to perform.
+ * @returns A Promise that resolves when all rotations are complete.
+ */
+export function enqueueRotations(
+    $cube: WebCube,
+    rotations: RotationOptions[],
+): Promise<void> {
+    return rotations.reduce((promise, rotation) => {
+        return promise.then(() => {
+            return rotate($cube, rotation);
+        });
+    }, Promise.resolve());
 }

@@ -1,4 +1,10 @@
-import { define, WebCube } from "../src/index";
+import {
+    createRandomRotationOptions,
+    define,
+    enqueueRotations,
+    rotate,
+    WebCube,
+} from "../src/index";
 import "./styles.css";
 
 define();
@@ -47,3 +53,15 @@ function cubeButtonClickHandler(e: MouseEvent) {
 $$cubeBtns.forEach(($btn) => {
     $btn.addEventListener("click", cubeButtonClickHandler);
 });
+
+await enqueueRotations(
+    $webRubik,
+    Array.from(
+        { length: 10 },
+        () =>
+            createRandomRotationOptions($webRubik.size, {
+                type: "layer",
+                speed: 100,
+            }),
+    ),
+);
