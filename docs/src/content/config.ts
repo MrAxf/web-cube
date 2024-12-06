@@ -1,5 +1,6 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
+import { group } from "console";
 
 const docs = defineCollection({
     loader: glob({
@@ -11,6 +12,7 @@ const docs = defineCollection({
         title: z.string(),
         group: z.string(),
         path: z.string(),
+        groupOrder: z.number(),
         order: z.number(),
     }),
 });

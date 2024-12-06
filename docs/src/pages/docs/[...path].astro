@@ -9,15 +9,22 @@ import SideNavigation from "@/components/side-navigation.astro";
 
 export async function getStaticPaths() {
     const docs = await getCollection("docs");
-    return docs.map((doc, idx) => ({
-        params: { path: doc.data.path },
-        props: {
-            doc,
-            prevDoc: docs[idx - 1] || undefined,
-            nextDoc: docs[idx + 1] || undefined,
-            docs,
-        },
-    }));
+    return docs
+        .sort((a, b) => {
+            return (
+                a.data.groupOrder - b.data.groupOrder ||
+                a.data.order - b.data.order
+            );
+        })
+        .map((doc, idx) => ({
+            params: { path: doc.data.path },
+            props: {
+                doc,
+                prevDoc: docs[idx - 1] || undefined,
+                nextDoc: docs[idx + 1] || undefined,
+                docs,
+            },
+        }));
 }
 
 const { doc, prevDoc, nextDoc } = Astro.props;

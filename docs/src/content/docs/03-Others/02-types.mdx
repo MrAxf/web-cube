@@ -2,13 +2,16 @@
 id: types
 title: Types
 group: Others
-order: 1
 path: others/types
+groupOrder: 3
+order: 2
 ---
 
 Types reference for the Web Cube element.
 
-## `Face` Enum
+## State types
+
+### `Face` Enum
 
 The `Face` enum represents the faces of a cube. It includes the following values:
 
@@ -19,7 +22,7 @@ The `Face` enum represents the faces of a cube. It includes the following values
 - `Face.Up`: Represents the top face of the cube. Has a value of `4`.
 - `Face.Down`: Represents the bottom face of the cube. Has a value of `5`.
 
-## `FlatState` Type
+### `FlatState` Type
 
 The `FlatState` type is an object that represents a flat representation of the state of a cube. It includes the following properties:
 
@@ -29,3 +32,36 @@ The `FlatState` type is an object that represents a flat representation of the s
 - `[Face.Right]`: A 2D array of [`Face`](#face-enum) values representing the right face of the cube.
 - `[Face.Front]`: A 2D array of [`Face`](#face-enum) values representing the front face of the cube.
 - `[Face.Back]`: A 2D array of [`Face`](#face-enum) values representing the back face of the cube.
+
+## Rotation options types
+
+### `CubeRotationOptions` Type
+
+The `CubeRotationOptions` type represents the options for rotating the entire cube. It includes the following properties:
+
+- `axis`: The axis to rotate the cube. Must be `"x"`, `"y"`, or `"z"`.
+- `angle`: The angle to rotate the cube. Must be `90`, `180`, `270`, or `360`.
+- `backwards?`: Optional. Whether to rotate the cube backwards. Defaults to `false`.
+- `speed?`: Optional. The speed of the rotation in milliseconds. Defaults to the instance speed.
+
+### `LayerRotationOptions` Type
+
+The `LayerRotationOptions` type represents the options for rotating a layer of the cube. It includes the following properties:
+
+- `axis`: The axis of the layer to rotate. Must be `"x"`, `"y"`, or `"z"`.
+- `layer`: The index of the layer to rotate. Must be between `0` and the size of the cube.
+- `angle`: The angle to rotate the layer. Must be `90`, `180`, `270`, or `360`.
+- `backwards?`: Optional. Whether to rotate the layer backwards. Defaults to `false`.
+- `speed?`: Optional. The speed of the rotation in milliseconds. Defaults to the instance speed.
+
+### `RotationOptions` Type
+
+The `RotationOptions` type represents the options for rotating either the entire cube or a layer of the cube. It includes the following properties:
+
+- `type`: The type of rotation. Must be `"cube"` or `"layer"`.
+- `axis`: The axis to rotate the cube. Must be `"x"`, `"y"`, or `"z"`.
+- `layer?`: Optional. The index of the layer to rotate. Must be between `0` and the size of the cube. Only required if `type` is `"layer"`.
+- `angle`: The angle to rotate the cube. Must be `90`, `180`, `270`, or `360`.
+- `backwards?`: Optional. Whether to rotate the cube backwards. Defaults to `false`.
+- `speed?`: Optional. The speed of the rotation in milliseconds. Defaults to the instance speed.
+

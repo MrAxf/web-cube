@@ -5,7 +5,11 @@ import ThemeButton from "./theme-button.astro";
 const docs = await getCollection("docs");
 
 const groupedDocs = docs
-    .sort((a, b) => a.data.order - b.data.order)
+    .sort((a, b) => {
+        return (
+            a.data.groupOrder - b.data.groupOrder || a.data.order - b.data.order
+        );
+    })
     .reduce((acc: { [key: string]: typeof docs }, doc) => {
         const group = doc.data.group;
         if (!acc[group]) {

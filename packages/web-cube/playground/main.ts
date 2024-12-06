@@ -55,15 +55,3 @@ function cubeButtonClickHandler(e: MouseEvent) {
 $$cubeBtns.forEach(($btn) => {
     $btn.addEventListener("click", cubeButtonClickHandler);
 });
-
-await enqueueRotations(
-    $webCube,
-    Array.from(
-        { length: 10 },
-        () =>
-            createRandomRotationOptions($webCube.size, {
-                type: "layer",
-                speed: 100,
-            }),
-    ),
-);

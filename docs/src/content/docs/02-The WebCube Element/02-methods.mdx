@@ -2,8 +2,9 @@
 id: methods
 title: Methods
 group: The WebCube Element
-order: 2
 path: the-webcube-element/methods
+groupOrder: 2
+order: 2
 ---
 
 The **Web Cube** element has a few methods that you can use to interact with the cube.
@@ -69,37 +70,10 @@ Rotates the entire cube with an animation.
 
 #### `options`
 
-An `Object` with the following properties:
+The options for the rotation.
 
-##### `axis`
-
-The axis to rotate the cube. Must be set to "x", "y", or "z" otherwise it will throw an error.
-
-- type: `string`
-- required: Yes
-
-##### `angle`
-
-The angle to rotate the cube. Must be set to `90`, `180`, `270`, or `360` otherwise it will throw an error.
-
-- type: `number`
-- required: Yes
-
-##### `backwards`
-
-Whether to rotate the cube backwards.
-
-- type: `boolean`
-- required: No
-- default: `false`
-
-##### `speed`
-
-If sets overwrites the speed property for this rotation.
-
-- type: `number`
-- required: No
-- default: Current instance speed
+- Type: [`CubeRotationOptions`](/docs/others/types#cuberotationoptions-type)
+- Required: Yes
 
 ### Returns
 
@@ -112,7 +86,7 @@ import { WebCube } from "@web-cube/web-cube";
 
 const $cube = document.querySelector("web-cube") as WebCube;
 
-$cube.rotateCube({ axis: "x", angle: 90 });
+$cube.rotateCube({ axis: "x", angle: 90, backwards: false, speed: 500 });
 ```
 
 ## `rotateLayer`
@@ -123,44 +97,10 @@ Rotates a layer of the cube.
 
 #### `options`
 
-An `Object` with the following properties:
+The options for the rotation.
 
-##### `axis`
-
-The axis of the layer to rotate. Must be "x", "y", or "z" otherwise it will throw an error.
-
-- type: `string`
-- required: Yes
-
-##### `layer`
-
-The index of the layer to rotate. Must be between 0 and the size of the cube otherwise it will throw an error.
-
-- type: `number`
-- required: Yes
-
-##### `angle`
-
-The angle to rotate the layer. Must be `90`, `180`, `270`, or `360` otherwise it will throw an error.
-
-- type: `number`
-- required: Yes
-
-##### `backwards`
-
-Whether to rotate the layer backwards.
-
-- type: `boolean`
-- required: No
-- default: `false`
-
-##### `speed`
-
-If sets overwrites the speed property for this rotation.
-
-- type: `number`
-- required: No
-- default: Current instance speed
+- Type: [`LayerRotationOptions`](/docs/others/types#layerrotationoptions-type)
+- Required: Yes
 
 ### Returns
 
@@ -173,5 +113,5 @@ import { WebCube } from "@web-cube/web-cube";
 
 const $cube = document.querySelector("web-cube") as WebCube;
 
-$cube.rotateLayer({ axis: "x", layer: 0, angle: 90 });
+$cube.rotateLayer({ axis: "x", layer: 0, angle: 90, backwards: false, speed: 500 });
 ```
