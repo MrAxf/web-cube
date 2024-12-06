@@ -36,6 +36,7 @@ import {
     beforeLayerRotate,
     beforeRotate,
     RotationEventDetail,
+    stateChanged,
 } from "./cube-events.ts";
 
 const ROTATIONS = {
@@ -195,7 +196,9 @@ export class WebCube extends HTMLElement {
         this.#observableCtx = createObservableContext();
         this.#state = createState(this.#observableCtx, this.#size);
 
-        this.#observableCtx.tick();
+        if (this.#observableCtx.tick() > 0) {
+            this.dispatchEvent(stateChanged());
+        }
 
         this.#$viewport = document.createElement("div");
         this.#$viewport.setAttribute("data-viewport", "");
@@ -603,7 +606,9 @@ export class WebCube extends HTMLElement {
         );
         this.#resetCubesRotate(axis, layer);
         this.style.setProperty("--spin-angle", "0deg");
-        this.#observableCtx!.tick();
+        if (this.#observableCtx!.tick() > 0) {
+            this.dispatchEvent(stateChanged());
+        }
 
         this.dispatchEvent(afterRotate(evDetail));
         this.dispatchEvent(afterLayerRotate(evDetail));
@@ -671,7 +676,9 @@ export class WebCube extends HTMLElement {
         );
         this.#$mainCube!.style.removeProperty(`--cube-rotation-${axis}`);
         this.style.setProperty("--spin-angle", "0deg");
-        this.#observableCtx!.tick();
+        if (this.#observableCtx!.tick() > 0) {
+            this.dispatchEvent(stateChanged());
+        }
 
         this.dispatchEvent(afterRotate(evDetail));
         this.dispatchEvent(afterCubeRotate(evDetail));
@@ -695,7 +702,9 @@ export class WebCube extends HTMLElement {
      */
     setState(newState: FlatState) {
         setState(this.#state!, newState);
-        this.#observableCtx!.tick();
+        if (this.#observableCtx!.tick() > 0) {
+            this.dispatchEvent(stateChanged());
+        }
     }
 
     /**

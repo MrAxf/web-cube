@@ -11,9 +11,9 @@ import { WebCube } from "./web-cube.ts";
 
 export { WebCube };
 
-export * from "./utils.ts";
-
 export type { FlatState } from "./state.ts";
+
+export * from "./utils.ts";
 
 /**
  * Registers the `WebCube` custom element with the specified tag name.

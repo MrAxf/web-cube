@@ -2,11 +2,11 @@ export type ObservableListener<T> = (value: T) => void;
 export type Observable<T> = {
     value: T;
     subscribe: (listener: ObservableListener<T>) => void;
-}
+};
 export type ObservableContext = {
     observableOf: <T>(value: T) => Observable<T>;
-    tick: () => void;
-} 
+    tick: () => number;
+};
 
 export function createObservableContext(): ObservableContext {
     const observableValues = new Map<symbol, unknown>();
@@ -14,7 +14,8 @@ export function createObservableContext(): ObservableContext {
 
     const nextTick: Set<symbol> = new Set();
 
-    function tick() {
+    function tick(): number {
+        const updatedKeys = nextTick.size;
         const currentTick = Array.from(nextTick);
         nextTick.clear();
         currentTick.forEach((key) => {
@@ -24,6 +25,7 @@ export function createObservableContext(): ObservableContext {
                 listener.forEach((listener) => listener(value));
             }
         });
+        return updatedKeys;
     }
 
     function observableOf<T>(value: T): Observable<T> {
@@ -36,19 +38,23 @@ export function createObservableContext(): ObservableContext {
             set value(value: T) {
                 if (observableValues.get(key) === value) return;
                 observableValues.set(key, value);
-                nextTick.add((key));
+                nextTick.add(key);
             },
             subscribe(listener: ObservableListener<T>) {
-                const listenerList = (listeners.get(key) || []) as ObservableListener<T>[];
+                const listenerList =
+                    (listeners.get(key) || []) as ObservableListener<T>[];
                 listenerList.push(listener);
-                listeners.set(key, listenerList as ObservableListener<unknown>[]);
+                listeners.set(
+                    key,
+                    listenerList as ObservableListener<unknown>[],
+                );
                 listener(this.value);
-            }
-        }
+            },
+        };
     }
 
     return {
         observableOf,
-        tick
-    }
+        tick,
+    };
 }

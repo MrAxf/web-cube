@@ -1,3 +1,5 @@
+import { FlatState } from "./state";
+
 export type RotationEventDetail = {
     type: "cube";
     axis: "x" | "y" | "z";
@@ -17,7 +19,15 @@ export type RotationEventDetail = {
     speed: number;
 };
 
+/**
+ * The event for a rotation.
+ */
 export type RotationEvent = CustomEvent<RotationEventDetail>;
+
+/**
+ * The event for a state change.
+ */
+export type StateChangeEvent = CustomEvent<{ state: FlatState }>;
 
 function createRotationEvent(
     name: string,
@@ -41,3 +51,5 @@ export const beforeLayerRotate = (detail: RotationEventDetail) =>
     createRotationEvent("web-cube:before-layer-rotate", detail);
 export const afterLayerRotate = (detail: RotationEventDetail) =>
     createRotationEvent("web-cube:after-layer-rotate", detail);
+
+export const stateChanged = () => new CustomEvent("web-cube:state-changed");

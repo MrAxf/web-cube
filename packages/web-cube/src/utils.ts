@@ -4,7 +4,7 @@ import { WebCube } from "./web-cube";
 /**
  * The base options for a rotation.
  */
-export type _BaseRotationOptions = {
+type _BaseRotationOptions = {
     axis: "x" | "y" | "z";
     angle: 90 | 180 | 270 | 360;
     backwards?: boolean;

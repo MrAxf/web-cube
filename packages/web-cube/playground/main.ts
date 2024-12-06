@@ -1,15 +1,17 @@
 import {
+    createBaseFaceState,
     createRandomRotationOptions,
     define,
     enqueueRotations,
-    rotate,
+    Face,
+    setState,
     WebCube,
 } from "../src/index";
 import "./styles.css";
 
 define();
 
-const $webRubik = document.querySelector("web-cube") as WebCube;
+const $webCube = document.querySelector("web-cube") as WebCube;
 
 const $controls = document.getElementById("controls") as HTMLDivElement;
 const $$layerBtns: NodeListOf<HTMLButtonElement> = $controls.querySelectorAll(
@@ -22,7 +24,7 @@ function layerButtonClickHandler(e: MouseEvent) {
     const layer = parseInt(target.dataset.layer!);
     const angle = parseInt(target.dataset.angle!);
 
-    $webRubik.rotateLayer({
+    $webCube.rotateLayer({
         axis,
         layer,
         angle: Math.abs(angle) as any,
@@ -43,7 +45,7 @@ function cubeButtonClickHandler(e: MouseEvent) {
     const target = e.target as HTMLElement;
     const axis = target.dataset.axis! as "x" | "y" | "z";
     const angle = parseInt(target.dataset.angle!);
-    $webRubik.rotateCube({
+    $webCube.rotateCube({
         axis,
         angle: Math.abs(angle) as any,
         backwards: angle < 0,
@@ -55,11 +57,11 @@ $$cubeBtns.forEach(($btn) => {
 });
 
 await enqueueRotations(
-    $webRubik,
+    $webCube,
     Array.from(
         { length: 10 },
         () =>
-            createRandomRotationOptions($webRubik.size, {
+            createRandomRotationOptions($webCube.size, {
                 type: "layer",
                 speed: 100,
             }),
