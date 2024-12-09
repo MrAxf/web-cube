@@ -7,7 +7,7 @@ groupOrder: 2
 order: 1
 ---
 
-import WebCube from "@/components/web-cube.astro"
+import WebCube from "@/components/web-cube.astro";
 
 The Web Cube element has a few properties that you can use to customize the cube.
 
@@ -23,8 +23,8 @@ If size is set to `0`, below `0` or `NaN`, the size will be set to the default v
 <web-cube size="4"></web-cube>
 ```
 
-<div class="rounded-lg overflow-hidden bg-slate-300 dark:bg-slate-700 my-8">
-    <WebCube size={4} />
+<div class="my-8 overflow-hidden rounded-lg bg-slate-300 dark:bg-slate-700">
+  <WebCube size={4} />
 </div>
 
 ## speed
@@ -41,8 +41,8 @@ If speed is set to `0`, below `0` or `NaN`, the speed will be set to the default
 <web-cube speed="5000"></web-cube>
 ```
 
-<div class="rounded-lg overflow-hidden bg-slate-300 dark:bg-slate-700 my-8">
-    <WebCube size={2} speed={5000} />
+<div class="my-8 overflow-hidden rounded-lg bg-slate-300 dark:bg-slate-700">
+  <WebCube size={2} speed={5000} />
 </div>
 
 ## disabled-pointer-events
@@ -55,8 +55,6 @@ The pointer events will be disabled while this property is present and is not se
 <web-cube disabled-pointer-events></web-cube>
 ```
 
-<div class="rounded-lg overflow-hidden bg-slate-300 dark:bg-slate-700 my-8">
-    <WebCube disabledPointerEvents size={2} />
+<div class="my-8 overflow-hidden rounded-lg bg-slate-300 dark:bg-slate-700">
+  <WebCube disabledPointerEvents size={2} />
 </div>
-
-

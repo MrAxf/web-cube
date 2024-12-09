@@ -1,20 +1,19 @@
 <script is:inline>
-    function setTheme() {
-        const theme = localStorage.getItem("theme");
+  function setTheme() {
+    const theme = localStorage.getItem("theme");
 
-        if (
-            theme === "dark" ||
-            (!theme &&
-                window.matchMedia("(prefers-color-scheme: dark)").matches)
-        ) {
-            localStorage.setItem("theme", "dark");
-            document.documentElement.classList.add("dark");
-        } else {
-            localStorage.setItem("theme", "light");
-            document.documentElement.classList.remove("dark");
-        }
+    if (
+      theme === "dark" ||
+      (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)
+    ) {
+      localStorage.setItem("theme", "dark");
+      document.documentElement.classList.add("dark");
+    } else {
+      localStorage.setItem("theme", "light");
+      document.documentElement.classList.remove("dark");
     }
+  }
 
-    setTheme();
-    document.addEventListener("astro:after-swap", setTheme);
+  setTheme();
+  document.addEventListener("astro:after-swap", setTheme);
 </script>

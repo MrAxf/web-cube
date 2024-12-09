@@ -6,67 +6,61 @@ const isDocsPage = Astro.url.pathname.startsWith("/docs");
 ---
 
 <header
-    id="main-header"
-    class="transition-colors h-14 md:h-16 lg:h-20 flex items-center justify-between px-6 md:px-12 lg:px-16 sticky top-0 z-10 bg-slate-100 dark:bg-slate-900 backdrop-blur-xl border-b border-slate-500"
-    style="
+  id="main-header"
+  class="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-slate-500 bg-slate-100 px-6 backdrop-blur-xl transition-colors md:h-16 md:px-12 lg:h-20 lg:px-16 dark:bg-slate-900"
+  style="
     --tw-bg-opacity:
     var(--header-bg-opacity); --tw-border-opacity: var(--header-border-opacity);"
 >
-    <a href="/" class="flex items-center gap-4 shrink-0">
-        <figure>
-            <img
-                src="/favicon.svg"
-                alt="Web Cube logo"
-                class="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12"
-            />
-        </figure>
-        <span class="font-bold text-xl uppercase md:text-2xl">Web Cube</span>
+  <a href="/" class="flex shrink-0 items-center gap-4">
+    <figure>
+      <img
+        src="/favicon.svg"
+        alt="Web Cube logo"
+        class="size-8 md:size-10 lg:size-12"
+      />
+    </figure>
+    <span class="text-xl font-bold uppercase md:text-2xl">Web Cube</span>
+  </a>
+  <div class="flex shrink-0 items-center gap-2 sm:gap-4">
+    <SearchButton />
+    <span class="shrink-0 opacity-50">|</span>
+    <ThemeButton class={isDocsPage ? "hidden md:grid" : ""} />
+    <span class:list={["shrink-0 opacity-50", isDocsPage && "hidden md:inline"]}
+      >|</span
+    >
+    <a
+      href="https://github.com/MrAxf/web-cube"
+      target="_blank"
+      class:list={["icon-button shrink-0", isDocsPage && "hidden md:grid"]}
+      aria-label="GitHub repository"
+      title="GitHub repository"
+    >
+      <span class="i-simple-icons-github"></span>
     </a>
-    <div class="flex items-center gap-2 sm:gap-4 shrink-0">
-        <SearchButton />
-        <span class="opacity-50 shrink-0">|</span>
-        <ThemeButton class={isDocsPage ? "hidden md:grid" : ""} />
-        <span
-            class:list={[
-                "opacity-50 shrink-0",
-                isDocsPage && "hidden md:inline",
-            ]}>|</span
+    {
+      isDocsPage && (
+        <button
+          id="menu-button"
+          class="icon-button grid md:hidden"
+          title="Open menu"
         >
-        <a
-            href="https://github.com/MrAxf/web-cube"
-            target="_blank"
-            class:list={[
-                "icon-button shrink-0",
-                isDocsPage && "hidden md:grid",
-            ]}
-            aria-label="GitHub repository"
-            title="GitHub repository"
-        >
-            <span class="i-simple-icons-github"></span>
-        </a>
-        {
-            isDocsPage && (
-                <button
-                    id="menu-button"
-                    class="icon-button grid md:hidden"
-                    title="Open menu"
-                >
-                    <span class="i-heroicons-bars-3" />
-                </button>
-            )
-        }
-    </div>
+          <span class="i-heroicons-bars-3" />
+        </button>
+      )
+    }
+  </div>
 </header>
 
 <script>
-    window.addEventListener("scroll", () => {
-        document.documentElement.style.setProperty(
-            "--header-bg-opacity",
-            window.scrollY > 0 ? "0.7" : "0",
-        );
-        document.documentElement.style.setProperty(
-            "--header-border-opacity",
-            window.scrollY > 0 ? "0.7" : "0",
-        );
-    });
+  window.addEventListener("scroll", () => {
+    document.documentElement.style.setProperty(
+      "--header-bg-opacity",
+      window.scrollY > 0 ? "0.7" : "0",
+    );
+    document.documentElement.style.setProperty(
+      "--header-border-opacity",
+      window.scrollY > 0 ? "0.7" : "0",
+    );
+  });
 </script>

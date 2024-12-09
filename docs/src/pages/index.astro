@@ -1,46 +1,43 @@
 ---
-import BaseLayout from "@/layouts/base-layout.astro";
-
 import BackgroundGradients from "@/components/background-gradients.astro";
 import Footer from "@/components/footer.astro";
 import WebCube from "@/components/web-cube.astro";
+import BaseLayout from "@/layouts/base-layout.astro";
 ---
 
 <BaseLayout mainClass="gap-12 flex flex-col w-full">
-    <BackgroundGradients />
-    <section
-        class="text-content mx-auto text-center my-[5dvh] md:my-[7.5dvh] lg:my-[10dvh]"
-    >
-        <h1 class="font-normal">
-            Create and customize your <strong>rubik's cube.</strong>
-        </h1>
-        <p>
-            <strong>Web Cube</strong> is a web component that allows you to create
-            and customize your own rubik's cube.
-        </p>
-        <div class="not-prose mt-16">
-            <a
-                href="/docs/get-started/quick-start"
-                class="mt-4 bg-cube-left hover:bg-blue-700 text-white font-bold py-4 px-8 rounded transition-colors shadow-md"
-            >
-                Get Started
-            </a>
-        </div>
-    </section>
+  <BackgroundGradients />
+  <section
+    class="text-content mx-auto my-[5dvh] text-center md:my-[7.5dvh] lg:my-[10dvh]"
+  >
+    <h1 class="font-normal">
+      Create and customize your <strong>rubik's cube.</strong>
+    </h1>
+    <p>
+      <strong>Web Cube</strong> is a web component that allows you to create and
+      customize your own rubik's cube.
+    </p>
+    <div class="not-prose mt-16">
+      <a
+        href="/docs/get-started/quick-start"
+        class="bg-cube-left mt-4 rounded px-8 py-4 font-bold text-white shadow-md transition-colors hover:bg-blue-700"
+      >
+        Get Started
+      </a>
+    </div>
+  </section>
 
-    <section class="flex flex-col gap-4">
-        <article class="text-content">
-            <h2>Do you wanna try it?</h2>
-            <p>
-                Drag outside the cube to rotate it or drag inside the cube to
-                rotate a face.
-            </p>
-        </article>
-        <article
-            class="rounded-lg overflow-hidden bg-slate-300 dark:bg-slate-700"
-        >
-            <WebCube size={3} />
-        </article>
-    </section>
-    <Footer />
+  <section class="flex flex-col gap-4">
+    <article class="text-content">
+      <h2>Do you wanna try it?</h2>
+      <p>
+        Drag outside the cube to rotate it or drag inside the cube to rotate a
+        face.
+      </p>
+    </article>
+    <article class="overflow-hidden rounded-lg bg-slate-300 dark:bg-slate-700">
+      <WebCube size={3} />
+    </article>
+  </section>
+  <Footer />
 </BaseLayout>

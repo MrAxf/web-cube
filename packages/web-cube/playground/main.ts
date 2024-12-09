@@ -1,12 +1,4 @@
-import {
-    createBaseFaceState,
-    createRandomRotationOptions,
-    define,
-    enqueueRotations,
-    Face,
-    setState,
-    WebCube,
-} from "../src/index";
+import { define, WebCube } from "../src/index";
 import "./styles.css";
 
 define();
@@ -15,43 +7,43 @@ const $webCube = document.querySelector("web-cube") as WebCube;
 
 const $controls = document.getElementById("controls") as HTMLDivElement;
 const $$layerBtns: NodeListOf<HTMLButtonElement> = $controls.querySelectorAll(
-    "button[data-layer-btn]",
+  "button[data-layer-btn]",
 );
 
 function layerButtonClickHandler(e: MouseEvent) {
-    const target = e.target as HTMLElement;
-    const axis = target.dataset.axis! as "x" | "y" | "z";
-    const layer = parseInt(target.dataset.layer!);
-    const angle = parseInt(target.dataset.angle!);
+  const target = e.target as HTMLElement;
+  const axis = target.dataset.axis! as "x" | "y" | "z";
+  const layer = parseInt(target.dataset.layer!);
+  const angle = parseInt(target.dataset.angle!);
 
-    $webCube.rotateLayer({
-        axis,
-        layer,
-        angle: Math.abs(angle) as any,
-        backwards: angle < 0,
-        speed: 100,
-    });
+  $webCube.rotateLayer({
+    axis,
+    layer,
+    angle: Math.abs(angle) as any,
+    backwards: angle < 0,
+    speed: 100,
+  });
 }
 
 $$layerBtns.forEach(($btn) => {
-    $btn.addEventListener("click", layerButtonClickHandler);
+  $btn.addEventListener("click", layerButtonClickHandler);
 });
 
 const $$cubeBtns: NodeListOf<HTMLButtonElement> = $controls.querySelectorAll(
-    "button[data-cube-btn]",
+  "button[data-cube-btn]",
 );
 
 function cubeButtonClickHandler(e: MouseEvent) {
-    const target = e.target as HTMLElement;
-    const axis = target.dataset.axis! as "x" | "y" | "z";
-    const angle = parseInt(target.dataset.angle!);
-    $webCube.rotateCube({
-        axis,
-        angle: Math.abs(angle) as any,
-        backwards: angle < 0,
-    });
+  const target = e.target as HTMLElement;
+  const axis = target.dataset.axis! as "x" | "y" | "z";
+  const angle = parseInt(target.dataset.angle!);
+  $webCube.rotateCube({
+    axis,
+    angle: Math.abs(angle) as any,
+    backwards: angle < 0,
+  });
 }
 
 $$cubeBtns.forEach(($btn) => {
-    $btn.addEventListener("click", cubeButtonClickHandler);
+  $btn.addEventListener("click", cubeButtonClickHandler);
 });

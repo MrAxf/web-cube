@@ -1,27 +1,27 @@
 <button0
-    id="search-button"
-    class="opacity-70 hover:opacity-90 active:opacity-100 transition-opacity h-4 md:h-6 lg:h-8 items-center flex gap-4 cursor-pointer shrink-0"
-    aria-label="Search"
-    title="Search"
+  id="search-button"
+  class="flex h-4 shrink-0 cursor-pointer items-center gap-4 opacity-70 transition-opacity hover:opacity-90 active:opacity-100 md:h-6 lg:h-8"
+  aria-label="Search"
+  title="Search"
 >
-    <span class="i-heroicons-magnifying-glass lg:text-3xl md:text-2xl text-xl"
-    ></span>
+  <span class="i-heroicons-magnifying-glass text-xl md:text-2xl lg:text-3xl"
+  ></span>
 
-    <!-- A kbd with (meta key + k) -->
-    <span
-        data-kbd
-        class="hidden md:block text-sm dark:bg-slate-700 border bg-slate-300 border-slate-500 rounded-sm px-1 py-0.5"
-        >Ctrl K</span
-    >
+  <!-- A kbd with (meta key + k) -->
+  <span
+    data-kbd
+    class="hidden rounded-sm border border-slate-500 bg-slate-300 px-1 py-0.5 text-sm md:block dark:bg-slate-700"
+    >Ctrl K</span
+  >
 </button0>
 
 <script>
-    const init = () => {
-        // @ts-ignore
-        if (/(Mac|iPhone|iPod|iPad)/i.test(navigator.userAgent.platform)) {
-            document.querySelector("[data-kbd]")!.textContent = "⌘ K";
-        }
-    };
-    init();
-    document.addEventListener("astro:after-swap", init);
+  const init = () => {
+    // @ts-ignore
+    if (/(Mac|iPhone|iPod|iPad)/i.test(navigator.userAgent.platform)) {
+      document.querySelector("[data-kbd]")!.textContent = "⌘ K";
+    }
+  };
+  init();
+  document.addEventListener("astro:after-swap", init);
 </script>

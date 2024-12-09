@@ -2,76 +2,75 @@
 import type { MarkdownHeading } from "astro";
 
 interface Props {
-    headings: MarkdownHeading[];
+  headings: MarkdownHeading[];
 }
 
 const { headings } = Astro.props as Props;
 ---
 
 <aside
-    class="sticky hidden xl:block top-14 md:top-16 lg:top-20 h-[calc(100dvh-3.5rem)] md:h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-5rem)] w-64 border-l border-slate-500 p-4 shrink-0"
+  class="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-64 shrink-0 border-l border-slate-500 p-4 md:top-16 md:h-[calc(100dvh-4rem)] lg:top-20 lg:h-[calc(100dvh-5rem)] xl:block"
 >
-    <nav class="sticky
-    top-0">
-        <h2 class="text-xl font-bold mb-4">In this page</h2>
-        <ul class="flex flex-col gap-1">
-            {
-                headings.map((heading) => (
-                    <li
-                        class="text-sm"
-                        style={`
+  <nav class="sticky top-0">
+    <h2 class="mb-4 text-xl font-bold">In this page</h2>
+    <ul class="flex flex-col gap-1">
+      {
+        headings.map((heading) => (
+          <li
+            class="text-sm"
+            style={`
                                     padding-left: ${(heading.depth - 2) * 1.5}rem;
                                 `}
-                    >
-                        <a
-                            data-heading-link
-                            class="opacity-70 hover:opacity-100 transition-all [&.active]:text-blue-700 [&.active]:opacity-100 dark:[&.active]:text-blue-300"
-                            href={`#${heading.slug}`}
-                        >
-                            {heading.text}
-                        </a>
-                    </li>
-                ))
+          >
+            <a
+              data-heading-link
+              class="opacity-70 transition-all hover:opacity-100 [&.active]:text-blue-700 [&.active]:opacity-100 dark:[&.active]:text-blue-300"
+              href={`#${heading.slug}`}
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <script>
+    let intersetionObserver: IntersectionObserver | null = null;
+    const init = () => {
+      if (intersetionObserver) {
+        intersetionObserver.disconnect();
+      }
+      const headings = document.querySelectorAll(
+        "h2[id], h3[id], h4[id], h5[id], h6[id]",
+      );
+      const links = document.querySelectorAll("[data-heading-link]");
+
+      intersetionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              links.forEach((link) => {
+                link.classList.remove("active");
+              });
+
+              const link = document.querySelector(
+                `[href="#${entry.target.id}"]`,
+              );
+              link!.classList.add("active");
             }
-        </ul>
-    </nav>
+          });
+        },
+        {
+          rootMargin: "0% 0% -80% 0%",
+        },
+      );
 
-    <script>
-        let intersetionObserver: IntersectionObserver | null = null;
-        const init = () => {
-            if (intersetionObserver) {
-                intersetionObserver.disconnect();
-            }
-            const headings = document.querySelectorAll(
-                "h2[id], h3[id], h4[id], h5[id], h6[id]",
-            );
-            const links = document.querySelectorAll("[data-heading-link]");
-
-            intersetionObserver = new IntersectionObserver(
-                (entries) => {
-                    entries.forEach((entry) => {
-                        if (entry.isIntersecting) {
-                            links.forEach((link) => {
-                                link.classList.remove("active");
-                            });
-
-                            const link = document.querySelector(
-                                `[href="#${entry.target.id}"]`,
-                            );
-                            link!.classList.add("active");
-                        }
-                    });
-                },
-                {
-                    rootMargin: "0% 0% -80% 0%",
-                },
-            );
-
-            headings.forEach((heading) => {
-                intersetionObserver!.observe(heading);
-            });
-        };
-        init();
-        document.addEventListener("astro:after-swap", init);
-    </script>
+      headings.forEach((heading) => {
+        intersetionObserver!.observe(heading);
+      });
+    };
+    init();
+    document.addEventListener("astro:after-swap", init);
+  </script>
 </aside>

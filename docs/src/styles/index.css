@@ -3,84 +3,77 @@
 @tailwind utilities;
 
 @layer base {
-    :root {
-        --color-cube-bg: #242424;
-        --color-cube-up: #ba0c2f;
-        --color-cube-down: #fe5000;
-        --color-cube-front: #ffffff;
-        --color-cube-back: #ffd700;
-        --color-cube-left: #003da5;
-        --color-cube-right: #009a44;
+  :root {
+    --color-cube-bg: #242424;
+    --color-cube-up: #ba0c2f;
+    --color-cube-down: #fe5000;
+    --color-cube-front: #ffffff;
+    --color-cube-back: #ffd700;
+    --color-cube-left: #003da5;
+    --color-cube-right: #009a44;
 
-        --color-background: theme("colors.slate.100");
-        --color-text: theme("colors.slate.900");
+    --color-background: theme("colors.slate.100");
+    --color-text: theme("colors.slate.900");
 
-        --header-bg-opacity: 0;
-        --header-border-opacity: 0;
-    }
+    --header-bg-opacity: 0;
+    --header-border-opacity: 0;
+  }
 
-    .dark {
-        --color-background: theme("colors.slate.900");
-        --color-text: theme("colors.slate.100");
-    }
+  .dark {
+    --color-background: theme("colors.slate.900");
+    --color-text: theme("colors.slate.100");
+  }
 
-    * {
-        scrollbar-width: thin;
-        scrollbar-color: theme("colors.slate.500") transparent;
-    }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: theme("colors.slate.500") transparent;
+  }
 
-    html {
-        width: 100%;
-        min-height: 100%;
-        font-size: 16px;
-        scrollbar-gutter: stable both-edges;
+  html {
+    width: 100%;
+    min-height: 100%;
+    font-size: 16px;
+    scrollbar-gutter: stable both-edges;
 
-        @apply scroll-pt-16 md:scroll-pt-20 lg:scroll-pt-24
-    }
+    @apply scroll-pt-16 md:scroll-pt-20 lg:scroll-pt-24;
+  }
 
-    body {
-        width: 100%;
-        min-height: 100%;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        background-color: var(--color-background);
-        color: var(--color-text);
-        overflow-x: hidden;
+  body {
+    width: 100%;
+    min-height: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    overflow-x: hidden;
 
-        @apply font-opensans transition-colors overflow-y-auto has-[#side-navigation[data-open]]:overflow-y-hidden md:has-[#side-navigation[data-open]]:overflow-y-auto;
-    }
+    @apply font-opensans overflow-y-auto transition-colors has-[#side-navigation[data-open]]:overflow-y-hidden md:has-[#side-navigation[data-open]]:overflow-y-auto;
+  }
 }
 
 @layer components {
-    .radial-circle {
-        position: absolute;
-        width: var(--diameter);
-        height: var(--diameter);
-        background: radial-gradient(
-            circle,
-            var(--color) 0%,
-            transparent 70%
-        );
-        opacity: 0.3;
-        filter: blur(10px);
-    }
+  .radial-circle {
+    position: absolute;
+    width: var(--diameter);
+    height: var(--diameter);
+    background: radial-gradient(circle, var(--color) 0%, transparent 70%);
+    opacity: 0.3;
+    filter: blur(10px);
+  }
 
-    .icon-button {
-        @apply opacity-70 hover:opacity-90 active:opacity-100 transition-opacity
-            size-7 md:size-8 lg:size-9 grid place-items-center;
-        & > span {
-            @apply lg:text-3xl md:text-2xl text-xl;
-        }
+  .icon-button {
+    @apply grid size-7 place-items-center opacity-70 transition-opacity hover:opacity-90 active:opacity-100 md:size-8 lg:size-9;
+    & > span {
+      @apply text-xl md:text-2xl lg:text-3xl;
     }
+  }
 }
 
 @layer utilities {
-    .text-content {
-        @apply prose dark:prose-invert prose-slate md:prose-lg lg:prose-xl
-            xl:prose-xl;
-    }
-    .text-content-sm {
-        @apply prose prose-sm dark:prose-invert prose-slate md:prose-sm lg:prose-lg
-            xl:prose-xl;
-    }
+  .text-content {
+    @apply prose dark:prose-invert prose-slate md:prose-lg lg:prose-xl xl:prose-xl;
+  }
+  .text-content-sm {
+    @apply prose prose-sm dark:prose-invert prose-slate md:prose-sm lg:prose-lg xl:prose-xl;
+  }
 }

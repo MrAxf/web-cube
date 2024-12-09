@@ -15,7 +15,7 @@ Sets the state of the cube. You can use the [`Face`](/docs/others/types#face-enu
 
 ### Parameters
 
-#### `newState` 
+#### `newState`
 
 The new state of the cube.
 
@@ -113,5 +113,11 @@ import { WebCube } from "@web-cube/web-cube";
 
 const $cube = document.querySelector("web-cube") as WebCube;
 
-$cube.rotateLayer({ axis: "x", layer: 0, angle: 90, backwards: false, speed: 500 });
+$cube.rotateLayer({
+  axis: "x",
+  layer: 0,
+  angle: 90,
+  backwards: false,
+  speed: 500,
+});
 ```

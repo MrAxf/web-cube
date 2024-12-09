@@ -7,7 +7,7 @@ groupOrder: 1
 order: 3
 ---
 
-import WebCube from "@/components/web-cube.astro"
+import WebCube from "@/components/web-cube.astro";
 
 ## Register the custom element
 
@@ -35,20 +35,20 @@ Once the custom element is defined, you can easily embed **Web Cube** in your ex
 
 ```html title="index.html"
 <web-cube></web-cube>
-````
+```
 
 Also is possible to you must add some styles to the custom element to adjust the size and position.
 
 ```css title="index.css"
 web-cube {
-    display: block;
-    width: 100%;
-    height: 100%;
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 ```
 
 The cube will automatically adjust to the size of container.
 
-<div class="rounded-lg overflow-hidden bg-slate-300 dark:bg-slate-700 my-8">
-    <WebCube />
+<div class="my-8 overflow-hidden rounded-lg bg-slate-300 dark:bg-slate-700">
+  <WebCube />
 </div>

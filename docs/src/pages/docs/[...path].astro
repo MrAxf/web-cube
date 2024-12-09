@@ -1,30 +1,27 @@
 ---
 import { getCollection, render } from "astro:content";
 
-import BaseLayout from "@/layouts/base-layout.astro";
-
 import Footer from "@/components/footer.astro";
 import PageNavigation from "@/components/page-navigation.astro";
 import SideNavigation from "@/components/side-navigation.astro";
+import BaseLayout from "@/layouts/base-layout.astro";
 
 export async function getStaticPaths() {
-    const docs = await getCollection("docs");
-    return docs
-        .sort((a, b) => {
-            return (
-                a.data.groupOrder - b.data.groupOrder ||
-                a.data.order - b.data.order
-            );
-        })
-        .map((doc, idx) => ({
-            params: { path: doc.data.path },
-            props: {
-                doc,
-                prevDoc: docs[idx - 1] || undefined,
-                nextDoc: docs[idx + 1] || undefined,
-                docs,
-            },
-        }));
+  const docs = await getCollection("docs");
+  return docs
+    .sort(
+      (a, b) =>
+        a.data.groupOrder - b.data.groupOrder || a.data.order - b.data.order,
+    )
+    .map((doc, idx) => ({
+      params: { path: doc.data.path },
+      props: {
+        doc,
+        prevDoc: docs[idx - 1] || undefined,
+        nextDoc: docs[idx + 1] || undefined,
+        docs,
+      },
+    }));
 }
 
 const { doc, prevDoc, nextDoc } = Astro.props;
@@ -32,41 +29,39 @@ const { Content, headings } = await render(doc);
 ---
 
 <BaseLayout title={doc.data.title} mainClass="gap-12 flex flex-col py-0">
-    <section class="flex justify-between gap-4">
-        <SideNavigation />
-        <article
-            class="text-content-sm grow py-8 w-full overflow-x-hidden mx-auto"
-        >
-            <h1>{doc.data.title}</h1>
-            <Content />
-            <div
-                class="flex flex-wrap justify-between items-stretch my-8 not-prose gap-8"
+  <section class="flex justify-between gap-4">
+    <SideNavigation />
+    <article class="text-content-sm mx-auto w-full grow overflow-x-hidden py-8">
+      <h1>{doc.data.title}</h1>
+      <Content />
+      <div
+        class="not-prose my-8 flex flex-wrap items-stretch justify-between gap-8"
+      >
+        {
+          prevDoc && (
+            <a
+              href={`/docs/${prevDoc.data.path}`}
+              class="no-prose flex flex-1 items-center justify-start gap-4 rounded-lg border border-current px-4 py-2 no-underline opacity-70 shadow-sm transition-all hover:opacity-100"
             >
-                {
-                    prevDoc && (
-                        <a
-                            href={`/docs/${prevDoc.data.path}`}
-                            class="border-current rounded-lg border no-underline no-prose flex gap-4 items-center flex-1 px-4 py-2 justify-start shadow-sm opacity-70 hover:opacity-100 transition-all"
-                        >
-                            <span class="i-heroicons-arrow-left" />
-                            <span>{prevDoc.data.title}</span>
-                        </a>
-                    )
-                }
-                {
-                    nextDoc && (
-                        <a
-                            href={`/docs/${nextDoc.data.path}`}
-                            class="border-current rounded-lg border no-underline no-prose flex gap-4 items-center flex-1 px-4 py-2 justify-start shadow-sm opacity-70 hover:opacity-100 transition-all"
-                        >
-                            <span>{nextDoc.data.title}</span>
-                            <span class="i-heroicons-arrow-right" />
-                        </a>
-                    )
-                }
-            </div>
-            <Footer />
-        </article>
-        <PageNavigation headings={headings} />
-    </section>
+              <span class="i-heroicons-arrow-left" />
+              <span>{prevDoc.data.title}</span>
+            </a>
+          )
+        }
+        {
+          nextDoc && (
+            <a
+              href={`/docs/${nextDoc.data.path}`}
+              class="no-prose flex flex-1 items-center justify-start gap-4 rounded-lg border border-current px-4 py-2 no-underline opacity-70 shadow-sm transition-all hover:opacity-100"
+            >
+              <span>{nextDoc.data.title}</span>
+              <span class="i-heroicons-arrow-right" />
+            </a>
+          )
+        }
+      </div>
+      <Footer />
+    </article>
+    <PageNavigation headings={headings} />
+  </section>
 </BaseLayout>

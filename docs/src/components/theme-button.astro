@@ -1,41 +1,42 @@
 ---
 import { twMerge } from "tailwind-merge";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface Props {
-    class?: string;
-    id?: string;
+  class?: string;
+  id?: string;
 }
 
 const { class: className = "", id = "theme-button" } = Astro.props;
 ---
 
 <button
-    id={id}
-    class:list={twMerge("icon-button shrink-0", className)}
-    aria-label="Toggle theme"
-    title="Toggle theme"
+  id={id}
+  class:list={twMerge("icon-button shrink-0", className)}
+  aria-label="Toggle theme"
+  title="Toggle theme"
 >
-    <span class="i-heroicons-sun"></span>
+  <span class="i-heroicons-sun"></span>
 </button>
 
 <script is:inline define:vars={{ id }}>
-    const init = () => {
-        const $themeButton = document.getElementById(id);
+  const init = () => {
+    const $themeButton = document.getElementById(id);
 
-        const theme = localStorage.getItem("theme") ?? "light";
-        const icon = (theme) =>
-            theme === "dark" ? "i-heroicons-sun" : "i-heroicons-moon";
-        $themeButton.querySelector("span").className = icon(theme);
+    const theme = localStorage.getItem("theme") ?? "light";
+    const icon = (theme) =>
+      theme === "dark" ? "i-heroicons-sun" : "i-heroicons-moon";
+    $themeButton.querySelector("span").className = icon(theme);
 
-        $themeButton.addEventListener("click", () => {
-            document.documentElement.classList.toggle("dark");
-            const theme = document.documentElement.classList.contains("dark")
-                ? "dark"
-                : "light";
-            localStorage.setItem("theme", theme);
-            $themeButton.querySelector("span").className = icon(theme);
-        });
-    };
-    init();
-    document.addEventListener("astro:after-swap", init);
+    $themeButton.addEventListener("click", () => {
+      document.documentElement.classList.toggle("dark");
+      const theme = document.documentElement.classList.contains("dark")
+        ? "dark"
+        : "light";
+      localStorage.setItem("theme", theme);
+      $themeButton.querySelector("span").className = icon(theme);
+    });
+  };
+  init();
+  document.addEventListener("astro:after-swap", init);
 </script>

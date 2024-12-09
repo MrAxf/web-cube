@@ -1,30 +1,31 @@
 ---
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface Props {
-    size?: number;
-    disabledPointerEvents?: boolean;
-    speed?: number;
-    id?: string;
+  size?: number;
+  disabledPointerEvents?: boolean;
+  speed?: number;
+  id?: string;
 }
 
 const {
-    size = 3,
-    disabledPointerEvents = false,
-    speed = 500,
-    id = null,
+  size = 3,
+  disabledPointerEvents = false,
+  speed = 500,
+  id = null,
 } = Astro.props;
 ---
 
 <web-cube
-    id={id}
-    size={size}
-    disabled-pointer-events={disabledPointerEvents || null}
-    speed={speed}
-    class="w-full h-[75dvh] block"></web-cube>
+  id={id}
+  size={size}
+  disabled-pointer-events={disabledPointerEvents || null}
+  speed={speed}
+  class="block h-[75dvh] w-full"></web-cube>
 <script>
-    import { define } from "@web-cube/web-cube";
+  import { define } from "@web-cube/web-cube";
 
-    if (customElements.get("web-cube") === undefined) {
-        define();
-    }
+  if (customElements.get("web-cube") === undefined) {
+    define();
+  }
 </script>
 <slot />

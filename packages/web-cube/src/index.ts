@@ -12,7 +12,6 @@ import { WebCube } from "./web-cube.ts";
 export { WebCube };
 
 export type { FlatState } from "./state.ts";
-
 export * from "./utils.ts";
 
 /**
@@ -20,6 +19,6 @@ export * from "./utils.ts";
  *
  * @param tagName - The tag name to use for the custom element.
  */
-export function define(tagName: string = "web-cube"): void {
-    globalThis.customElements.define(tagName, WebCube);
+export function define(tagName = "web-cube"): void {
+  globalThis.customElements.define(tagName, WebCube);
 }
