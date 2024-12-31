@@ -2,8 +2,8 @@
   "name": "web-cube-root",
   "version": "1.0.0",
   "scripts": {
-    "dev": "npm run --workspace=@web-cube/web-cube dev",
-    "build": "npm run --workspace=@web-cube/web-cube build",
+    "dev": "pnpm --filter=@web-cube/web-cube dev",
+    "build": "pnpm --filter=@web-cube/web-cube build",
     "lint": "pnpm run lint:js+ts && pnpm run lint:format && pnpm run lint:types",
     "lint:js+ts": "eslint",
     "lint:format": "prettier --check .",
@@ -13,7 +13,7 @@
     "lint:fix:format": "prettier --write ."
   },
   "devDependencies": {
-    "eslint": "9.16.0",
+    "eslint": "9.17.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-config-airbnb-typescript": "18.0.0",
     "eslint-config-prettier": "9.1.0",
@@ -28,5 +28,6 @@
     "prettier": "3.4.2",
     "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-tailwindcss": "0.6.9"
-  }
+  },
+  "packageManager": "pnpm@9.15.2"
 }
