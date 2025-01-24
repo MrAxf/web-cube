@@ -1,32 +1,39 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+@plugin "@egoist/tailwindcss-icons";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-cube-bg: oklch(26.03% 0 0);
+  --color-cube-up: oklch(50.24% 0.1969 20.61);
+  --color-cube-down: oklch(66.9% 0.2203 37.72);
+  --color-cube-front: oklch(100% 0 0);
+  --color-cube-back: oklch(88.68% 0.1821 95.33);
+  --color-cube-left: oklch(40.24% 0.1765 261.24);
+  --color-cube-right: oklch(59.95% 0.1667 149.57);
+
+  --font-opensans: "Open Sans", sans-serif;
+}
 
 @layer base {
   :root {
-    --color-cube-bg: #242424;
-    --color-cube-up: #ba0c2f;
-    --color-cube-down: #fe5000;
-    --color-cube-front: #ffffff;
-    --color-cube-back: #ffd700;
-    --color-cube-left: #003da5;
-    --color-cube-right: #009a44;
-
-    --color-background: theme("colors.slate.100");
-    --color-text: theme("colors.slate.900");
+    --color-background: var(--color-slate-100);
+    --color-text: var(--colors-slate-900);
 
     --header-bg-opacity: 0;
     --header-border-opacity: 0;
   }
 
   .dark {
-    --color-background: theme("colors.slate.900");
-    --color-text: theme("colors.slate.100");
+    --color-background: var(--color-slate-900);
+    --color-text: var(--color-slate-100);
   }
 
   * {
     scrollbar-width: thin;
-    scrollbar-color: theme("colors.slate.500") transparent;
+    scrollbar-color: var(--color-slate-500) transparent;
   }
 
   html {
@@ -62,7 +69,7 @@
   }
 
   .icon-button {
-    @apply grid size-7 place-items-center opacity-70 transition-opacity hover:opacity-90 active:opacity-100 md:size-8 lg:size-9;
+    @apply grid size-7 cursor-pointer place-items-center opacity-70 transition-opacity hover:opacity-90 active:opacity-100 md:size-8 lg:size-9;
     & > span {
       @apply text-xl md:text-2xl lg:text-3xl;
     }

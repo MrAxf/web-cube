@@ -9,6 +9,7 @@ order: 2
 
 import Tabs from "@/components/tabs.astro";
 import TabItem from "@/components/tab-item.astro";
+import { Code } from "astro-expressive-code/components";
 
 You can install **Web Cube** using multiple options.
 
@@ -26,19 +27,19 @@ You can install **Web Cube** using **NPM** package manager.
   ]}
 >
   <TabItem tabKey="npm" containerClass="py-4">
-    ```bash npm install @web-cube/web-cube ```
+    <Code code="npm install @web-cube/web-cube" lang="bash" frame="terminal" />
   </TabItem>
   <TabItem tabKey="yarn" containerClass="py-4" hidden>
-    ```bash yarn add @web-cube/web-cube ```
+    <Code code="yarn add @web-cube/web-cube" lang="bash" frame="terminal" />
   </TabItem>
   <TabItem tabKey="pnpm" containerClass="py-4" hidden>
-    ```bash pnpm add @web-cube/web-cube ```
+    <Code code="pnpm add @web-cube/web-cube" lang="bash" frame="terminal" />
   </TabItem>
   <TabItem tabKey="deno" containerClass="py-4" hidden>
-    ```bash deno add npm:@web-cube/web-cube ```
+    <Code code="deno add npm:@web-cube/web-cube" lang="bash" frame="terminal" />
   </TabItem>
   <TabItem tabKey="bun" containerClass="py-4" hidden>
-    ```bash bun add @web-cube/web-cube ```
+    <Code code="bun add @web-cube/web-cube" lang="bash" frame="terminal" />
   </TabItem>
 </Tabs>
 
@@ -56,19 +57,27 @@ You can install **Web Cube** using **JSR** package manager.
   ]}
 >
   <TabItem tabKey="npm" containerClass="py-4">
-    ```bash npx jsr add @web-cube/web-cube ```
+    <Code code="npx jsr add @web-cube/web-cube" lang="bash" frame="terminal" />
   </TabItem>
   <TabItem tabKey="yarn" containerClass="py-4" hidden>
-    ```bash yarn dlx jsr add @web-cube/web-cube ```
+    <Code
+      code="yarn dlx jsr add @web-cube/web-cub"
+      lang="bash"
+      frame="terminal"
+    />
   </TabItem>
   <TabItem tabKey="pnpm" containerClass="py-4" hidden>
-    ```bash pnpm dlx jsr add @web-cube/web-cube ```
+    <Code
+      code="pnpm dlx jsr add @web-cube/web-cube"
+      lang="bash"
+      frame="terminal"
+    />
   </TabItem>
   <TabItem tabKey="deno" containerClass="py-4" hidden>
-    ```bash deno add jsr:@web-cube/web-cube ```
+    <Code code="deno add jsr:@web-cube/web-cube" lang="bash" frame="terminal" />
   </TabItem>
   <TabItem tabKey="bun" containerClass="py-4" hidden>
-    ```bash bunx jsr add @web-cube/web-cube ```
+    <Code code="bunx jsr add @web-cube/web-cube" lang="bash" frame="terminal" />
   </TabItem>
 </Tabs>
 

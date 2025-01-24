@@ -25,10 +25,10 @@ const path = Astro.url.pathname;
   id="side-navigation"
   class:list={[
     "fixed md:sticky",
-    "hidden flex-col items-start justify-start data-[open]:flex md:flex",
+    "data-open:flex hidden flex-col items-start justify-start md:flex",
     "left-0 top-14 md:top-16 lg:top-20",
     "h-[calc(100dvh-3.5rem)] w-full md:h-[calc(100dvh-4rem)] md:w-64 lg:h-[calc(100dvh-5rem)]",
-    "z-[2] shrink-0 border-r-0 border-slate-500 bg-[--color-background] p-4 md:border-r",
+    "bg-(--color-background) z-[2] shrink-0 border-r-0 border-slate-500 p-4 md:border-r",
   ]}
 >
   <nav class="grow overflow-y-auto">
@@ -44,7 +44,7 @@ const path = Astro.url.pathname;
                   <a
                     href={`/docs/${doc.data.path}`}
                     data-active={path.includes(doc.data.path) ? "true" : null}
-                    class="block rounded-lg px-2 py-0.5 opacity-70 transition-all hover:opacity-100 data-[active]:bg-[--color-cube-left] data-[active]:text-slate-100 data-[active]:opacity-100"
+                    class="data-active:text-slate-100 data-active:opacity-100 data-active:bg-cube-left block rounded-lg px-2 py-0.5 opacity-70 transition-all hover:opacity-100"
                   >
                     {doc.data.title}
                   </a>

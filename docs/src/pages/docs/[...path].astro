@@ -31,7 +31,7 @@ const { Content, headings } = await render(doc);
 <BaseLayout title={doc.data.title} mainClass="gap-12 flex flex-col py-0">
   <section class="flex justify-between gap-4">
     <SideNavigation />
-    <article class="text-content-sm mx-auto w-full grow overflow-x-hidden py-8">
+    <article class="text-content-sm mx-auto w-full grow py-8">
       <h1>{doc.data.title}</h1>
       <Content />
       <div
@@ -41,7 +41,7 @@ const { Content, headings } = await render(doc);
           prevDoc && (
             <a
               href={`/docs/${prevDoc.data.path}`}
-              class="no-prose flex flex-1 items-center justify-start gap-4 rounded-lg border border-current px-4 py-2 no-underline opacity-70 shadow-sm transition-all hover:opacity-100"
+              class="no-prose box-content flex flex-1 items-center justify-start gap-4 rounded-lg border border-current px-4 py-2 no-underline opacity-70 shadow-sm transition-all hover:opacity-100"
             >
               <span class="i-heroicons-arrow-left" />
               <span>{prevDoc.data.title}</span>
@@ -52,7 +52,7 @@ const { Content, headings } = await render(doc);
           nextDoc && (
             <a
               href={`/docs/${nextDoc.data.path}`}
-              class="no-prose flex flex-1 items-center justify-start gap-4 rounded-lg border border-current px-4 py-2 no-underline opacity-70 shadow-sm transition-all hover:opacity-100"
+              class="no-prose box-content flex flex-1 items-center justify-start gap-4 rounded-lg border border-current px-4 py-2 no-underline opacity-70 shadow-sm transition-all hover:opacity-100"
             >
               <span>{nextDoc.data.title}</span>
               <span class="i-heroicons-arrow-right" />

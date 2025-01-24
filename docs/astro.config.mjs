@@ -4,17 +4,13 @@ import { dirname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import mdx from "@astrojs/mdx";
-import tailwind from "@astrojs/tailwind";
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import expressiveCode from "astro-expressive-code";
 
 // https://astro.build/config
 export default defineConfig({
   integrations: [
-    tailwind({
-      nesting: true,
-      applyBaseStyles: false,
-    }),
     expressiveCode({
       themes: ["dracula"],
     }),
@@ -37,4 +33,7 @@ export default defineConfig({
       },
     },
   ],
+  vite: {
+    plugins: [tailwindcss()],
+  },
 });

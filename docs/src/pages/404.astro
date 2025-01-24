@@ -1,0 +1,62 @@
+---
+import WebCube from "@/components/web-cube.astro";
+import BaseLayout from "@/layouts/base-layout.astro";
+---
+
+<BaseLayout mainClass="h-screen w-full" showHeader={false}>
+  <WebCube size={3} id="404" />
+</BaseLayout>
+
+<script>
+  import { WebCube, Face, createBaseState } from "@web-cube/web-cube";
+  const $cube = document.getElementById("404") as WebCube;
+  const state = createBaseState(3);
+  state[Face.Up] = [
+    [Face.Down, Face.Down, Face.Up],
+    [Face.Up, Face.Down, Face.Up],
+    [Face.Down, Face.Down, Face.Down],
+  ];
+  state[Face.Left] = [
+    [Face.Right, Face.Right, Face.Right],
+    [Face.Right, Face.Left, Face.Right],
+    [Face.Right, Face.Right, Face.Right],
+  ];
+  state[Face.Up] = [
+    [Face.Down, Face.Down, Face.Up],
+    [Face.Up, Face.Down, Face.Up],
+    [Face.Down, Face.Down, Face.Down],
+  ];
+
+  $cube.setState({
+    [Face.Up]: [
+      [Face.Up, Face.Up, Face.Front],
+      [Face.Front, Face.Up, Face.Front],
+      [Face.Up, Face.Up, Face.Up],
+    ],
+    [Face.Left]: [
+      [Face.Left, Face.Left, Face.Left],
+      [Face.Left, Face.Front, Face.Left],
+      [Face.Left, Face.Left, Face.Left],
+    ],
+    [Face.Front]: [
+      [Face.Back, Face.Back, Face.Front],
+      [Face.Front, Face.Back, Face.Front],
+      [Face.Back, Face.Back, Face.Back],
+    ],
+    [Face.Back]: [
+      [Face.Back, Face.Back, Face.Front],
+      [Face.Front, Face.Back, Face.Front],
+      [Face.Back, Face.Back, Face.Back],
+    ],
+    [Face.Right]: [
+      [Face.Right, Face.Right, Face.Right],
+      [Face.Right, Face.Front, Face.Right],
+      [Face.Right, Face.Right, Face.Right],
+    ],
+    [Face.Down]: [
+      [Face.Down, Face.Down, Face.Front],
+      [Face.Front, Face.Down, Face.Front],
+      [Face.Down, Face.Down, Face.Down],
+    ],
+  });
+</script>
