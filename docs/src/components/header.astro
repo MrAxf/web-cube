@@ -7,11 +7,12 @@ const isDocsPage = Astro.url.pathname.startsWith("/docs");
 
 <header
   id="main-header"
-  class="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-slate-500 bg-slate-100 px-6 backdrop-blur-xl transition-colors md:h-16 md:px-12 lg:h-20 lg:px-16 dark:bg-slate-900"
+  class="sticky top-0 z-10 border-b border-slate-500 bg-slate-100/70 px-6 backdrop-blur-xl transition-colors md:px-12 lg:px-16 dark:bg-slate-900/70"
   style="
     --tw-bg-opacity:
     var(--header-bg-opacity); --tw-border-opacity: var(--header-border-opacity);"
 >
+<nav class="h-14 lg:h-20 md:h-16 justify-between container mx-auto flex items-center">
   <a href="/" class="flex shrink-0 items-center gap-4">
     <figure>
       <img
@@ -50,6 +51,7 @@ const isDocsPage = Astro.url.pathname.startsWith("/docs");
       )
     }
   </div>
+</nav>
 </header>
 
 <script>

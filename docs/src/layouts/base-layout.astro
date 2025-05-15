@@ -30,14 +30,13 @@ const { title, mainClass = "", showHeader = true } = Astro.props;
       content="Web Cube - Create and customize your rubik's cube."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/og.avif" />
+    <meta property="og:image" content={`${Astro.url}/og.avif`} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:url" content={Astro.url} />
     <meta
       property="og:description"
-      content="Web Cube is a web component that allows you to create
-            and customize your own rubik's cube."
+      content="Web Cube is a web component that allows you to create and customize your own rubik's cube."
     />
     <ThemeScript transition:persist />
   </head>
@@ -46,7 +45,7 @@ const { title, mainClass = "", showHeader = true } = Astro.props;
     <main
       class:list={twMerge(
         "container mx-auto grow px-4 py-8 md:px-6 lg:px-8",
-        mainClass,
+        mainClass
       )}
     >
       <slot />

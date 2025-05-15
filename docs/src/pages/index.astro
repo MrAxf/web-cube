@@ -11,7 +11,7 @@ import BaseLayout from "@/layouts/base-layout.astro";
     class="text-content mx-auto my-[5dvh] text-center md:my-[7.5dvh] lg:my-[10dvh]"
   >
     <h1 class="font-normal">
-      Create and customize your <strong>rubik's cube.</strong>
+      <span class="text-cube-up dark:brightness-125">Create</span> and <span class="text-cube-left dark:brightness-125">customize</span> your <span class="text-cube-right dark:brightness-125"><strong>rubik's cube.</strong></span>
     </h1>
     <p>
       <strong>Web Cube</strong> is a web component that allows you to create and
@@ -38,6 +38,32 @@ import BaseLayout from "@/layouts/base-layout.astro";
     <article class="overflow-hidden rounded-lg bg-slate-300 dark:bg-slate-700">
       <WebCube size={3} />
     </article>
+  </section>
+
+  <section class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <article class="text-content rounded-lg flex items-stretch gap-8 overflow-hidden border border-slate-300 dark:border-slate-700">
+      <div class="bg-slate-300 dark:bg-slate-700 grid place-items-center">
+        <span class="i-simple-icons-npm size-16 mx-16"></span>
+      </div>
+      <div class="text-content p-4">
+        <h3 class="!mt-0">Zero dependencies</h3>
+        <p>Web Cube has zero npm dependencies and is built with web standards.</p>
+      </div>
+    </article>
+    <article class="text-content rounded-lg flex items-stretch gap-8 overflow-hidden border border-slate-300 dark:border-slate-700">
+      <div class="bg-slate-300 dark:bg-slate-700 grid place-items-center relative">
+        <div class="size-16 mx-16">
+        </div>
+        <span class="i-simple-icons-react size-16 absolute top-8 left-8 bg-cube-left brightness-125"></span>
+        <span class="i-simple-icons-angular size-16 absolute top-16 left-16 bg-cube-up"></span>
+        <span class="i-simple-icons-vuedotjs size-16 absolute top-24 left-24 bg-cube-right"></span>
+      </div>
+      <div class="text-content p-4">
+        <h3 class="!mt-0">Works with any framework</h3>
+        <p>
+          Web Cube is a web component that can be used with any framework or without it.
+        </p>
+      </div>
   </section>
   <Footer />
 </BaseLayout>
