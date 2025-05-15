@@ -116,7 +116,18 @@ export class WebCube extends HTMLElement {
 
   #observableCtx: ObservableContext | null = null;
 
-  static observedAttributes = ["size", "speed", "disabled-pointer-events"];
+  static observedAttributes = [
+    "size",
+    "speed",
+    "disabled-pointer-events",
+    "color-background",
+    "color-front",
+    "color-right",
+    "color-back",
+    "color-left",
+    "color-up",
+    "color-down"
+  ];
 
   /**
    * Creates a new `WebCube` instance.
@@ -165,8 +176,7 @@ export class WebCube extends HTMLElement {
         this.#diposeCube();
         this.#createCube();
       }
-    }
-    if (name === "speed") {
+    } else if (name === "speed") {
       try {
         this.#speed = parseInt(newValue, 10);
       } catch (error) {
@@ -179,8 +189,7 @@ export class WebCube extends HTMLElement {
         this.#diposeCube();
         this.#createCube();
       }
-    }
-    if (name === "disabled-pointer-events") {
+    } else if (name === "disabled-pointer-events") {
       this.#disabledPointerEvents = newValue === null || newValue !== "false";
       if (this.#$viewport) {
         if (this.#disabledPointerEvents) {
@@ -189,6 +198,20 @@ export class WebCube extends HTMLElement {
           this.#createPointerEvents();
         }
       }
+    } else if (name === "color-background") {
+      this.style.setProperty("--color-background", newValue);
+    } else if (name === "color-front") {
+      this.style.setProperty("--color-front", newValue);
+    } else if (name === "color-right") {
+      this.style.setProperty("--color-right", newValue);
+    } else if (name === "color-back") {
+      this.style.setProperty("--color-back", newValue);
+    } else if (name === "color-left") {
+      this.style.setProperty("--color-left", newValue);
+    } else if (name === "color-up") {
+      this.style.setProperty("--color-up", newValue);
+    } else if (name === "color-down") {
+      this.style.setProperty("--color-down", newValue);
     }
   }
 
