@@ -1,5 +1,9 @@
 import { FlatState } from "./state.ts";
 
+export type RotationTrigger =
+  | "pointer-event"
+  | "function-call"
+
 export type RotationEventDetail =
   | {
       type: "cube";
@@ -9,6 +13,7 @@ export type RotationEventDetail =
       toAngle: number;
       backwards: boolean;
       speed: number;
+      triggeredBy: RotationTrigger;
     }
   | {
       type: "layer";
@@ -19,6 +24,7 @@ export type RotationEventDetail =
       toAngle: number;
       backwards: boolean;
       speed: number;
+      triggeredBy: RotationTrigger;
     };
 
 /**

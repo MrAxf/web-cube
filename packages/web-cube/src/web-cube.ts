@@ -8,6 +8,7 @@ import {
   beforeLayerRotate,
   beforeRotate,
   RotationEventDetail,
+  RotationTrigger,
   stateChanged,
 } from "./cube-events.ts";
 import { createObservableContext, ObservableContext } from "./observable.ts";
@@ -350,6 +351,7 @@ export class WebCube extends HTMLElement {
               angle: Math.abs(targetAngle) as 90 | 180 | 270 | 360,
               backwards: targetAngle < 0,
               from: currentAngle,
+              triggeredBy: "pointer-event"
             })
             .then(() => {
               self.#$mainCube!.style.removeProperty(`--cube-rotation-${axis}`);
@@ -419,6 +421,7 @@ export class WebCube extends HTMLElement {
               angle: Math.abs(targetAngle) as 90 | 180 | 270 | 360,
               backwards: targetAngle < 0,
               from: currentAngle,
+              triggeredBy: "pointer-event"
             })
             .then(() => {
               self.#resetCubesRotate(axis!, layer);
@@ -486,6 +489,7 @@ export class WebCube extends HTMLElement {
               angle: Math.abs(targetAngle) as 90 | 180 | 270 | 360,
               backwards: targetAngle < 0,
               from: currentAngle,
+              triggeredBy: "pointer-event"
             })
             .then(() => {
               self.#resetCubesRotate(axis!, layer);
@@ -545,6 +549,7 @@ export class WebCube extends HTMLElement {
     backwards = false,
     from = 0,
     speed = this.#speed,
+    triggeredBy
   }: {
     axis: "x" | "y" | "z";
     layer: number;
@@ -552,6 +557,7 @@ export class WebCube extends HTMLElement {
     backwards?: boolean;
     from?: number;
     speed?: number;
+    triggeredBy: RotationTrigger;
   }) {
     let rotation: ((state: State, layer: number) => void) | null = null;
 
@@ -584,6 +590,7 @@ export class WebCube extends HTMLElement {
       toAngle: realAngle,
       backwards,
       speed,
+      triggeredBy,
     };
 
     this.dispatchEvent(beforeRotate(evDetail));
@@ -613,12 +620,14 @@ export class WebCube extends HTMLElement {
     backwards = false,
     from = 0,
     speed = this.#speed,
+    triggeredBy
   }: {
     axis: "x" | "y" | "z";
     angle: 0 | 90 | 180 | 270 | 360;
     backwards?: boolean;
     from?: number;
     speed?: number;
+    triggeredBy: RotationTrigger;
   }) {
     let rotation: ((state: State) => void) | null = null;
 
@@ -650,6 +659,7 @@ export class WebCube extends HTMLElement {
       toAngle: realAngle,
       backwards,
       speed,
+      triggeredBy,
     };
 
     this.dispatchEvent(beforeRotate(evDetail));
@@ -739,6 +749,7 @@ export class WebCube extends HTMLElement {
         angle,
         backwards,
         speed,
+        triggeredBy: "function-call"
       }),
     );
   }
@@ -779,6 +790,7 @@ export class WebCube extends HTMLElement {
         angle,
         backwards,
         speed,
+        triggeredBy: "function-call"
       }),
     );
   }
