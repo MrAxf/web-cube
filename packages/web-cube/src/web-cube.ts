@@ -802,4 +802,12 @@ export class WebCube extends HTMLElement {
   get size(): number {
     return this.#size;
   }
+
+  /**
+   * Indicates whether the cube is currently rotating.
+   * @type {boolean}
+   */
+  get isRotating(): boolean {
+    return this.#isRotating;
+  }
 }
