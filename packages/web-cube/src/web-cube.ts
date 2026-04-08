@@ -184,7 +184,7 @@ export class WebCube extends HTMLElement {
         this.#speed = 500;
       }
       if (this.#speed <= 0) {
-        this.#size = 500;
+        this.#speed = 500;
       }
       if (this.#$viewport) {
         this.#diposeCube();
