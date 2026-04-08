@@ -117,6 +117,8 @@ export class WebCube extends HTMLElement {
 
   #observableCtx: ObservableContext | null = null;
 
+  #animationAbortController: AbortController | null = null;
+
   static observedAttributes = [
     "size",
     "speed",
@@ -267,6 +269,8 @@ export class WebCube extends HTMLElement {
   }
 
   #diposeCube() {
+    this.#cancelAnimation();
+
     if (this.#resizeObserver) {
       this.#resizeObserver.disconnect();
       this.#resizeObserver = null;
@@ -274,6 +278,23 @@ export class WebCube extends HTMLElement {
 
     this.#$viewport?.remove();
     this.#$viewport = null;
+  }
+
+  #createAnimationSignal(): AbortSignal {
+    this.#cancelAnimation();
+    this.#animationAbortController = new AbortController();
+    return this.#animationAbortController.signal;
+  }
+
+  #clearAnimationSignal(signal: AbortSignal) {
+    if (this.#animationAbortController?.signal === signal) {
+      this.#animationAbortController = null;
+    }
+  }
+
+  #cancelAnimation() {
+    this.#animationAbortController?.abort();
+    this.#animationAbortController = null;
   }
 
   #createPointerEvents() {
@@ -304,6 +325,15 @@ export class WebCube extends HTMLElement {
 
         let axis: "x" | "y" | "z" | null = null;
         let currentAngle = 0;
+        let spinAngleRafId = 0;
+
+        const scheduleSpinAngleUpdate = () => {
+          if (spinAngleRafId) return;
+          spinAngleRafId = globalThis.requestAnimationFrame(() => {
+            spinAngleRafId = 0;
+            self.style.setProperty("--spin-angle", `${currentAngle}deg`);
+          });
+        };
 
         // eslint-disable-next-line no-inner-declarations, @typescript-eslint/no-shadow
         function handlePointerMove(ev: PointerEvent) {
@@ -333,15 +363,18 @@ export class WebCube extends HTMLElement {
               ),
               360,
             );
-            globalThis.requestAnimationFrame(() => {
-              self.style.setProperty("--spin-angle", `${currentAngle}deg`);
-            });
+            scheduleSpinAngleUpdate();
           }
         }
 
         // eslint-disable-next-line no-inner-declarations, @typescript-eslint/no-shadow
         function handlePointerUp(ev: PointerEvent) {
           ev.preventDefault();
+
+          if (spinAngleRafId) {
+            globalThis.cancelAnimationFrame(spinAngleRafId);
+            spinAngleRafId = 0;
+          }
 
           const targetAngle = Math.round(currentAngle / 90) * 90;
 
@@ -369,6 +402,15 @@ export class WebCube extends HTMLElement {
         let axis: "x" | "y" | "z" | null = null;
         let layer = 0;
         let currentAngle = 0;
+        let spinAngleRafId = 0;
+
+        const scheduleSpinAngleUpdate = () => {
+          if (spinAngleRafId) return;
+          spinAngleRafId = globalThis.requestAnimationFrame(() => {
+            spinAngleRafId = 0;
+            self.style.setProperty("--spin-angle", `${currentAngle}deg`);
+          });
+        };
 
         // eslint-disable-next-line no-inner-declarations, @typescript-eslint/no-shadow
         function handlePointerMove(ev: PointerEvent) {
@@ -402,15 +444,18 @@ export class WebCube extends HTMLElement {
               ),
               360,
             );
-            globalThis.requestAnimationFrame(() => {
-              self.style.setProperty("--spin-angle", `${currentAngle}deg`);
-            });
+            scheduleSpinAngleUpdate();
           }
         }
 
         // eslint-disable-next-line no-inner-declarations, @typescript-eslint/no-shadow
         function handlePointerUp(ev: PointerEvent) {
           ev.preventDefault();
+
+          if (spinAngleRafId) {
+            globalThis.cancelAnimationFrame(spinAngleRafId);
+            spinAngleRafId = 0;
+          }
 
           const targetAngle = Math.round(currentAngle / 90) * 90;
 
@@ -439,6 +484,15 @@ export class WebCube extends HTMLElement {
         let axis: "x" | "y" | "z" | null = null;
         let layer = 0;
         let currentAngle = 0;
+        let spinAngleRafId = 0;
+
+        const scheduleSpinAngleUpdate = () => {
+          if (spinAngleRafId) return;
+          spinAngleRafId = globalThis.requestAnimationFrame(() => {
+            spinAngleRafId = 0;
+            self.style.setProperty("--spin-angle", `${currentAngle}deg`);
+          });
+        };
 
         // eslint-disable-next-line no-inner-declarations, @typescript-eslint/no-shadow
         function handlePointerMove(ev: PointerEvent) {
@@ -470,15 +524,18 @@ export class WebCube extends HTMLElement {
               Math.max(axis === "z" ? rotatedX / 3 : -rotatedY / 3, -360),
               360,
             );
-            globalThis.requestAnimationFrame(() => {
-              self.style.setProperty("--spin-angle", `${currentAngle}deg`);
-            });
+            scheduleSpinAngleUpdate();
           }
         }
 
         // eslint-disable-next-line no-inner-declarations, @typescript-eslint/no-shadow
         function handlePointerUp(ev: PointerEvent) {
           ev.preventDefault();
+
+          if (spinAngleRafId) {
+            globalThis.cancelAnimationFrame(spinAngleRafId);
+            spinAngleRafId = 0;
+          }
 
           const targetAngle = Math.round(currentAngle / 90) * 90;
 
@@ -596,6 +653,8 @@ export class WebCube extends HTMLElement {
     this.dispatchEvent(beforeRotate(evDetail));
     this.dispatchEvent(beforeLayerRotate(evDetail));
 
+    const animationSignal = this.#createAnimationSignal();
+
     this.#setCubesToRotate(axis, layer);
     await animateDegCssVar(
       this.style,
@@ -603,7 +662,15 @@ export class WebCube extends HTMLElement {
       from,
       realAngle,
       speed * (Math.abs(realAngle - from) / 90),
+      { signal: animationSignal },
     );
+
+    this.#clearAnimationSignal(animationSignal);
+
+    if (animationSignal.aborted) {
+      return;
+    }
+
     this.#resetCubesRotate(axis, layer);
     this.style.setProperty("--spin-angle", "0deg");
     if (this.#observableCtx!.tick() > 0) {
@@ -665,6 +732,8 @@ export class WebCube extends HTMLElement {
     this.dispatchEvent(beforeRotate(evDetail));
     this.dispatchEvent(beforeCubeRotate(evDetail));
 
+    const animationSignal = this.#createAnimationSignal();
+
     this.#$mainCube!.style.setProperty(
       `--cube-rotation-${axis}`,
       "var(--spin-angle)",
@@ -676,7 +745,15 @@ export class WebCube extends HTMLElement {
       from,
       realAngle,
       speed * (Math.abs(realAngle - from) / 90),
+      { signal: animationSignal },
     );
+
+    this.#clearAnimationSignal(animationSignal);
+
+    if (animationSignal.aborted) {
+      return;
+    }
+
     this.#$mainCube!.style.removeProperty(`--cube-rotation-${axis}`);
     this.style.setProperty("--spin-angle", "0deg");
     if (this.#observableCtx!.tick() > 0) {
