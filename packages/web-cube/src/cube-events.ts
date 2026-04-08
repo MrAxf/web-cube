@@ -57,4 +57,9 @@ export const beforeLayerRotate = (detail: RotationEventDetail) =>
 export const afterLayerRotate = (detail: RotationEventDetail) =>
   createRotationEvent("web-cube:after-layer-rotate", detail);
 
-export const stateChanged = () => new CustomEvent("web-cube:state-changed");
+export const stateChanged = (state: FlatState): StateChangeEvent =>
+  new CustomEvent("web-cube:state-changed", {
+    detail: {
+      state,
+    },
+  });

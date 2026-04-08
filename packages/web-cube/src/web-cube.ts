@@ -188,10 +188,6 @@ export class WebCube extends HTMLElement {
       if (this.#speed <= 0) {
         this.#speed = 500;
       }
-      if (this.#$viewport) {
-        this.#diposeCube();
-        this.#createCube();
-      }
     } else if (name === "disabled-pointer-events") {
       this.#disabledPointerEvents = newValue === null || newValue !== "false";
       if (this.#$viewport) {
@@ -225,7 +221,7 @@ export class WebCube extends HTMLElement {
     this.#state = createState(this.#observableCtx, this.#size);
 
     if (this.#observableCtx.tick() > 0) {
-      this.dispatchEvent(stateChanged());
+      this.dispatchEvent(stateChanged(getCurrentState(this.#state)));
     }
 
     this.#$viewport = document.createElement("div");
@@ -271,6 +267,10 @@ export class WebCube extends HTMLElement {
   #diposeCube() {
     this.#cancelAnimation();
 
+    if (this.#$viewport && this.#viewportPointerEvent) {
+      this.#diposePointerEvents();
+    }
+
     if (this.#resizeObserver) {
       this.#resizeObserver.disconnect();
       this.#resizeObserver = null;
@@ -278,6 +278,11 @@ export class WebCube extends HTMLElement {
 
     this.#$viewport?.remove();
     this.#$viewport = null;
+    this.#$mainCube = null;
+    this.#cubeGroups = null;
+    this.#state = null;
+    this.#observableCtx = null;
+    this.#isRotating = false;
   }
 
   #createAnimationSignal(): AbortSignal {
@@ -635,7 +640,6 @@ export class WebCube extends HTMLElement {
         rotation = posibleRotation as any;
       }
 
-      rotation!(this.#state!, layer);
     }
 
     const evDetail: RotationEventDetail = {
@@ -653,6 +657,10 @@ export class WebCube extends HTMLElement {
     this.dispatchEvent(beforeRotate(evDetail));
     this.dispatchEvent(beforeLayerRotate(evDetail));
 
+    if (rotation) {
+      rotation(this.#state!, layer);
+    }
+
     const animationSignal = this.#createAnimationSignal();
 
     this.#setCubesToRotate(axis, layer);
@@ -668,13 +676,15 @@ export class WebCube extends HTMLElement {
     this.#clearAnimationSignal(animationSignal);
 
     if (animationSignal.aborted) {
+      this.#resetCubesRotate(axis, layer);
+      this.style.setProperty("--spin-angle", "0deg");
       return;
     }
 
     this.#resetCubesRotate(axis, layer);
     this.style.setProperty("--spin-angle", "0deg");
     if (this.#observableCtx!.tick() > 0) {
-      this.dispatchEvent(stateChanged());
+      this.dispatchEvent(stateChanged(getCurrentState(this.#state!)));
     }
 
     this.dispatchEvent(afterRotate(evDetail));
@@ -715,7 +725,6 @@ export class WebCube extends HTMLElement {
         rotation = posibleRotation as any;
       }
 
-      rotation!(this.#state!);
     }
 
     const evDetail: RotationEventDetail = {
@@ -731,6 +740,10 @@ export class WebCube extends HTMLElement {
 
     this.dispatchEvent(beforeRotate(evDetail));
     this.dispatchEvent(beforeCubeRotate(evDetail));
+
+    if (rotation) {
+      rotation(this.#state!);
+    }
 
     const animationSignal = this.#createAnimationSignal();
 
@@ -751,13 +764,15 @@ export class WebCube extends HTMLElement {
     this.#clearAnimationSignal(animationSignal);
 
     if (animationSignal.aborted) {
+      this.#$mainCube!.style.removeProperty(`--cube-rotation-${axis}`);
+      this.style.setProperty("--spin-angle", "0deg");
       return;
     }
 
     this.#$mainCube!.style.removeProperty(`--cube-rotation-${axis}`);
     this.style.setProperty("--spin-angle", "0deg");
     if (this.#observableCtx!.tick() > 0) {
-      this.dispatchEvent(stateChanged());
+      this.dispatchEvent(stateChanged(getCurrentState(this.#state!)));
     }
 
     this.dispatchEvent(afterRotate(evDetail));
@@ -784,7 +799,7 @@ export class WebCube extends HTMLElement {
   setState(newState: FlatState) {
     setState(this.#state!, newState);
     if (this.#observableCtx!.tick() > 0) {
-      this.dispatchEvent(stateChanged());
+      this.dispatchEvent(stateChanged(getCurrentState(this.#state!)));
     }
   }
 
