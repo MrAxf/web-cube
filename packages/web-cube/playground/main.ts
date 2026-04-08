@@ -3,47 +3,405 @@ import "./styles.css";
 
 define();
 
-const $webCube = document.querySelector("web-cube") as WebCube;
+type Axis = "x" | "y" | "z";
+type Angle = 90 | 180 | 270 | 360;
+type FaceName = "background" | "front" | "right" | "back" | "left" | "up" | "down";
 
+type PaletteVariant = {
+  background: string;
+  front: string;
+  right: string;
+  back: string;
+  left: string;
+  up: string;
+  down: string;
+};
+
+type PaletteSet = {
+  light: PaletteVariant;
+  dark: PaletteVariant;
+};
+
+const STORAGE_KEYS = {
+  theme: "web-cube-playground-theme",
+  size: "web-cube-playground-size",
+  speed: "web-cube-playground-speed",
+  palette: "web-cube-playground-palette",
+};
+
+const PALETTES: Record<string, PaletteSet> = {
+  classic: {
+    light: {
+      background: "#242424",
+      front: "#ffffff",
+      right: "#009A44",
+      back: "#FFD700",
+      left: "#003DA5",
+      up: "#BA0C2F",
+      down: "#FE5000",
+    },
+    dark: {
+      background: "#0f1317",
+      front: "#f5f5f5",
+      right: "#2de27a",
+      back: "#ffd54d",
+      left: "#4d84ff",
+      up: "#ff5f74",
+      down: "#ff9f58",
+    },
+  },
+  pastel: {
+    light: {
+      background: "#2f343d",
+      front: "#fff2d9",
+      right: "#b7f3cf",
+      back: "#ffe3b0",
+      left: "#c6d7ff",
+      up: "#ffc3ce",
+      down: "#ffd7bc",
+    },
+    dark: {
+      background: "#10161d",
+      front: "#fef2dd",
+      right: "#9df8c4",
+      back: "#ffd08a",
+      left: "#a9c2ff",
+      up: "#ffaab9",
+      down: "#ffc299",
+    },
+  },
+  signal: {
+    light: {
+      background: "#111111",
+      front: "#f8f8f8",
+      right: "#09ef80",
+      back: "#ffe100",
+      left: "#2b6dff",
+      up: "#ff3855",
+      down: "#ff8f1f",
+    },
+    dark: {
+      background: "#06090e",
+      front: "#f7fbff",
+      right: "#25ff9f",
+      back: "#fff06b",
+      left: "#5f90ff",
+      up: "#ff6a80",
+      down: "#ffad53",
+    },
+  },
+};
+
+const COLOR_FACES: FaceName[] = [
+  "background",
+  "front",
+  "right",
+  "back",
+  "left",
+  "up",
+  "down",
+];
+
+const $html = document.documentElement;
 const $controls = document.getElementById("controls") as HTMLDivElement;
-const $$layerBtns: NodeListOf<HTMLButtonElement> = $controls.querySelectorAll(
-  "button[data-layer-btn]",
-);
+const $webCube = document.getElementById("cube") as WebCube;
+const $themeToggle = document.getElementById("theme-toggle") as HTMLButtonElement;
+const $sizeInput = document.getElementById("size-input") as HTMLInputElement;
+const $sizeValue = document.getElementById("size-value") as HTMLOutputElement;
+const $speedInput = document.getElementById("speed-input") as HTMLInputElement;
+const $speedValue = document.getElementById("speed-value") as HTMLOutputElement;
+const $paletteSelect = document.getElementById("palette-select") as HTMLSelectElement;
+const $resetBtn = document.getElementById("reset-btn") as HTMLButtonElement;
+const $layerAxis = document.getElementById("layer-axis") as HTMLSelectElement;
+const $layerIndex = document.getElementById("layer-index") as HTMLSelectElement;
+const $layerAngle = document.getElementById("layer-angle") as HTMLSelectElement;
+const $layerBackwards = document.getElementById("layer-backwards") as HTMLInputElement;
+const $rotateLayerBtn = document.getElementById("rotate-layer-btn") as HTMLButtonElement;
+const $advancedLayerControls = document.getElementById("advanced-layer-controls") as HTMLDivElement;
 
-function layerButtonClickHandler(e: MouseEvent) {
-  const target = e.target as HTMLElement;
-  const axis = target.dataset.axis! as "x" | "y" | "z";
-  const layer = parseInt(target.dataset.layer!);
-  const angle = parseInt(target.dataset.angle!);
+let initialState = $webCube.getState();
 
-  $webCube.rotateLayer({
-    axis,
-    layer,
-    angle: Math.abs(angle) as any,
-    backwards: angle < 0,
-    speed: 100,
+function getCurrentTheme(): "light" | "dark" {
+  return $html.dataset.theme === "dark" ? "dark" : "light";
+}
+
+function getSavedPalette(): string {
+  const saved = localStorage.getItem(STORAGE_KEYS.palette);
+  if (saved && Object.hasOwn(PALETTES, saved)) {
+    return saved;
+  }
+  return "classic";
+}
+
+function updateControlLock() {
+  const isBusy = $webCube.isRotating;
+  const $$buttons = $controls.querySelectorAll("button");
+  $$buttons.forEach(($button) => {
+    if ($button.id === "theme-toggle") {
+      return;
+    }
+    $button.disabled = isBusy;
   });
 }
 
-$$layerBtns.forEach(($btn) => {
-  $btn.addEventListener("click", layerButtonClickHandler);
-});
+async function runRotationTask(action: () => Promise<void>) {
+  if ($webCube.isRotating) {
+    return;
+  }
+  updateControlLock();
+  try {
+    await action();
+  } finally {
+    updateControlLock();
+  }
+}
 
-const $$cubeBtns: NodeListOf<HTMLButtonElement> = $controls.querySelectorAll(
-  "button[data-cube-btn]",
-);
+function setTheme(theme: "light" | "dark") {
+  $html.dataset.theme = theme;
+  $themeToggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+  $themeToggle.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+  localStorage.setItem(STORAGE_KEYS.theme, theme);
+}
 
-function cubeButtonClickHandler(e: MouseEvent) {
-  const target = e.target as HTMLElement;
-  const axis = target.dataset.axis! as "x" | "y" | "z";
-  const angle = parseInt(target.dataset.angle!);
-  $webCube.rotateCube({
-    axis,
-    angle: Math.abs(angle) as any,
-    backwards: angle < 0,
+function setCubeColor(face: FaceName, color: string) {
+  $webCube.setAttribute(`color-${face}`, color);
+  const $input = document.getElementById(`color-${face}`) as HTMLInputElement | null;
+  if ($input && $input.value.toLowerCase() !== color.toLowerCase()) {
+    $input.value = color;
+  }
+}
+
+function applyPalette(name: string) {
+  if (!Object.hasOwn(PALETTES, name)) {
+    return;
+  }
+  const currentTheme = getCurrentTheme();
+  const palette = PALETTES[name][currentTheme];
+  COLOR_FACES.forEach((face) => {
+    setCubeColor(face, palette[face]);
+  });
+  $paletteSelect.value = name;
+  localStorage.setItem(STORAGE_KEYS.palette, name);
+}
+
+function setPaletteCustom() {
+  $paletteSelect.value = "custom";
+  localStorage.setItem(STORAGE_KEYS.palette, "custom");
+}
+
+function refreshLayerOptions() {
+  const size = Number.parseInt($sizeInput.value, 10);
+  const selectedLayer = Number.parseInt($layerIndex.value || "0", 10);
+
+  $layerIndex.innerHTML = "";
+  for (let layer = 0; layer < size; layer += 1) {
+    const $option = document.createElement("option");
+    $option.value = String(layer);
+    $option.textContent = `Layer ${layer}`;
+    $layerIndex.appendChild($option);
+  }
+
+  const nextLayer = Number.isNaN(selectedLayer)
+    ? 0
+    : Math.min(selectedLayer, Math.max(0, size - 1));
+  $layerIndex.value = String(nextLayer);
+}
+
+function createAdvancedLayerButton(axis: Axis, layer: number, angle: number): HTMLButtonElement {
+  const $button = document.createElement("button");
+  $button.type = "button";
+  $button.dataset.layerBtn = "";
+  $button.dataset.axis = axis;
+  $button.dataset.layer = String(layer);
+  $button.dataset.angle = String(angle);
+  $button.textContent = `${axis.toUpperCase()} L${layer} ${angle > 0 ? "+" : ""}${angle}`;
+  return $button;
+}
+
+function renderAdvancedLayerControls() {
+  const size = Number.parseInt($sizeInput.value, 10);
+  $advancedLayerControls.innerHTML = "";
+
+  (["x", "y", "z"] as Axis[]).forEach((axis) => {
+    const $group = document.createElement("section");
+    $group.className = "advanced-axis-group";
+    const $title = document.createElement("strong");
+    $title.textContent = `Axis ${axis.toUpperCase()}`;
+    const $grid = document.createElement("div");
+    $grid.className = "button-grid";
+
+    for (let layer = 0; layer < size; layer += 1) {
+      [90, -90, 180, -180].forEach((angle) => {
+        $grid.appendChild(createAdvancedLayerButton(axis, layer, angle));
+      });
+    }
+
+    $group.appendChild($title);
+    $group.appendChild($grid);
+    $advancedLayerControls.appendChild($group);
   });
 }
 
-$$cubeBtns.forEach(($btn) => {
-  $btn.addEventListener("click", cubeButtonClickHandler);
-});
+function initTheme() {
+  const savedTheme = localStorage.getItem(STORAGE_KEYS.theme);
+  const initialTheme = savedTheme === "dark" ? "dark" : "light";
+  setTheme(initialTheme);
+
+  $themeToggle.addEventListener("click", () => {
+    const nextTheme = getCurrentTheme() === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    if ($paletteSelect.value !== "custom") {
+      applyPalette($paletteSelect.value);
+    }
+  });
+}
+
+function initPropertyControls() {
+  const savedSize = localStorage.getItem(STORAGE_KEYS.size);
+  const savedSpeed = localStorage.getItem(STORAGE_KEYS.speed);
+
+  const size = Math.max(1, Math.min(7, Number.parseInt(savedSize ?? "3", 10) || 3));
+  const speed = Math.max(100, Math.min(1000, Number.parseInt(savedSpeed ?? "500", 10) || 500));
+
+  $sizeInput.value = String(size);
+  $speedInput.value = String(speed);
+  $sizeValue.textContent = String(size);
+  $speedValue.textContent = `${speed}ms`;
+
+  $webCube.setAttribute("size", String(size));
+  $webCube.setAttribute("speed", String(speed));
+  initialState = $webCube.getState();
+
+  $sizeInput.addEventListener("input", () => {
+    const newSize = Number.parseInt($sizeInput.value, 10);
+    $sizeValue.textContent = String(newSize);
+    $webCube.setAttribute("size", String(newSize));
+    localStorage.setItem(STORAGE_KEYS.size, String(newSize));
+    refreshLayerOptions();
+    renderAdvancedLayerControls();
+    initialState = $webCube.getState();
+  });
+
+  $speedInput.addEventListener("input", () => {
+    const newSpeed = Number.parseInt($speedInput.value, 10);
+    $speedValue.textContent = `${newSpeed}ms`;
+    $webCube.setAttribute("speed", String(newSpeed));
+    localStorage.setItem(STORAGE_KEYS.speed, String(newSpeed));
+  });
+}
+
+function initColorControls() {
+  const $$colorInputs = document.querySelectorAll<HTMLInputElement>("[data-color-input]");
+  $$colorInputs.forEach(($input) => {
+    $input.addEventListener("input", () => {
+      const face = $input.id.replace("color-", "") as FaceName;
+      setCubeColor(face, $input.value);
+      setPaletteCustom();
+    });
+  });
+}
+
+function initPaletteControl() {
+  const initialPalette = getSavedPalette();
+  applyPalette(initialPalette);
+
+  $paletteSelect.addEventListener("change", () => {
+    if ($paletteSelect.value === "custom") {
+      setPaletteCustom();
+      return;
+    }
+    applyPalette($paletteSelect.value);
+  });
+}
+
+function initCubeRotationControls() {
+  const $$cubeButtons = $controls.querySelectorAll<HTMLButtonElement>("button[data-cube-btn]");
+  $$cubeButtons.forEach(($button) => {
+    $button.addEventListener("click", async () => {
+      const axis = $button.dataset.axis as Axis;
+      const rawAngle = Number.parseInt($button.dataset.angle || "90", 10);
+      const angle = Math.abs(rawAngle) as Angle;
+      const backwards = rawAngle < 0;
+      const speed = Number.parseInt($speedInput.value, 10);
+
+      await runRotationTask(() =>
+        $webCube.rotateCube({
+          axis,
+          angle,
+          backwards,
+          speed,
+        }),
+      );
+    });
+  });
+}
+
+function initLayerRotationControls() {
+  refreshLayerOptions();
+  renderAdvancedLayerControls();
+
+  $rotateLayerBtn.addEventListener("click", async () => {
+    const axis = $layerAxis.value as Axis;
+    const layer = Number.parseInt($layerIndex.value, 10);
+    const angle = Number.parseInt($layerAngle.value, 10) as Angle;
+    const backwards = $layerBackwards.checked;
+    const speed = Number.parseInt($speedInput.value, 10);
+
+    await runRotationTask(() =>
+      $webCube.rotateLayer({
+        axis,
+        layer,
+        angle,
+        backwards,
+        speed,
+      }),
+    );
+  });
+
+  $advancedLayerControls.addEventListener("click", async (event) => {
+    const target = event.target as HTMLElement;
+    const $button = target.closest("button[data-layer-btn]") as HTMLButtonElement | null;
+    if (!$button) {
+      return;
+    }
+
+    const axis = $button.dataset.axis as Axis;
+    const layer = Number.parseInt($button.dataset.layer || "0", 10);
+    const rawAngle = Number.parseInt($button.dataset.angle || "90", 10);
+    const angle = Math.abs(rawAngle) as Angle;
+    const backwards = rawAngle < 0;
+    const speed = Number.parseInt($speedInput.value, 10);
+
+    await runRotationTask(() =>
+      $webCube.rotateLayer({
+        axis,
+        layer,
+        angle,
+        backwards,
+        speed,
+      }),
+    );
+  });
+}
+
+function initResetControl() {
+  $resetBtn.addEventListener("click", () => {
+    if ($webCube.isRotating) {
+      return;
+    }
+    $webCube.setState(initialState);
+  });
+}
+
+function init() {
+  initTheme();
+  initPropertyControls();
+  initPaletteControl();
+  initColorControls();
+  initCubeRotationControls();
+  initLayerRotationControls();
+  initResetControl();
+  updateControlLock();
+}
+
+init();

@@ -3,367 +3,141 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Web Cube</title>
+    <title>Web Cube Playground</title>
   </head>
   <body>
-    <aside id="controls">
-      <h3>X</h3>
-      <section>
-        <button data-layer-btn data-axis="x" data-layer="0" data-angle="90">
-          Rotate 0 90
+    <div class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Interactive playground</p>
+          <h1>Web Cube Lab</h1>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-pressed="false">
+          Dark mode
         </button>
-        <button data-layer-btn data-axis="x" data-layer="1" data-angle="90">
-          Rotate 1 90
-        </button>
-        <button data-layer-btn data-axis="x" data-layer="2" data-angle="90">
-          Rotate 2 90
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="x" data-layer="0" data-angle="-90">
-          Rotate 0 -90
-        </button>
-        <button data-layer-btn data-axis="x" data-layer="1" data-angle="-90">
-          Rotate 1 -90
-        </button>
-        <button data-layer-btn data-axis="x" data-layer="2" data-angle="-90">
-          Rotate 2 -90
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="x" data-layer="0" data-angle="180">
-          Rotate 0 180
-        </button>
-        <button data-layer-btn data-axis="x" data-layer="1" data-angle="180">
-          Rotate 1 180
-        </button>
-        <button data-layer-btn data-axis="x" data-layer="2" data-angle="180">
-          Rotate 2 180
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="x" data-layer="0" data-angle="-180">
-          Rotate 0 -180
-        </button>
-        <button data-layer-btn data-axis="x" data-layer="1" data-angle="-180">
-          Rotate 1 -180
-        </button>
-        <button data-layer-btn data-axis="x" data-layer="2" data-angle="-180">
-          Rotate 2 -180
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="x" data-layer="0" data-angle="270">
-          Rotate 0 270
-        </button>
-        <button data-layer-btn data-axis="x" data-layer="1" data-angle="270">
-          Rotate 1 270
-        </button>
-        <button data-layer-btn data-axis="x" data-layer="2" data-angle="270">
-          Rotate 2 270
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="x" data-layer="0" data-angle="-270">
-          Rotate 0 -270
-        </button>
-        <button data-layer-btn data-axis="x" data-layer="1" data-angle="-270">
-          Rotate 1 -270
-        </button>
-        <button data-layer-btn data-axis="x" data-layer="2" data-angle="-270">
-          Rotate 2 -270
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="x" data-layer="0" data-angle="360">
-          Rotate 0 360
-        </button>
-        <button data-layer-btn data-axis="x" data-layer="1" data-angle="360">
-          Rotate 1 360
-        </button>
-        <button data-layer-btn data-axis="x" data-layer="2" data-angle="360">
-          Rotate 2 360
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="x" data-layer="0" data-angle="-360">
-          Rotate 0 -360
-        </button>
-        <button data-layer-btn data-axis="x" data-layer="1" data-angle="-360">
-          Rotate 1 -360
-        </button>
-        <button data-layer-btn data-axis="x" data-layer="2" data-angle="-360">
-          Rotate 2 -360
-        </button>
-      </section>
+      </header>
 
-      <h3>Y</h3>
-      <section>
-        <button data-layer-btn data-axis="y" data-layer="0" data-angle="90">
-          Rotate 0 90
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="1" data-angle="90">
-          Rotate 1 90
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="2" data-angle="90">
-          Rotate 2 90
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="y" data-layer="0" data-angle="-90">
-          Rotate 0 -90
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="1" data-angle="-90">
-          Rotate 1 -90
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="2" data-angle="-90">
-          Rotate 2 -90
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="y" data-layer="0" data-angle="180">
-          Rotate 0 180
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="1" data-angle="180">
-          Rotate 1 180
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="2" data-angle="180">
-          Rotate 2 180
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="y" data-layer="0" data-angle="-180">
-          Rotate 0 -180
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="1" data-angle="-180">
-          Rotate 1 -180
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="2" data-angle="-180">
-          Rotate 2 -180
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="y" data-layer="0" data-angle="270">
-          Rotate 0 270
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="1" data-angle="270">
-          Rotate 1 270
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="2" data-angle="270">
-          Rotate 2 270
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="y" data-layer="0" data-angle="-270">
-          Rotate 0 -270
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="1" data-angle="-270">
-          Rotate 1 -270
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="2" data-angle="-270">
-          Rotate 2 -270
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="y" data-layer="0" data-angle="360">
-          Rotate 0 360
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="1" data-angle="360">
-          Rotate 1 360
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="2" data-angle="360">
-          Rotate 2 360
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="y" data-layer="0" data-angle="-360">
-          Rotate 0 -360
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="1" data-angle="-360">
-          Rotate 1 -360
-        </button>
-        <button data-layer-btn data-axis="y" data-layer="2" data-angle="-360">
-          Rotate 2 -360
-        </button>
-      </section>
+      <div class="app-layout">
+        <aside id="controls" class="control-panel">
+          <section class="control-card">
+            <h2>Properties</h2>
 
-      <h3>Z</h3>
-      <section>
-        <button data-layer-btn data-axis="z" data-layer="0" data-angle="90">
-          Rotate 0 90
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="1" data-angle="90">
-          Rotate 1 90
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="2" data-angle="90">
-          Rotate 2 90
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="z" data-layer="0" data-angle="-90">
-          Rotate 0 -90
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="1" data-angle="-90">
-          Rotate 1 -90
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="2" data-angle="-90">
-          Rotate 2 -90
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="z" data-layer="0" data-angle="180">
-          Rotate 0 180
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="1" data-angle="180">
-          Rotate 1 180
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="2" data-angle="180">
-          Rotate 2 180
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="z" data-layer="0" data-angle="-180">
-          Rotate 0 -180
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="1" data-angle="-180">
-          Rotate 1 -180
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="2" data-angle="-180">
-          Rotate 2 -180
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="z" data-layer="0" data-angle="270">
-          Rotate 0 270
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="1" data-angle="270">
-          Rotate 1 270
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="2" data-angle="270">
-          Rotate 2 270
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="z" data-layer="0" data-angle="-270">
-          Rotate 0 -270
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="1" data-angle="-270">
-          Rotate 1 -270
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="2" data-angle="-270">
-          Rotate 2 -270
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="z" data-layer="0" data-angle="360">
-          Rotate 0 360
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="1" data-angle="360">
-          Rotate 1 360
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="2" data-angle="360">
-          Rotate 2 360
-        </button>
-      </section>
-      <section>
-        <button data-layer-btn data-axis="z" data-layer="0" data-angle="-360">
-          Rotate 0 -360
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="1" data-angle="-360">
-          Rotate 1 -360
-        </button>
-        <button data-layer-btn data-axis="z" data-layer="2" data-angle="-360">
-          Rotate 2 -360
-        </button>
-      </section>
+            <label class="field" for="size-input">
+              <span>Cube size</span>
+              <output id="size-value" for="size-input">3</output>
+            </label>
+            <input id="size-input" type="range" min="1" max="7" step="1" value="3" />
 
-      <h3>Cube</h3>
-      <section>
-        <button data-cube-btn data-axis="x" data-angle="90">Rotate X 90</button>
-        <button data-cube-btn data-axis="y" data-angle="90">Rotate Y 90</button>
-        <button data-cube-btn data-axis="z" data-angle="90">Rotate Z 90</button>
-      </section>
-      <section>
-        <button data-cube-btn data-axis="x" data-angle="-90">
-          Rotate X -90
-        </button>
-        <button data-cube-btn data-axis="y" data-angle="-90">
-          Rotate Y -90
-        </button>
-        <button data-cube-btn data-axis="z" data-angle="-90">
-          Rotate Z -90
-        </button>
-      </section>
-      <section>
-        <button data-cube-btn data-axis="x" data-angle="180">
-          Rotate X 180
-        </button>
-        <button data-cube-btn data-axis="y" data-angle="180">
-          Rotate Y 180
-        </button>
-        <button data-cube-btn data-axis="z" data-angle="180">
-          Rotate Z 180
-        </button>
-      </section>
-      <section>
-        <button data-cube-btn data-axis="x" data-angle="-180">
-          Rotate X -180
-        </button>
-        <button data-cube-btn data-axis="y" data-angle="-180">
-          Rotate Y -180
-        </button>
-        <button data-cube-btn data-axis="z" data-angle="-180">
-          Rotate Z -180
-        </button>
-      </section>
-      <section>
-        <button data-cube-btn data-axis="x" data-angle="270">
-          Rotate X 270
-        </button>
-        <button data-cube-btn data-axis="y" data-angle="270">
-          Rotate Y 270
-        </button>
-        <button data-cube-btn data-axis="z" data-angle="270">
-          Rotate Z 270
-        </button>
-      </section>
-      <section>
-        <button data-cube-btn data-axis="x" data-angle="-270">
-          Rotate X -270
-        </button>
-        <button data-cube-btn data-axis="y" data-angle="-270">
-          Rotate Y -270
-        </button>
-        <button data-cube-btn data-axis="z" data-angle="-270">
-          Rotate Z -270
-        </button>
-      </section>
-      <section>
-        <button data-cube-btn data-axis="x" data-angle="360">
-          Rotate X 360
-        </button>
-        <button data-cube-btn data-axis="y" data-angle="360">
-          Rotate Y 360
-        </button>
-        <button data-cube-btn data-axis="z" data-angle="360">
-          Rotate Z 360
-        </button>
-      </section>
-      <section>
-        <button data-cube-btn data-axis="x" data-angle="-360">
-          Rotate X -360
-        </button>
-        <button data-cube-btn data-axis="y" data-angle="-360">
-          Rotate Y -360
-        </button>
-        <button data-cube-btn data-axis="z" data-angle="-360">
-          Rotate Z -360
-        </button>
-      </section>
-    </aside>
-    <main>
-      <web-cube size="3"></web-cube>
-    </main>
+            <label class="field" for="speed-input">
+              <span>Speed</span>
+              <output id="speed-value" for="speed-input">500ms</output>
+            </label>
+            <input
+              id="speed-input"
+              type="range"
+              min="100"
+              max="1000"
+              step="50"
+              value="500"
+            />
+
+            <label class="field" for="palette-select">
+              <span>Palette</span>
+            </label>
+            <select id="palette-select">
+              <option value="classic">Classic</option>
+              <option value="pastel">Pastel</option>
+              <option value="signal">Signal</option>
+              <option value="custom">Custom</option>
+            </select>
+
+            <button id="reset-btn" type="button">Reset state</button>
+          </section>
+
+          <section class="control-card">
+            <h2>Colors</h2>
+            <div class="color-grid">
+              <label for="color-background"><span>Background</span></label>
+              <input id="color-background" data-color-input type="color" value="#242424" />
+
+              <label for="color-front"><span>Front</span></label>
+              <input id="color-front" data-color-input type="color" value="#ffffff" />
+
+              <label for="color-right"><span>Right</span></label>
+              <input id="color-right" data-color-input type="color" value="#009A44" />
+
+              <label for="color-back"><span>Back</span></label>
+              <input id="color-back" data-color-input type="color" value="#FFD700" />
+
+              <label for="color-left"><span>Left</span></label>
+              <input id="color-left" data-color-input type="color" value="#003DA5" />
+
+              <label for="color-up"><span>Up</span></label>
+              <input id="color-up" data-color-input type="color" value="#BA0C2F" />
+
+              <label for="color-down"><span>Down</span></label>
+              <input id="color-down" data-color-input type="color" value="#FE5000" />
+            </div>
+          </section>
+
+          <section class="control-card">
+            <h2>Rotate cube</h2>
+            <div class="button-grid">
+              <button data-cube-btn data-axis="x" data-angle="90" type="button">X +90</button>
+              <button data-cube-btn data-axis="y" data-angle="90" type="button">Y +90</button>
+              <button data-cube-btn data-axis="z" data-angle="90" type="button">Z +90</button>
+
+              <button data-cube-btn data-axis="x" data-angle="-90" type="button">X -90</button>
+              <button data-cube-btn data-axis="y" data-angle="-90" type="button">Y -90</button>
+              <button data-cube-btn data-axis="z" data-angle="-90" type="button">Z -90</button>
+
+              <button data-cube-btn data-axis="x" data-angle="180" type="button">X 180</button>
+              <button data-cube-btn data-axis="y" data-angle="180" type="button">Y 180</button>
+              <button data-cube-btn data-axis="z" data-angle="180" type="button">Z 180</button>
+            </div>
+          </section>
+
+          <section class="control-card">
+            <h2>Rotate layer</h2>
+            <div class="layer-form">
+              <label for="layer-axis">Axis</label>
+              <select id="layer-axis">
+                <option value="x">X</option>
+                <option value="y">Y</option>
+                <option value="z">Z</option>
+              </select>
+
+              <label for="layer-index">Layer</label>
+              <select id="layer-index"></select>
+
+              <label for="layer-angle">Angle</label>
+              <select id="layer-angle">
+                <option value="90">90</option>
+                <option value="180">180</option>
+              </select>
+
+              <label class="field-inline" for="layer-backwards">
+                <input id="layer-backwards" type="checkbox" />
+                <span>Backwards</span>
+              </label>
+
+              <button id="rotate-layer-btn" type="button">Rotate layer</button>
+            </div>
+          </section>
+
+          <details class="control-card advanced" id="advanced-controls">
+            <summary>Advanced controls</summary>
+            <div id="advanced-layer-controls" class="advanced-layer-controls"></div>
+          </details>
+        </aside>
+
+        <main class="viewport-panel">
+          <div class="viewport-frame">
+            <web-cube id="cube" size="3" speed="500"></web-cube>
+          </div>
+        </main>
+      </div>
+    </div>
     <script type="module" src="/playground/main.ts"></script>
   </body>
 </html>

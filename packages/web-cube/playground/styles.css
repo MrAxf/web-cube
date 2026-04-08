@@ -1,104 +1,279 @@
-* {
-  margin: 0;
-  padding: 0;
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
+:root {
+  --bg: #f7f5f0;
+  --bg-elevated: #fdfcf8;
+  --bg-card: #efe8dc;
+  --text: #1f1712;
+  --muted: #66594f;
+  --line: #cbbba7;
+  --accent: #bc3f2f;
+  --accent-soft: #efc2b8;
+  --shadow: 0 14px 40px rgb(49 31 15 / 15%);
 }
-*,
-*::before,
-*::after {
+
+html[data-theme="dark"] {
+  --bg: #161c22;
+  --bg-elevated: #222b33;
+  --bg-card: #2b3640;
+  --text: #f1e9de;
+  --muted: #b6a89b;
+  --line: #3f4d5b;
+  --accent: #f2a34b;
+  --accent-soft: #694118;
+  --shadow: 0 20px 55px rgb(2 5 9 / 38%);
+}
+
+* {
   box-sizing: border-box;
+  margin: 0;
 }
 
 body {
   min-height: 100dvh;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 10% 10%, rgb(255 202 148 / 22%), transparent 42%),
+    radial-gradient(circle at 90% 8%, rgb(188 63 47 / 18%), transparent 38%),
+    var(--bg);
+  transition: background-color 220ms ease, color 220ms ease;
 }
-input,
+
 button,
-textarea,
+input,
 select {
   font: inherit;
 }
 
-p {
-  text-wrap: pretty;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  text-wrap: balance;
-}
-
-img,
-video,
-svg {
-  height: auto;
-  max-width: 100%;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-    transition: none;
-  }
-}
-
-body {
+.app-shell {
   display: flex;
+  flex-direction: column;
+  gap: 1rem;
   padding: 1rem;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-
-  & aside {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem;
-    width: 30%;
-    height: 100%;
-    background-color: #f0f0f0;
-    overflow-y: auto;
-    overflow-x: hidden;
-
-    & section {
-      display: flex;
-      gap: 1rem;
-      width: 100%;
-
-      & button {
-        padding: 0.5rem;
-        width: 100%;
-        background-color: #f8f8f8;
-        border: 1px solid #ccc;
-        border-radius: 0.25rem;
-        cursor: pointer;
-        transition: background-color 0.3s;
-
-        &:hover {
-          background-color: #f0f0f0;
-        }
-      }
-    }
-  }
-
-  & main {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 70%;
-    height: 100%;
-    background-color: #f8f8f8;
-  }
+  min-height: 100dvh;
 }
+
+.app-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+h1,
+h2 {
+  line-height: 1.1;
+}
+
+h1 {
+  font-size: clamp(1.5rem, 3.2vw, 2.3rem);
+  margin-top: 0.35rem;
+}
+
+h2 {
+  font-size: 1rem;
+}
+
+.theme-toggle {
+  border: 1px solid var(--line);
+  background: var(--bg-card);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+}
+
+.app-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) 1fr;
+  gap: 1rem;
+  min-height: 0;
+  flex: 1;
+}
+
+.control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow: auto;
+  padding-right: 0.25rem;
+}
+
+.control-card {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.95rem;
+  border-radius: 16px;
+  background: color-mix(in oklab, var(--bg-elevated) 75%, var(--bg-card));
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  animation: rise 260ms ease both;
+}
+
+.field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.field-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.45rem 0.65rem;
+  align-items: center;
+}
+
+.color-grid label {
+  font-size: 0.9rem;
+}
+
+input[type="color"] {
+  width: 2.35rem;
+  height: 1.7rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  background: transparent;
+  border-radius: 6px;
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.layer-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.layer-form button,
+.layer-form .field-inline {
+  grid-column: 1 / -1;
+}
+
+button,
+select,
+input[type="range"] {
+  width: 100%;
+}
+
+button,
+select {
+  padding: 0.55rem 0.7rem;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  color: var(--text);
+  background: var(--bg-elevated);
+}
+
+input[type="range"] {
+  accent-color: var(--accent);
+}
+
+button:hover {
+  border-color: var(--accent);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.advanced summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.advanced-layer-controls {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.advanced-axis-group {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.advanced-axis-group>strong {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.advanced-axis-group .button-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.viewport-panel {
+  min-height: 0;
+}
+
+.viewport-frame {
+  width: 100%;
+  height: 100%;
+  min-height: 460px;
+  border-radius: 24px;
+  background:
+    linear-gradient(150deg, color-mix(in oklab, var(--bg-elevated) 85%, black), var(--bg-card)),
+    var(--bg-elevated);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
 web-cube {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+@media (max-width: 1020px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .control-panel {
+    max-height: 52dvh;
+  }
+
+  .viewport-frame {
+    min-height: 44dvh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
