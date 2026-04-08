@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "bench": "vitest bench"
   },
   "keywords": [
     "typescript",
@@ -17,9 +18,11 @@
   "author": "Axford",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "5.8.3",
-    "vite": "6.3.5",
-    "vite-plugin-dts": "4.5.4"
+    "happy-dom": "20.8.9",
+    "typescript": "5.9.3",
+    "vite": "8.0.7",
+    "vite-plugin-dts": "4.5.4",
+    "vitest": "4.1.3"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
