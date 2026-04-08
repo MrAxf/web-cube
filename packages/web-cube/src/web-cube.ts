@@ -323,6 +323,48 @@ export class WebCube extends HTMLElement {
         ? parseInt($closestFace.dataset.face!, 10)
         : null;
 
+      const createSpinAngleScheduler = (getCurrentAngle: () => number) => {
+        let spinAngleRafId = 0;
+
+        return {
+          schedule: () => {
+            if (spinAngleRafId) return;
+            spinAngleRafId = globalThis.requestAnimationFrame(() => {
+              spinAngleRafId = 0;
+              self.style.setProperty(
+                "--spin-angle",
+                `${getCurrentAngle()}deg`,
+              );
+            });
+          },
+          cancel: () => {
+            if (!spinAngleRafId) return;
+            globalThis.cancelAnimationFrame(spinAngleRafId);
+            spinAngleRafId = 0;
+          },
+        };
+      };
+
+      const bindDragHandlers = (
+        onMove: (moveEvent: PointerEvent) => void,
+        onUp: (upEvent: PointerEvent) => void,
+      ) => {
+        const handlePointerMove = (moveEvent: PointerEvent) => {
+          moveEvent.preventDefault();
+          onMove(moveEvent);
+        };
+
+        const handlePointerUp = (upEvent: PointerEvent) => {
+          upEvent.preventDefault();
+          onUp(upEvent);
+          window.removeEventListener("pointermove", handlePointerMove);
+          window.removeEventListener("pointerup", handlePointerUp);
+        };
+
+        window.addEventListener("pointermove", handlePointerMove);
+        window.addEventListener("pointerup", handlePointerUp);
+      };
+
       if (currentFace === null) {
         const xAxis = "y";
         const yAxis = originX > viewportRect.width / 2 ? "x" : "z";
@@ -330,22 +372,11 @@ export class WebCube extends HTMLElement {
 
         let axis: "x" | "y" | "z" | null = null;
         let currentAngle = 0;
-        let spinAngleRafId = 0;
+        const spinAngleScheduler = createSpinAngleScheduler(() => currentAngle);
 
-        const scheduleSpinAngleUpdate = () => {
-          if (spinAngleRafId) return;
-          spinAngleRafId = globalThis.requestAnimationFrame(() => {
-            spinAngleRafId = 0;
-            self.style.setProperty("--spin-angle", `${currentAngle}deg`);
-          });
-        };
-
-        // eslint-disable-next-line no-inner-declarations, @typescript-eslint/no-shadow
-        function handlePointerMove(ev: PointerEvent) {
-          ev.preventDefault();
-
-          const currentX = ev.clientX - viewportRect.left;
-          const currentY = ev.clientY - viewportRect.top;
+        bindDragHandlers((moveEvent) => {
+          const currentX = moveEvent.clientX - viewportRect.left;
+          const currentY = moveEvent.clientY - viewportRect.top;
 
           if (!axis) {
             const xDistance = Math.abs(currentX - originX);
@@ -358,34 +389,31 @@ export class WebCube extends HTMLElement {
                 "var(--spin-angle)",
               );
             }
-          } else {
-            currentAngle = Math.min(
-              Math.max(
-                axis === "y"
-                  ? ((currentX - originX) / 3) * xMultiplier
-                  : (originY - currentY) / 3,
-                -360,
-              ),
-              360,
-            );
-            scheduleSpinAngleUpdate();
+            return;
           }
-        }
 
-        // eslint-disable-next-line no-inner-declarations, @typescript-eslint/no-shadow
-        function handlePointerUp(ev: PointerEvent) {
-          ev.preventDefault();
-
-          if (spinAngleRafId) {
-            globalThis.cancelAnimationFrame(spinAngleRafId);
-            spinAngleRafId = 0;
+          currentAngle = Math.min(
+            Math.max(
+              axis === "y"
+                ? ((currentX - originX) / 3) * xMultiplier
+                : (originY - currentY) / 3,
+              -360,
+            ),
+            360,
+          );
+          spinAngleScheduler.schedule();
+        }, () => {
+          spinAngleScheduler.cancel();
+          if (!axis) {
+            self.#isRotating = false;
+            return;
           }
 
           const targetAngle = Math.round(currentAngle / 90) * 90;
 
           self
             .#rotateAxisCube({
-              axis: axis!,
+              axis,
               angle: Math.abs(targetAngle) as 90 | 180 | 270 | 360,
               backwards: targetAngle < 0,
               from: currentAngle,
@@ -396,33 +424,16 @@ export class WebCube extends HTMLElement {
               self.style.setProperty("--spin-angle", "0deg");
               self.#isRotating = false;
             });
-
-          window.removeEventListener("pointermove", handlePointerMove);
-          window.removeEventListener("pointerup", handlePointerUp);
-        }
-
-        window.addEventListener("pointermove", handlePointerMove);
-        window.addEventListener("pointerup", handlePointerUp);
+        });
       } else if (currentFace === Face.Front || currentFace === Face.Left) {
         let axis: "x" | "y" | "z" | null = null;
         let layer = 0;
         let currentAngle = 0;
-        let spinAngleRafId = 0;
+        const spinAngleScheduler = createSpinAngleScheduler(() => currentAngle);
 
-        const scheduleSpinAngleUpdate = () => {
-          if (spinAngleRafId) return;
-          spinAngleRafId = globalThis.requestAnimationFrame(() => {
-            spinAngleRafId = 0;
-            self.style.setProperty("--spin-angle", `${currentAngle}deg`);
-          });
-        };
-
-        // eslint-disable-next-line no-inner-declarations, @typescript-eslint/no-shadow
-        function handlePointerMove(ev: PointerEvent) {
-          ev.preventDefault();
-
-          const currentX = ev.clientX - viewportRect.left;
-          const currentY = ev.clientY - viewportRect.top;
+        bindDragHandlers((moveEvent) => {
+          const currentX = moveEvent.clientX - viewportRect.left;
+          const currentY = moveEvent.clientY - viewportRect.top;
 
           if (!axis) {
             const xDistance = Math.abs(currentX - originX);
@@ -436,37 +447,35 @@ export class WebCube extends HTMLElement {
                 axis = "z";
               }
               layer = parseInt($closestFace!.dataset[axis]!, 10);
-
               self.#setCubesToRotate(axis, layer);
             }
-          } else {
-            currentAngle = Math.min(
-              Math.max(
-                axis === "y"
-                  ? (currentX - originX) / 3
-                  : (originY - currentY) / 3,
-                -360,
-              ),
-              360,
-            );
-            scheduleSpinAngleUpdate();
+            return;
           }
-        }
 
-        // eslint-disable-next-line no-inner-declarations, @typescript-eslint/no-shadow
-        function handlePointerUp(ev: PointerEvent) {
-          ev.preventDefault();
-
-          if (spinAngleRafId) {
-            globalThis.cancelAnimationFrame(spinAngleRafId);
-            spinAngleRafId = 0;
+          currentAngle = Math.min(
+            Math.max(
+              axis === "y"
+                ? (currentX - originX) / 3
+                : (originY - currentY) / 3,
+              -360,
+            ),
+            360,
+          );
+          spinAngleScheduler.schedule();
+        }, () => {
+          spinAngleScheduler.cancel();
+          if (!axis) {
+            self.#isRotating = false;
+            return;
           }
+
+          const selectedAxis = axis;
 
           const targetAngle = Math.round(currentAngle / 90) * 90;
 
           self
             .#rotateAxisLayer({
-              axis: axis!,
+              axis: selectedAxis,
               layer,
               angle: Math.abs(targetAngle) as 90 | 180 | 270 | 360,
               backwards: targetAngle < 0,
@@ -474,37 +483,20 @@ export class WebCube extends HTMLElement {
               triggeredBy: "pointer-event"
             })
             .then(() => {
-              self.#resetCubesRotate(axis!, layer);
+              self.#resetCubesRotate(selectedAxis, layer);
               self.style.setProperty("--spin-angle", "0deg");
               self.#isRotating = false;
             });
-
-          window.removeEventListener("pointermove", handlePointerMove);
-          window.removeEventListener("pointerup", handlePointerUp);
-        }
-
-        window.addEventListener("pointermove", handlePointerMove);
-        window.addEventListener("pointerup", handlePointerUp);
+        });
       } else if (currentFace === Face.Up) {
         let axis: "x" | "y" | "z" | null = null;
         let layer = 0;
         let currentAngle = 0;
-        let spinAngleRafId = 0;
+        const spinAngleScheduler = createSpinAngleScheduler(() => currentAngle);
 
-        const scheduleSpinAngleUpdate = () => {
-          if (spinAngleRafId) return;
-          spinAngleRafId = globalThis.requestAnimationFrame(() => {
-            spinAngleRafId = 0;
-            self.style.setProperty("--spin-angle", `${currentAngle}deg`);
-          });
-        };
-
-        // eslint-disable-next-line no-inner-declarations, @typescript-eslint/no-shadow
-        function handlePointerMove(ev: PointerEvent) {
-          ev.preventDefault();
-
-          const currentX = ev.clientX - viewportRect.left;
-          const currentY = ev.clientY - viewportRect.top;
+        bindDragHandlers((moveEvent) => {
+          const currentX = moveEvent.clientX - viewportRect.left;
+          const currentY = moveEvent.clientY - viewportRect.top;
           const xDistance = currentX - originX;
           const yDistance = currentY - originY;
 
@@ -524,29 +516,28 @@ export class WebCube extends HTMLElement {
 
               self.#setCubesToRotate(axis, layer);
             }
-          } else {
-            currentAngle = Math.min(
-              Math.max(axis === "z" ? rotatedX / 3 : -rotatedY / 3, -360),
-              360,
-            );
-            scheduleSpinAngleUpdate();
+            return;
           }
-        }
 
-        // eslint-disable-next-line no-inner-declarations, @typescript-eslint/no-shadow
-        function handlePointerUp(ev: PointerEvent) {
-          ev.preventDefault();
-
-          if (spinAngleRafId) {
-            globalThis.cancelAnimationFrame(spinAngleRafId);
-            spinAngleRafId = 0;
+          currentAngle = Math.min(
+            Math.max(axis === "z" ? rotatedX / 3 : -rotatedY / 3, -360),
+            360,
+          );
+          spinAngleScheduler.schedule();
+        }, () => {
+          spinAngleScheduler.cancel();
+          if (!axis) {
+            self.#isRotating = false;
+            return;
           }
+
+          const selectedAxis = axis;
 
           const targetAngle = Math.round(currentAngle / 90) * 90;
 
           self
             .#rotateAxisLayer({
-              axis: axis!,
+              axis: selectedAxis,
               layer,
               angle: Math.abs(targetAngle) as 90 | 180 | 270 | 360,
               backwards: targetAngle < 0,
@@ -554,17 +545,11 @@ export class WebCube extends HTMLElement {
               triggeredBy: "pointer-event"
             })
             .then(() => {
-              self.#resetCubesRotate(axis!, layer);
+              self.#resetCubesRotate(selectedAxis, layer);
               self.style.setProperty("--spin-angle", "0deg");
               self.#isRotating = false;
             });
-
-          window.removeEventListener("pointermove", handlePointerMove);
-          window.removeEventListener("pointerup", handlePointerUp);
-        }
-
-        window.addEventListener("pointermove", handlePointerMove);
-        window.addEventListener("pointerup", handlePointerUp);
+        });
       } else {
         this.#isRotating = false;
       }

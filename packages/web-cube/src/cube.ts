@@ -86,7 +86,7 @@ function createCube(
     cubeLayerY: y,
     cubeLayerZ: z,
   });
-  const faceBack = createFace({
+  const $faceBack = createFace({
     x,
     y: reversedSize - y,
     state,
@@ -127,7 +127,14 @@ function createCube(
     cubeLayerZ: z,
   });
 
-  $cube.append($faceFront, $faceRight, faceBack, $faceLeft, $faceUp, $faceDown);
+  $cube.append(
+    $faceFront,
+    $faceRight,
+    $faceBack,
+    $faceLeft,
+    $faceUp,
+    $faceDown,
+  );
 
   return $cube;
 }
