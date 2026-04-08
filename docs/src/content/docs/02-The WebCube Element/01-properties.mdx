@@ -9,15 +9,15 @@ order: 1
 
 import WebCube from "@/components/web-cube.astro";
 
-The Web Cube element has a few properties that you can use to customize the cube.
+The Web Cube element exposes attributes you can use to configure behavior and appearance.
 
 ## size
 
-You can change the size of the cube by setting the `size` property.
+You can change the cube dimension by setting the `size` attribute.
 
 Has default value of `3`.
 
-If size is set to `0`, below `0` or `NaN`, the size will be set to the default value.
+If size is `0`, negative, or invalid, it falls back to `1`.
 
 ```html title="index.html"
 <web-cube size="4"></web-cube>
@@ -29,13 +29,13 @@ If size is set to `0`, below `0` or `NaN`, the size will be set to the default v
 
 ## speed
 
-You can change the speed of the cube for animations by setting the `speed` property.
+You can change animation speed by setting the `speed` attribute.
 
 The speed is in milliseconds and represents the time it takes for the cube to rotate 90 degrees.
 
 Has default value of `500`.
 
-If speed is set to `0`, below `0` or `NaN`, the speed will be set to the default value.
+If speed is `0`, negative, or invalid, it falls back to `500`.
 
 ```html title="index.html"
 <web-cube speed="5000"></web-cube>
@@ -47,9 +47,9 @@ If speed is set to `0`, below `0` or `NaN`, the speed will be set to the default
 
 ## disabled-pointer-events
 
-You can disable pointer events on the cube by setting the `disable-pointer-events` property.
+You can disable pointer interactions by setting the `disabled-pointer-events` attribute.
 
-The pointer events will be disabled while this property is present and is not set to `false`.
+Interactions are disabled while this attribute is present and not equal to `false`.
 
 ```html title="index.html"
 <web-cube disabled-pointer-events></web-cube>
@@ -58,3 +58,41 @@ The pointer events will be disabled while this property is present and is not se
 <div class="my-8 overflow-hidden rounded-lg bg-slate-300 dark:bg-slate-700">
   <WebCube disabledPointerEvents size={2} />
 </div>
+
+## Color attributes
+
+You can customize cube colors using attributes that map to CSS variables.
+
+- `color-background`
+- `color-front`
+- `color-right`
+- `color-back`
+- `color-left`
+- `color-up`
+- `color-down`
+
+```html title="index.html"
+<web-cube
+  color-background="#101426"
+  color-front="#e63946"
+  color-right="#f1faee"
+  color-back="#457b9d"
+  color-left="#1d3557"
+  color-up="#ffd166"
+  color-down="#06d6a0"
+></web-cube>
+```
+
+## Read-only getters
+
+The element also exposes two read-only getters in JavaScript:
+
+- `size: number`
+- `isRotating: boolean`
+
+```typescript title="index.ts"
+import { WebCube } from "@web-cube/web-cube";
+
+const cube = document.querySelector("web-cube") as WebCube;
+console.log(cube.size, cube.isRotating);
+```

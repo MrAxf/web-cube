@@ -11,7 +11,7 @@ The **Web Cube** element has a few methods that you can use to interact with the
 
 ## `setState`
 
-Sets the state of the cube. You can use the [`Face`](/docs/others/types#face-enum) enum to represent the faces of the cube to help you set the state.
+Sets the state of the cube. You can use the [`Face`](/docs/others/types#face-enum) enum to represent face values.
 
 ### Parameters
 
@@ -54,6 +54,8 @@ $cube.setState({
 });
 ```
 
+When the state changes, the element emits `web-cube:state-changed`.
+
 ## `getState`
 
 Gets the state of the cube.
@@ -61,6 +63,16 @@ Gets the state of the cube.
 ### Returns
 
 - Type: [`FlatState`](/docs/others/types#flatstate-type)
+
+### Example
+
+```typescript title="index.ts"
+import { WebCube } from "@web-cube/web-cube";
+
+const $cube = document.querySelector("web-cube") as WebCube;
+const currentState = $cube.getState();
+console.log(currentState);
+```
 
 ## `rotateCube`
 
@@ -79,6 +91,12 @@ The options for the rotation.
 
 - Type: `Promise<void>`
 
+### Validation rules
+
+- `axis` must be `"x"`, `"y"`, or `"z"`.
+- `angle` must be `90`, `180`, `270`, or `360`.
+- `speed` must be greater than `0`.
+
 ### Example
 
 ```typescript title="index.ts"
@@ -88,6 +106,8 @@ const $cube = document.querySelector("web-cube") as WebCube;
 
 $cube.rotateCube({ axis: "x", angle: 90, backwards: false, speed: 500 });
 ```
+
+This method emits `web-cube:before-rotate`, `web-cube:before-cube-rotate`, `web-cube:after-rotate`, and `web-cube:after-cube-rotate`.
 
 ## `rotateLayer`
 
@@ -106,6 +126,13 @@ The options for the rotation.
 
 - Type: `Promise<void>`
 
+### Validation rules
+
+- `axis` must be `"x"`, `"y"`, or `"z"`.
+- `layer` must be in range `0` to `size - 1`.
+- `angle` must be `90`, `180`, `270`, or `360`.
+- `speed` must be greater than `0`.
+
 ### Example
 
 ```typescript title="index.ts"
@@ -121,3 +148,11 @@ $cube.rotateLayer({
   speed: 500,
 });
 ```
+
+This method emits `web-cube:before-rotate`, `web-cube:before-layer-rotate`, `web-cube:after-rotate`, and `web-cube:after-layer-rotate`.
+
+## Utility wrapper methods
+
+The package also exports utility functions that wrap these methods, including `rotateCube`, `rotateLayer`, and `rotate`.
+
+See [Utilities](/docs/others/utilities) for details.

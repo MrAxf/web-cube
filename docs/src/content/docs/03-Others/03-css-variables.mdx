@@ -1,0 +1,50 @@
+---
+id: css-variables
+title: CSS Variables
+group: Others
+path: others/css-variables
+groupOrder: 3
+order: 3
+---
+
+You can customize Web Cube appearance with CSS variables.
+
+## Face and background colors
+
+- `--color-background`
+- `--color-front`
+- `--color-right`
+- `--color-back`
+- `--color-left`
+- `--color-up`
+- `--color-down`
+
+```css title="index.css"
+web-cube {
+  --color-background: #111827;
+  --color-front: #e63946;
+  --color-right: #f1faee;
+  --color-back: #457b9d;
+  --color-left: #1d3557;
+  --color-up: #ffd166;
+  --color-down: #06d6a0;
+}
+```
+
+## Equivalent HTML attributes
+
+The following attributes update the same variables:
+
+- `color-background`
+- `color-front`
+- `color-right`
+- `color-back`
+- `color-left`
+- `color-up`
+- `color-down`
+
+```html title="index.html"
+<web-cube color-front="#e63946" color-up="#ffd166"></web-cube>
+```
+
+For behavior attributes such as size and speed, see [Properties](/docs/the-webcube-element/properties).

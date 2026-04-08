@@ -48,7 +48,7 @@ The Rubik's Cube consists of several layers in each axis that can rotate indepen
 
 The cube has six faces, Up, Down, Front, Back, Left, and Right. Each face is identified by its orientation relative to the coordinate axes.
 
-Each face is represented by a number from 0 to 5. You can easily identify the face usin the [`Face`](/docs/others/types#face-enum) enum.
+Each face is represented by a number from 0 to 5. You can identify faces using the [`Face`](/docs/others/types#face-enum) enum.
 
 <figure>
   <FacesSvg />
@@ -68,7 +68,7 @@ The following image shows how the cube is unfolded to display the state of each 
 
 The state of the cube is implemented as an object where each key is the face number and the value is a 2D array of colors. See [`FlatState`](/docs/others/types#flatstate-type) for more information.
 
-Each 2D array follow the following structure:
+Each 2D array follows this structure:
 
 <figure>
   <StateFaceSvg />
@@ -144,3 +144,5 @@ $cube.setState({
     </script>
   </WebCube>
 </div>
+
+For state helper functions, see [Utilities](/docs/others/utilities).

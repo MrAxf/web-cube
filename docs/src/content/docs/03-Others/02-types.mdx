@@ -9,6 +9,8 @@ order: 2
 
 Types reference for the Web Cube element.
 
+Also see [Utilities](/docs/others/utilities), [Events](/docs/the-webcube-element/events), and [Getters](/docs/others/getters).
+
 ## State types
 
 ### `Face` Enum
@@ -64,3 +66,27 @@ The `RotationOptions` type represents the options for rotating either the entire
 - `angle`: The angle to rotate the cube. Must be `90`, `180`, `270`, or `360`.
 - `backwards?`: Optional. Whether to rotate the cube backwards. Defaults to `false`.
 - `speed?`: Optional. The speed of the rotation in milliseconds. Defaults to the instance speed.
+
+## Event types
+
+### `RotationEvent` Type
+
+Custom event type emitted by rotation lifecycle events in [Events](/docs/the-webcube-element/events).
+
+### `StateChangeEvent` Type
+
+Custom event type emitted by `web-cube:state-changed`.
+
+### `RotationEventDetail` Type
+
+Detail payload for rotation events. Contains:
+
+- `type`: `"cube"` or `"layer"`
+- `axis`: `"x" | "y" | "z"`
+- `angle`: `number`
+- `fromAngle`: `number`
+- `toAngle`: `number`
+- `backwards`: `boolean`
+- `speed`: `number`
+- `triggeredBy`: `"pointer-event" | "function-call"`
+- `layer`: `number` (only when `type` is `"layer"`)

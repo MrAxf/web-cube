@@ -1,0 +1,87 @@
+---
+id: utilities
+title: Utilities
+group: Others
+path: others/utilities
+groupOrder: 3
+order: 1
+---
+
+Utilities exported by `@web-cube/web-cube` help with state creation, comparisons, and rotations.
+
+## State utilities
+
+### `createBaseFaceState(size, face)`
+
+Creates a `size x size` face matrix filled with one `Face` value.
+
+### `createBaseState(size)`
+
+Creates a solved cube state for the provided size.
+
+- Throws if `size < 1`.
+
+### `isStateSolved(state)`
+
+Returns `true` if every face contains a single consistent value.
+
+### `compareStates(state1, state2)`
+
+Returns `true` if both states are identical.
+
+## Element helper wrappers
+
+### `getState(cube)` and `setState(cube, state)`
+
+Wrapper functions around `WebCube` instance methods.
+
+### `rotateCube(cube, options)`
+
+Wrapper for cube rotations.
+
+### `rotateLayer(cube, options)`
+
+Wrapper for layer rotations.
+
+### `rotate(cube, options)`
+
+Unified wrapper for either cube or layer rotation using a `type` discriminator.
+
+## Random rotation helpers
+
+### `createRandomRotationOptions(size, partialOptions?)`
+
+Generates a random valid rotation options object.
+
+### `rotateCubeRandomly(cube, partialOptions?)`
+
+Performs a random rotation on the given cube.
+
+## Example
+
+```typescript title="index.ts"
+import {
+  WebCube,
+  Face,
+  createBaseState,
+  isStateSolved,
+  compareStates,
+  createRandomRotationOptions,
+  rotate,
+} from "@web-cube/web-cube";
+
+const cube = document.querySelector("web-cube") as WebCube;
+
+const solved = createBaseState(cube.size);
+cube.setState(solved);
+
+const randomMove = createRandomRotationOptions(cube.size);
+await rotate(cube, randomMove);
+
+const current = cube.getState();
+console.log("Solved:", isStateSolved(current));
+console.log("Back to initial:", compareStates(current, solved));
+console.log("Face enum value:", Face.Front);
+```
+
+See [Types](/docs/others/types) for utility type definitions.

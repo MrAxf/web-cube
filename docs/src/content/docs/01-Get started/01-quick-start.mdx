@@ -9,11 +9,9 @@ order: 1
 
 import WebCube from "@/components/web-cube.astro";
 
-> The documentation is still in progress.
-
 ## Embed in your page
 
-You can easily embed **Web Cube** in your existing project or start a new project using the following code.
+You can embed **Web Cube** in any web app once the custom element is defined.
 
 ```html title="index.html"
 <web-cube></web-cube>
@@ -36,7 +34,7 @@ You can easily embed **Web Cube** in your existing project or start a new projec
 
 ## Change the size
 
-You can change the size of the cube by setting the `size` property.
+You can change the cube dimension by setting the `size` attribute.
 
 ```html title="index.html"
 <web-cube size="2"></web-cube>
@@ -45,3 +43,21 @@ You can change the size of the cube by setting the `size` property.
 <div class="my-8 overflow-hidden rounded-lg bg-slate-300 dark:bg-slate-700">
   <WebCube size={2} />
 </div>
+
+## Control the cube with JavaScript
+
+Use the `WebCube` methods to rotate the cube and inspect the current state.
+
+```typescript title="index.ts"
+import { WebCube } from "@web-cube/web-cube";
+
+const cube = document.querySelector("web-cube") as WebCube;
+
+await cube.rotateCube({ axis: "x", angle: 90 });
+await cube.rotateLayer({ axis: "z", layer: 0, angle: 180 });
+
+const state = cube.getState();
+cube.setState(state);
+```
+
+Continue with [Properties](/docs/the-webcube-element/properties) and [Methods](/docs/the-webcube-element/methods).

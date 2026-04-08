@@ -1,0 +1,38 @@
+---
+id: getters
+title: Getters
+group: Others
+path: others/getters
+groupOrder: 3
+order: 4
+---
+
+The `WebCube` class exposes read-only getters for runtime inspection.
+
+## `size`
+
+Returns the current cube size as a number.
+
+- Type: `number`
+
+## `isRotating`
+
+Returns whether a rotation animation is currently running.
+
+- Type: `boolean`
+
+## Example
+
+```typescript title="index.ts"
+import { WebCube } from "@web-cube/web-cube";
+
+const cube = document.querySelector("web-cube") as WebCube;
+
+console.log("Size:", cube.size);
+
+if (!cube.isRotating) {
+  await cube.rotateCube({ axis: "y", angle: 90 });
+}
+```
+
+You can combine these getters with events from [Events](/docs/the-webcube-element/events).

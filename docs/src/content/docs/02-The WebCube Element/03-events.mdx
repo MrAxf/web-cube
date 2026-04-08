@@ -1,0 +1,85 @@
+---
+id: events
+title: Events
+group: The WebCube Element
+path: the-webcube-element/events
+groupOrder: 2
+order: 3
+---
+
+The **Web Cube** element emits custom events before and after rotations, and when state changes.
+
+## Rotation events
+
+### `web-cube:before-rotate`
+
+Triggered before any cube or layer rotation starts.
+
+### `web-cube:after-rotate`
+
+Triggered after any cube or layer rotation completes.
+
+### `web-cube:before-cube-rotate`
+
+Triggered before a full-cube rotation starts.
+
+### `web-cube:after-cube-rotate`
+
+Triggered after a full-cube rotation completes.
+
+### `web-cube:before-layer-rotate`
+
+Triggered before a layer rotation starts.
+
+### `web-cube:after-layer-rotate`
+
+Triggered after a layer rotation completes.
+
+### Rotation event detail
+
+Rotation events include a `detail` object with:
+
+- `type`: `"cube"` or `"layer"`
+- `axis`: `"x"`, `"y"`, or `"z"`
+- `angle`: requested angle (`90`, `180`, `270`, `360`)
+- `fromAngle`: starting angle for this animation step
+- `toAngle`: ending angle for this animation step
+- `backwards`: rotation direction
+- `speed`: animation speed in milliseconds
+- `triggeredBy`: `"function-call"` or `"pointer-event"`
+- `layer`: present only for layer rotations
+
+## State change event
+
+### `web-cube:state-changed`
+
+Triggered whenever the cube state changes because of:
+
+- `setState(...)`
+- `rotateCube(...)`
+- `rotateLayer(...)`
+- pointer interactions
+
+### State event detail
+
+- `detail.state`: current [`FlatState`](/docs/others/types#flatstate-type)
+
+## Event listener example
+
+```typescript title="index.ts"
+import { WebCube, RotationEvent, StateChangeEvent } from "@web-cube/web-cube";
+
+const cube = document.querySelector("web-cube") as WebCube;
+
+cube.addEventListener("web-cube:before-rotate", (event) => {
+  const rotationEvent = event as RotationEvent;
+  console.log("Before rotation:", rotationEvent.detail);
+});
+
+cube.addEventListener("web-cube:state-changed", (event) => {
+  const stateEvent = event as StateChangeEvent;
+  console.log("New state:", stateEvent.detail.state);
+});
+```
+
+For rotation methods, see [Methods](/docs/the-webcube-element/methods).
