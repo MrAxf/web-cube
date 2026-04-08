@@ -8,44 +8,41 @@ export interface ObservableContext {
   tick: () => number;
 }
 
-export function createObservableContext(): ObservableContext {
-  const observableValues = new Map<symbol, unknown>();
-  const listeners = new Map<symbol, ObservableListener<unknown>[]>();
+interface ObservableStore<T> {
+  value: T;
+  listeners: ObservableListener<T>[];
+}
 
-  const nextTick = new Set<symbol>();
+export function createObservableContext(): ObservableContext {
+  const nextTick = new Set<ObservableStore<unknown>>();
 
   function tick(): number {
     const updatedKeys = nextTick.size;
     const currentTick = Array.from(nextTick);
     nextTick.clear();
-    currentTick.forEach((key) => {
-      const value = observableValues.get(key);
-      const listenerList = listeners.get(key);
-      if (listenerList) {
-        listenerList.forEach((listener) => listener(value));
-      }
+    currentTick.forEach((store) => {
+      store.listeners.forEach((listener) => listener(store.value));
     });
     return updatedKeys;
   }
 
   function observableOf<T>(value: T): Observable<T> {
-    // eslint-disable-next-line symbol-description
-    const key = Symbol();
-    observableValues.set(key, value);
+    const store: ObservableStore<T> = {
+      value,
+      listeners: [],
+    };
+
     return {
       get value() {
-        return observableValues.get(key) as T;
+        return store.value;
       },
       set value(setValue: T) {
-        if (observableValues.get(key) === setValue) return;
-        observableValues.set(key, setValue);
-        nextTick.add(key);
+        if (store.value === setValue) return;
+        store.value = setValue;
+        nextTick.add(store as ObservableStore<unknown>);
       },
       subscribe(listener: ObservableListener<T>) {
-        const listenerList = (listeners.get(key) ??
-          []) as ObservableListener<T>[];
-        listenerList.push(listener);
-        listeners.set(key, listenerList as ObservableListener<unknown>[]);
+        store.listeners.push(listener);
         listener(this.value);
       },
     };
