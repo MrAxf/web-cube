@@ -12,10 +12,9 @@ import ThemeScript from "@/components/theme-script.astro";
 interface Props {
   title?: string;
   mainClass?: string;
-  showHeader?: boolean;
 }
 
-const { title, mainClass = "", showHeader = true } = Astro.props;
+const { title, mainClass = "" } = Astro.props;
 ---
 
 <html lang="en">
