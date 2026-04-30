@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 import { define, WebCube } from "../src/index";
 import "./styles.css";
 
@@ -27,7 +29,33 @@ const STORAGE_KEYS = {
   size: "web-cube-playground-size",
   speed: "web-cube-playground-speed",
   palette: "web-cube-playground-palette",
+  orientationArrows: "web-cube-playground-orientation-arrows",
 };
+
+const ORIENTATION_ARROW_STYLE_ID = "playground-orientation-arrows";
+
+const ORIENTATION_ARROW_STYLE = /* css */ `
+.sticker::before {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  width: 34%;
+  height: 48%;
+  background: color-mix(in oklab, var(--sticker-color), black 38%);
+  clip-path: polygon(50% 0, 100% 38%, 70% 38%, 70% 100%, 30% 100%, 30% 38%, 0 38%);
+  opacity: 0.28;
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(var(--sticker-rotation, 0deg));
+  transform-origin: center;
+}
+
+.sticker[data-face="1"]::before {
+  transform: translate(-50%, -50%) rotate(calc(180deg + var(--sticker-rotation, 0deg)));
+}
+`;
 
 const PALETTES: Record<string, PaletteSet> = {
   classic: {
@@ -111,6 +139,7 @@ const $sizeValue = document.getElementById("size-value") as HTMLOutputElement;
 const $speedInput = document.getElementById("speed-input") as HTMLInputElement;
 const $speedValue = document.getElementById("speed-value") as HTMLOutputElement;
 const $paletteSelect = document.getElementById("palette-select") as HTMLSelectElement;
+const $orientationArrows = document.getElementById("orientation-arrows") as HTMLInputElement;
 const $resetBtn = document.getElementById("reset-btn") as HTMLButtonElement;
 const $layerAxis = document.getElementById("layer-axis") as HTMLSelectElement;
 const $layerIndex = document.getElementById("layer-index") as HTMLSelectElement;
@@ -189,6 +218,27 @@ function setPaletteCustom() {
   localStorage.setItem(STORAGE_KEYS.palette, "custom");
 }
 
+function setOrientationArrows(enabled: boolean) {
+  $orientationArrows.checked = enabled;
+  localStorage.setItem(STORAGE_KEYS.orientationArrows, enabled ? "true" : "false");
+
+  const shadowRoot = $webCube.shadowRoot;
+  if (!shadowRoot) return;
+
+  const $existingStyle = shadowRoot.getElementById(ORIENTATION_ARROW_STYLE_ID);
+  if (!enabled) {
+    $existingStyle?.remove();
+    return;
+  }
+
+  if ($existingStyle) return;
+
+  const $style = document.createElement("style");
+  $style.id = ORIENTATION_ARROW_STYLE_ID;
+  $style.textContent = ORIENTATION_ARROW_STYLE;
+  shadowRoot.appendChild($style);
+}
+
 function refreshLayerOptions() {
   const size = Number.parseInt($sizeInput.value, 10);
   const selectedLayer = Number.parseInt($layerIndex.value || "0", 10);
@@ -259,6 +309,7 @@ function initTheme() {
 function initPropertyControls() {
   const savedSize = localStorage.getItem(STORAGE_KEYS.size);
   const savedSpeed = localStorage.getItem(STORAGE_KEYS.speed);
+  const savedOrientationArrows = localStorage.getItem(STORAGE_KEYS.orientationArrows);
 
   const size = Math.max(1, Math.min(7, Number.parseInt(savedSize ?? "3", 10) || 3));
   const speed = Math.max(100, Math.min(1000, Number.parseInt(savedSpeed ?? "500", 10) || 500));
@@ -270,6 +321,7 @@ function initPropertyControls() {
 
   $webCube.setAttribute("size", String(size));
   $webCube.setAttribute("speed", String(speed));
+  setOrientationArrows(savedOrientationArrows !== "false");
   initialState = $webCube.getState();
 
   $sizeInput.addEventListener("input", () => {
@@ -287,6 +339,10 @@ function initPropertyControls() {
     $speedValue.textContent = `${newSpeed}ms`;
     $webCube.setAttribute("speed", String(newSpeed));
     localStorage.setItem(STORAGE_KEYS.speed, String(newSpeed));
+  });
+
+  $orientationArrows.addEventListener("change", () => {
+    setOrientationArrows($orientationArrows.checked);
   });
 }
 
