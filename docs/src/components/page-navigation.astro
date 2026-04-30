@@ -1,75 +1,217 @@
 ---
 import type { MarkdownHeading } from "astro";
+import PageNavigationTree from "./page-navigation-tree.astro";
 
 interface Props {
   headings: MarkdownHeading[];
 }
 
 const { headings } = Astro.props as Props;
+
+type TocNode = {
+  slug: string;
+  text: string;
+  depth: number;
+  parentSlug: string;
+  children: TocNode[];
+};
+
+const tocTree = (() => {
+  const tree: TocNode[] = [];
+  const stack: TocNode[] = [];
+
+  for (const heading of headings) {
+    if (heading.depth < 2 || heading.depth > 6) continue;
+
+    const node: TocNode = {
+      slug: heading.slug,
+      text: heading.text,
+      depth: heading.depth,
+      parentSlug: "",
+      children: [],
+    };
+
+    while (stack.length > 0 && stack[stack.length - 1].depth >= node.depth) {
+      stack.pop();
+    }
+
+    if (stack.length > 0) {
+      const parent = stack[stack.length - 1];
+      node.parentSlug = parent.slug;
+      parent.children.push(node);
+    } else {
+      tree.push(node);
+    }
+
+    stack.push(node);
+  }
+
+  return tree;
+})();
 ---
 
 <aside
-  class="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-64 shrink-0 border-l border-slate-500 p-4 md:top-16 md:h-[calc(100dvh-4rem)] lg:top-20 lg:h-[calc(100dvh-5rem)] xl:block"
+  class="sticky top-14 hidden h-[calc(100dvh-3.5rem)] w-64 shrink-0 overflow-y-auto border-l border-slate-200 dark:border-slate-700 p-4 md:top-16 md:h-[calc(100dvh-4rem)] lg:top-20 lg:h-[calc(100dvh-5rem)] xl:block"
 >
-  <nav class="sticky top-0">
-    <h2 class="mb-4 text-xl font-bold">In this page</h2>
-    <ul class="flex flex-col gap-1">
-      {
-        headings.map((heading) => (
-          <li
-            class="text-sm"
-            style={`
-                                    padding-left: ${(heading.depth - 2) * 1.5}rem;
-                                `}
-          >
-            <a
-              data-heading-link
-              class="opacity-70 transition-all hover:opacity-100 [&.active]:text-blue-700 [&.active]:opacity-100 dark:[&.active]:text-blue-300"
-              href={`#${heading.slug}`}
-            >
-              {heading.text}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+  <nav>
+    <h2 class="mb-4 text-sm font-bold uppercase tracking-wider opacity-70">On this page</h2>
+    {
+      tocTree.length > 0 ? (
+        <ul class="flex flex-col gap-0.5">
+          <PageNavigationTree nodes={tocTree} />
+        </ul>
+      ) : (
+        <p class="text-sm opacity-70">No headings available.</p>
+      )
+    }
   </nav>
 
   <script>
-    let intersetionObserver: IntersectionObserver | null = null;
-    const init = () => {
-      if (intersetionObserver) {
-        intersetionObserver.disconnect();
-      }
-      const headings = document.querySelectorAll(
-        "h2[id], h3[id], h4[id], h5[id], h6[id]",
-      );
-      const links = document.querySelectorAll("[data-heading-link]");
+    let headingEls: HTMLElement[] = [];
+    let linkEls: HTMLAnchorElement[] = [];
+    let parentBySlug = new Map<string, string>();
+    let linkBySlug = new Map<string, HTMLAnchorElement>();
+    let scrollRafId = 0;
 
-      intersetionObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              links.forEach((link) => {
-                link.classList.remove("active");
-              });
-
-              const link = document.querySelector(
-                `[href="#${entry.target.id}"]`,
-              );
-              link!.classList.add("active");
-            }
-          });
-        },
-        {
-          rootMargin: "0% 0% -80% 0%",
-        },
-      );
-
-      headings.forEach((heading) => {
-        intersetionObserver!.observe(heading);
+    const clearStates = () => {
+      linkEls.forEach((link) => {
+        link.dataset.active = "false";
+        link.dataset.visible = "false";
+        link.dataset.ancestor = "false";
       });
     };
+
+    const markActivePath = (
+      activeSlug: string | null,
+      visibleSlugs: Set<string>,
+    ) => {
+      clearStates();
+
+      linkEls.forEach((link) => {
+        const slug = link.dataset.slug;
+        if (!slug) return;
+        if (visibleSlugs.has(slug)) {
+          link.dataset.visible = "true";
+        }
+      });
+
+      if (!activeSlug) return;
+
+      const activeLink = linkBySlug.get(activeSlug);
+      if (!activeLink) return;
+
+      activeLink.dataset.active = "true";
+      let currentParent = parentBySlug.get(activeSlug) ?? "";
+
+      while (currentParent) {
+        const parentLink = linkBySlug.get(currentParent);
+        if (!parentLink) break;
+        parentLink.dataset.ancestor = "true";
+        currentParent = parentBySlug.get(currentParent) ?? "";
+      }
+    };
+
+    const getScrollPaddingTop = () => {
+      const rawScrollPadding = getComputedStyle(document.documentElement)
+        .scrollPaddingTop;
+      const parsed = Number.parseFloat(rawScrollPadding);
+      return Number.isNaN(parsed) ? 96 : parsed;
+    };
+
+    const resolveActiveSlug = () => {
+      if (headingEls.length === 0) return null;
+
+      const marker = window.scrollY + getScrollPaddingTop() + 12;
+      let activeSlug: string | null = null;
+
+      for (const heading of headingEls) {
+        if (heading.offsetTop <= marker) {
+          activeSlug = heading.id;
+        } else {
+          break;
+        }
+      }
+
+      return activeSlug ?? headingEls[0].id;
+    };
+
+    const resolveVisibleState = () => {
+      const topMarker = getScrollPaddingTop() + 8;
+      const bottomMarker = window.innerHeight - 16;
+
+      const positions = headingEls.map((heading) => {
+        const rect = heading.getBoundingClientRect();
+        return {
+          id: heading.id,
+          top: rect.top,
+          bottom: rect.bottom,
+          offsetTop: heading.offsetTop,
+        };
+      });
+
+      const visible = positions.filter(
+        (position) =>
+          position.bottom > topMarker && position.top < bottomMarker,
+      );
+
+      const visibleSlugs = new Set(visible.map((position) => position.id));
+
+      const lastPassed = positions
+        .filter((position) => position.offsetTop <= window.scrollY + topMarker)
+        .at(-1);
+
+      const activeSlug =
+        lastPassed?.id ?? visible[0]?.id ?? positions[0]?.id ?? null;
+
+      return { activeSlug, visibleSlugs };
+    };
+
+    const scheduleUpdate = () => {
+      if (scrollRafId !== 0) return;
+      scrollRafId = window.requestAnimationFrame(() => {
+        scrollRafId = 0;
+        const { activeSlug, visibleSlugs } = resolveVisibleState();
+        markActivePath(activeSlug ?? resolveActiveSlug(), visibleSlugs);
+      });
+    };
+
+    const dispose = () => {
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      window.removeEventListener("hashchange", scheduleUpdate);
+      if (scrollRafId !== 0) {
+        window.cancelAnimationFrame(scrollRafId);
+        scrollRafId = 0;
+      }
+    };
+
+    const init = () => {
+      dispose();
+
+      headingEls = Array.from(
+        document.querySelectorAll<HTMLElement>(
+          "article h2[id], article h3[id], article h4[id], article h5[id], article h6[id]",
+        ),
+      );
+      linkEls = Array.from(
+        document.querySelectorAll<HTMLAnchorElement>("[data-heading-link]"),
+      );
+
+      parentBySlug = new Map<string, string>();
+      linkBySlug = new Map<string, HTMLAnchorElement>();
+      linkEls.forEach((link) => {
+        const slug = link.dataset.slug;
+        if (!slug) return;
+        parentBySlug.set(slug, link.dataset.parent ?? "");
+        linkBySlug.set(slug, link);
+      });
+
+      window.addEventListener("scroll", scheduleUpdate, { passive: true });
+      window.addEventListener("resize", scheduleUpdate, { passive: true });
+      window.addEventListener("hashchange", scheduleUpdate);
+      scheduleUpdate();
+    };
+
     init();
     document.addEventListener("astro:after-swap", init);
   </script>

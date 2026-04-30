@@ -7,12 +7,31 @@
 
 @theme {
   --color-cube-bg: oklch(26.03% 0 0);
-  --color-cube-up: oklch(50.24% 0.1969 20.61);
-  --color-cube-down: oklch(66.9% 0.2203 37.72);
+  --color-cube-up: oklch(54% 0.22 20.61);
+  --color-cube-down: oklch(68% 0.24 37.72);
   --color-cube-front: oklch(100% 0 0);
-  --color-cube-back: oklch(88.68% 0.1821 95.33);
-  --color-cube-left: oklch(40.24% 0.1765 261.24);
-  --color-cube-right: oklch(59.95% 0.1667 149.57);
+  --color-cube-back: oklch(90% 0.08 95.33);
+  --color-cube-left: oklch(44% 0.195 261.24);
+  --color-cube-right: oklch(62% 0.185 149.57);
+
+  --color-state-hover: rgba(0, 0, 0, 0.05);
+  --color-state-active: rgba(0, 0, 0, 0.1);
+  --color-state-disabled: rgba(0, 0, 0, 0.3);
+
+  --color-slate-50: oklch(99% 0.001 247.9);
+  --color-slate-100: oklch(96.3% 0.003 247.9);
+  --color-slate-200: oklch(93.2% 0.006 248);
+  --color-slate-300: oklch(89.5% 0.009 248);
+  --color-slate-400: oklch(80% 0.015 248);
+  --color-slate-500: oklch(70% 0.02 248);
+  --color-slate-600: oklch(55% 0.025 248);
+  --color-slate-700: oklch(40% 0.025 248);
+  --color-slate-800: oklch(26% 0.022 248);
+  --color-slate-900: oklch(15% 0.01 248);
+  --color-slate-950: oklch(8% 0 248);
+
+  --color-border-light: var(--color-slate-200);
+  --color-border-dark: var(--color-slate-700);
 
   --font-opensans: "Open Sans", sans-serif;
 }
@@ -21,6 +40,10 @@
   :root {
     --color-background: var(--color-slate-100);
     --color-text: var(--colors-slate-900);
+    --color-cube-stage-start: oklch(98.5% 0.004 248);
+    --color-cube-stage-mid: oklch(96.5% 0.008 248);
+    --color-cube-stage-end: oklch(92.5% 0.012 248);
+    --color-cube-surface: oklch(19% 0.02 250);
 
     --header-bg-opacity: 0;
     --header-border-opacity: 0;
@@ -29,6 +52,10 @@
   .dark {
     --color-background: var(--color-slate-900);
     --color-text: var(--color-slate-100);
+    --color-cube-stage-start: oklch(23% 0.02 250);
+    --color-cube-stage-mid: oklch(18% 0.018 250);
+    --color-cube-stage-end: oklch(14% 0.015 250);
+    --color-cube-surface: oklch(8.5% 0.012 250);
   }
 
   * {
@@ -43,6 +70,7 @@
     scrollbar-gutter: stable both-edges;
 
     @apply scroll-pt-16 md:scroll-pt-20 lg:scroll-pt-24;
+    line-height: 1.6;
   }
 
   body {
@@ -55,6 +83,14 @@
     overflow-x: hidden;
 
     @apply font-opensans overflow-y-auto transition-colors has-[#side-navigation[data-open]]:overflow-y-hidden md:has-[#side-navigation[data-open]]:overflow-y-auto;
+    font-weight: 400;
+    letter-spacing: -0.3px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
   }
 }
 
@@ -69,7 +105,7 @@
   }
 
   .icon-button {
-    @apply grid size-7 cursor-pointer place-items-center opacity-70 transition-opacity hover:opacity-90 active:opacity-100 md:size-8 lg:size-9;
+    @apply grid size-7 cursor-pointer place-items-center opacity-70 transition-all duration-200 hover:opacity-90 active:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cube-left dark:focus:ring-offset-slate-900 md:size-8 lg:size-9;
     & > span {
       @apply text-xl md:text-2xl lg:text-3xl;
     }
@@ -78,9 +114,36 @@
 
 @layer utilities {
   .text-content {
-    @apply prose dark:prose-invert prose-slate md:prose-lg lg:prose-xl xl:prose-xl;
+    @apply prose dark:prose-invert prose-slate md:prose-lg lg:prose-lg xl:prose-lg;
+  }
+  .text-content h1 {
+    @apply text-3xl! leading-tight! mt-2! mb-4!;
+  }
+  .text-content h2 {
+    @apply text-2xl! leading-tight! mt-6! mb-3!;
+  }
+  .text-content h3 {
+    @apply text-xl! leading-snug! mt-5! mb-2!;
+  }
+  .text-content p {
+    @apply text-base! leading-relaxed! my-4!;
   }
   .text-content-sm {
-    @apply prose prose-sm dark:prose-invert prose-slate md:prose-sm lg:prose-lg xl:prose-xl;
+    @apply prose prose-sm dark:prose-invert prose-slate md:prose-base lg:prose-lg xl:prose-lg;
+  }
+  .text-content-sm h1 {
+    @apply text-2xl! leading-tight! mt-2! mb-4!;
+  }
+  .text-content-sm h2 {
+    @apply text-xl! leading-tight! mt-6! mb-3!;
+  }
+  .text-content-sm p {
+    @apply text-sm! leading-relaxed! my-3!;
+  }
+}
+
+@layer components {
+  .theme-fade {
+    @apply transition-colors duration-200;
   }
 }

@@ -5,6 +5,7 @@ interface Props {
   disabledPointerEvents?: boolean;
   speed?: number;
   id?: string;
+  colorBackground?: string;
 }
 
 const {
@@ -12,6 +13,7 @@ const {
   disabledPointerEvents = false,
   speed = 500,
   id = null,
+  colorBackground = "var(--color-cube-surface)",
 } = Astro.props;
 ---
 
@@ -20,6 +22,7 @@ const {
   size={size}
   disabled-pointer-events={disabledPointerEvents || null}
   speed={speed}
+  color-background={colorBackground}
   class="block h-[75dvh] w-full"></web-cube>
 <script>
   import { define } from "@web-cube/web-cube";

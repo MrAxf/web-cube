@@ -1,0 +1,43 @@
+---
+interface TocNode {
+  slug: string;
+  text: string;
+  depth: number;
+  parentSlug: string;
+  children: TocNode[];
+}
+
+interface Props {
+  nodes: TocNode[];
+  level?: number;
+}
+
+const { nodes, level = 0 } = Astro.props as Props;
+---
+
+{
+  nodes.map((node) => (
+    <li class="relative pl-3 text-sm">
+      <span class="pointer-events-none absolute top-1 bottom-1 left-0 w-[1.5px] bg-slate-400 dark:bg-slate-500 opacity-0 transition-opacity duration-150 peer-data-[visible=true]:opacity-50 dark:peer-data-[visible=true]:opacity-40"></span>
+      <span class="pointer-events-none absolute top-0.5 bottom-0.5 left-0 w-0.5 bg-cube-left dark:bg-cube-down opacity-0 transition-opacity duration-150 peer-data-[active=true]:opacity-100"></span>
+      <a
+        data-heading-link
+        data-slug={node.slug}
+        data-parent={node.parentSlug}
+        class="peer block truncate rounded-md px-2 py-1 opacity-70 transition-all duration-200 hover:opacity-100 data-[visible=true]:opacity-95 data-[active=true]:bg-slate-200/80 data-[active=true]:text-cube-left data-[active=true]:opacity-100 data-[active=true]:font-semibold data-[ancestor=true]:opacity-90 dark:data-[active=true]:bg-slate-800 dark:data-[active=true]:text-cube-down dark:data-[active=true]:shadow-[inset_0_0_0_1px_rgb(255_255_255_/_0.06)] dark:data-[ancestor=true]:opacity-100"
+        href={`#${node.slug}`}
+        style={`margin-left: ${level * 0.9}rem`}
+        title={node.text}
+      >
+        {node.text}
+      </a>
+      {
+        node.children.length > 0 && (
+          <ul class="mt-0.5 flex flex-col gap-0.5">
+            <Astro.self nodes={node.children} level={level + 1} />
+          </ul>
+        )
+      }
+    </li>
+  ))
+}

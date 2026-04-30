@@ -31,20 +31,20 @@ const { Content, headings } = await render(doc);
 <BaseLayout title={doc.data.title} mainClass="gap-12 flex flex-col py-0">
   <section class="flex justify-between gap-4">
     <SideNavigation />
-    <article class="text-content-sm mx-auto w-full grow py-8">
+    <article class="text-content-sm mx-auto w-full grow py-6 px-4 md:py-8 md:px-6 lg:px-8">
       <h1>{doc.data.title}</h1>
       <Content />
       <div
-        class="not-prose my-8 flex flex-wrap items-stretch justify-between gap-8"
+        class="not-prose my-8 flex flex-col sm:flex-row flex-wrap items-stretch justify-between gap-4 sm:gap-6"
       >
         {
           prevDoc && (
             <a
               href={`/docs/${prevDoc.data.path}`}
-              class="no-prose box-content flex flex-1 items-center justify-start gap-4 rounded-lg border border-current px-4 py-2 no-underline opacity-70 shadow-sm transition-all hover:opacity-100"
+              class="no-prose box-content flex flex-1 items-center justify-start gap-3 rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-3 no-underline opacity-70 shadow-sm transition-all duration-200 hover:opacity-100 hover:shadow-md"
             >
               <span class="i-heroicons-arrow-left" />
-              <span>{prevDoc.data.title}</span>
+              <span class="text-sm sm:text-base line-clamp-2">{prevDoc.data.title}</span>
             </a>
           )
         }
@@ -52,9 +52,9 @@ const { Content, headings } = await render(doc);
           nextDoc && (
             <a
               href={`/docs/${nextDoc.data.path}`}
-              class="no-prose box-content flex flex-1 items-center justify-start gap-4 rounded-lg border border-current px-4 py-2 no-underline opacity-70 shadow-sm transition-all hover:opacity-100"
+              class="no-prose box-content flex flex-1 items-center justify-end gap-3 rounded-lg border border-slate-300 dark:border-slate-600 px-4 py-3 no-underline opacity-70 shadow-sm transition-all duration-200 hover:opacity-100 hover:shadow-md"
             >
-              <span>{nextDoc.data.title}</span>
+              <span class="text-sm sm:text-base line-clamp-2 text-right">{nextDoc.data.title}</span>
               <span class="i-heroicons-arrow-right" />
             </a>
           )

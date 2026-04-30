@@ -15,26 +15,43 @@ const { class: className = "", id = "theme-button" } = Astro.props;
   class:list={twMerge("icon-button shrink-0", className)}
   aria-label="Toggle theme"
   title="Toggle theme"
+  data-theme-button
 >
-  <span class="i-heroicons-sun"></span>
+  <span class="transition-transform duration-300 inline-block"></span>
 </button>
 
 <script is:inline define:vars={{ id }}>
+  const icon = (theme) =>
+    theme === "dark" ? "i-heroicons-sun" : "i-heroicons-moon";
+
+  const syncButton = ($themeButton) => {
+    const theme = localStorage.getItem("theme") ?? "light";
+    const $icon = $themeButton.querySelector("span");
+    $icon.className = `transition-transform duration-300 inline-block ${icon(theme)}`;
+  };
+
   const init = () => {
     const $themeButton = document.getElementById(id);
+    if (!$themeButton) return;
+    if ($themeButton.dataset.initialized === "true") {
+      syncButton($themeButton);
+      return;
+    }
+    $themeButton.dataset.initialized = "true";
 
-    const theme = localStorage.getItem("theme") ?? "light";
-    const icon = (theme) =>
-      theme === "dark" ? "i-heroicons-sun" : "i-heroicons-moon";
-    $themeButton.querySelector("span").className = icon(theme);
+    syncButton($themeButton);
 
     $themeButton.addEventListener("click", () => {
+      $themeButton.style.transform = "rotate(180deg)";
       document.documentElement.classList.toggle("dark");
       const theme = document.documentElement.classList.contains("dark")
         ? "dark"
         : "light";
       localStorage.setItem("theme", theme);
-      $themeButton.querySelector("span").className = icon(theme);
+      setTimeout(() => {
+        $themeButton.style.transform = "rotate(0deg)";
+      }, 150);
+      syncButton($themeButton);
     });
   };
   init();

@@ -8,19 +8,24 @@ import BaseLayout from "@/layouts/base-layout.astro";
 <BaseLayout mainClass="gap-12 flex flex-col w-full">
   <BackgroundGradients />
   <section
-    class="text-content mx-auto my-[5dvh] text-center md:my-[7.5dvh] lg:my-[10dvh]"
+    class="text-content relative mx-auto mt-4 w-full max-w-5xl px-6 py-10 text-center md:mt-6 md:px-10 md:py-14 lg:mt-8 lg:px-16 lg:py-18"
   >
-    <h1 class="font-normal">
-      <span class="text-cube-up dark:brightness-125">Create</span> and <span class="text-cube-left dark:brightness-125">customize</span> your <span class="text-cube-right dark:brightness-125"><strong>rubik's cube.</strong></span>
+    <div class="pointer-events-none absolute inset-x-[18%] top-0 h-24 bg-linear-to-r from-cube-up/25 via-cube-left/20 to-cube-right/25 blur-3xl"></div>
+    <div class="pointer-events-none absolute inset-x-[28%] bottom-6 h-px bg-linear-to-r from-transparent via-slate-300/90 to-transparent dark:via-slate-700/90"></div>
+    <p class="not-prose mb-4 text-xs font-semibold uppercase tracking-[0.32em] text-slate-700 dark:text-slate-300">
+      Web component for interactive cubes
+    </p>
+    <h1 class="relative mx-auto max-w-4xl text-balance font-normal text-4xl md:text-6xl lg:text-7xl">
+      <span class="text-cube-up dark:brightness-130 font-semibold">Create</span> and <span class="text-cube-left dark:brightness-130 font-semibold">customize</span> your <span class="text-cube-right dark:brightness-130 font-bold"><strong>rubik's cube.</strong></span>
     </h1>
-    <p>
+    <p class="mx-auto mt-6 max-w-2xl text-pretty text-slate-700 dark:text-slate-200">
       <strong>Web Cube</strong> is a web component that allows you to create and
       customize your own rubik's cube.
     </p>
-    <div class="not-prose mt-16">
+    <div class="not-prose mt-10 flex justify-center">
       <a
         href="/docs/get-started/quick-start"
-        class="bg-cube-left mt-4 rounded px-8 py-4 font-bold text-white shadow-md transition-colors hover:bg-blue-700"
+        class="bg-cube-left mt-4 rounded-xl px-10 py-4 font-bold text-white shadow-lg ring-1 ring-black/5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl"
       >
         Get Started
       </a>
@@ -35,32 +40,35 @@ import BaseLayout from "@/layouts/base-layout.astro";
         face.
       </p>
     </article>
-    <article class="overflow-hidden rounded-lg bg-slate-300 dark:bg-slate-700">
-      <WebCube size={3} />
+    <article
+      class="overflow-hidden rounded-xl border border-slate-200 shadow-lg dark:border-slate-700"
+      style="background-image: linear-gradient(135deg, var(--color-cube-stage-start), var(--color-cube-stage-mid), var(--color-cube-stage-end));"
+    >
+      <WebCube size={3} colorBackground="var(--color-cube-surface)" />
     </article>
   </section>
 
-  <section class="grid grid-cols-1 gap-4 md:grid-cols-2">
-    <article class="text-content rounded-lg flex items-stretch gap-8 overflow-hidden border border-slate-300 dark:border-slate-700">
-      <div class="bg-slate-300 dark:bg-slate-700 grid place-items-center">
-        <span class="i-simple-icons-npm size-16 mx-16"></span>
+  <section class="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <article class="text-content rounded-xl flex items-stretch gap-8 overflow-hidden border border-slate-200 dark:border-slate-700 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+      <div class="bg-slate-100 dark:bg-slate-800 grid place-items-center min-w-fit">
+        <span class="i-simple-icons-npm size-16 mx-16 text-slate-500"></span>
       </div>
-      <div class="text-content p-4">
-        <h3 class="!mt-0">Zero dependencies</h3>
-        <p>Web Cube has zero npm dependencies and is built with web standards.</p>
+      <div class="text-content p-6 flex flex-col justify-center">
+        <h3 class="mt-0! mb-2!">Zero dependencies</h3>
+        <p class="my-0!">Web Cube has zero npm dependencies and is built with web standards.</p>
       </div>
     </article>
-    <article class="text-content rounded-lg flex items-stretch gap-8 overflow-hidden border border-slate-300 dark:border-slate-700">
-      <div class="bg-slate-300 dark:bg-slate-700 grid place-items-center relative">
+    <article class="text-content rounded-xl flex items-stretch gap-8 overflow-hidden border border-slate-200 dark:border-slate-700 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+      <div class="bg-slate-100 dark:bg-slate-800 grid place-items-center relative min-w-fit">
         <div class="size-16 mx-16">
         </div>
-        <span class="i-simple-icons-react size-16 absolute top-8 left-8 bg-cube-left brightness-125"></span>
-        <span class="i-simple-icons-angular size-16 absolute top-16 left-16 bg-cube-up"></span>
-        <span class="i-simple-icons-vuedotjs size-16 absolute top-24 left-24 bg-cube-right"></span>
+        <span class="i-simple-icons-react size-16 absolute top-8 left-8 text-cyan-500"></span>
+        <span class="i-simple-icons-angular size-16 absolute top-16 left-16 text-red-500"></span>
+        <span class="i-simple-icons-vuedotjs size-16 absolute top-24 left-24 text-green-500"></span>
       </div>
-      <div class="text-content p-4">
-        <h3 class="!mt-0">Works with any framework</h3>
-        <p>
+      <div class="text-content p-6 flex flex-col justify-center">
+        <h3 class="mt-0! mb-2!">Works with any framework</h3>
+        <p class="my-0!">
           Web Cube is a web component that can be used with any framework or without it.
         </p>
       </div>

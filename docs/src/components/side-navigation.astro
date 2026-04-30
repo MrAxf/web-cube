@@ -28,14 +28,14 @@ const path = Astro.url.pathname;
     "data-open:flex hidden flex-col items-start justify-start md:flex",
     "left-0 top-14 md:top-16 lg:top-20",
     "h-[calc(100dvh-3.5rem)] w-full md:h-[calc(100dvh-4rem)] md:w-64 lg:h-[calc(100dvh-5rem)]",
-    "bg-(--color-background) z-[2] shrink-0 border-r-0 border-slate-500 p-4 md:border-r",
+    "bg-(--color-background) z-[2] shrink-0 border-r-0 border-slate-200 dark:border-slate-700 p-4 md:border-r transition-all duration-300",
   ]}
 >
   <nav class="grow overflow-y-auto">
     {
       Object.entries(groupedDocs).map(([group, documents]) => (
         <div>
-          <h2 class="mb-4 text-xl font-bold">{group}</h2>
+          <h2 class="mb-4 text-sm font-bold uppercase tracking-wider opacity-70">{group}</h2>
           <ul class="mb-4">
             {documents
               .sort((a, b) => a.data.order - b.data.order)
@@ -44,7 +44,7 @@ const path = Astro.url.pathname;
                   <a
                     href={`/docs/${doc.data.path}`}
                     data-active={path.includes(doc.data.path) ? "true" : null}
-                    class="data-active:text-slate-100 data-active:opacity-100 data-active:bg-cube-left block rounded-lg px-2 py-0.5 opacity-70 transition-all hover:opacity-100"
+                    class="data-active:text-white data-active:opacity-100 data-active:bg-cube-left block rounded-lg px-3 py-2 opacity-70 transition-all duration-200 hover:opacity-100 hover:bg-slate-200 dark:hover:bg-slate-700"
                   >
                     {doc.data.title}
                   </a>
