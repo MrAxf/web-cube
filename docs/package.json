@@ -9,22 +9,22 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/check": "0.9.8",
-    "@astrojs/mdx": "5.0.3",
+    "@astrojs/check": "0.9.9",
+    "@astrojs/mdx": "5.0.4",
     "@egoist/tailwindcss-icons": "1.9.2",
     "@fontsource-variable/open-sans": "5.2.7",
     "@iconify-json/heroicons": "1.2.3",
-    "@iconify-json/simple-icons": "1.2.77",
-    "@pagefind/default-ui": "1.5.0",
+    "@iconify-json/simple-icons": "1.2.80",
+    "@pagefind/default-ui": "1.5.2",
     "@tailwindcss/typography": "0.5.19",
-    "@tailwindcss/vite": "4.2.2",
+    "@tailwindcss/vite": "4.2.4",
     "@types/node": "24.12.2",
     "@web-cube/web-cube": "0.7.0",
-    "astro": "6.1.5",
+    "astro": "6.2.0",
     "astro-expressive-code": "0.41.7",
-    "pagefind": "1.5.0",
+    "pagefind": "1.5.2",
     "tailwind-merge": "3.5.0",
-    "tailwindcss": "4.2.2",
+    "tailwindcss": "4.2.4",
     "typescript": "5.9.3"
   }
 }
