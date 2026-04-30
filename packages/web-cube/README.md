@@ -8,7 +8,7 @@ event hooks for advanced integrations.
 
 - Interactive 3D Rubik's cube element.
 - Programmatic API for cube and layer rotations.
-- State management with `getState` and `setState`.
+- State management with `getState` and `setState`, including persistent sticker orientation.
 - Rotation and state-change custom events.
 - Works with npm and JSR.
 - TypeScript types included.
@@ -59,6 +59,11 @@ await cube.rotateLayer({ axis: "y", layer: 0, angle: 180 });
 const state = cube.getState();
 cube.setState(state);
 ```
+
+`getState()` includes an optional `rotations` field that stores each visible
+sticker orientation as `0`, `90`, `180`, or `270`. Passing that state back to
+`setState()` preserves sticker orientation between moves. Passing a color-only
+state resets sticker orientations to `0`.
 
 ## Events
 

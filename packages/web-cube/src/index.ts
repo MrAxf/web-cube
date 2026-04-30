@@ -11,7 +11,7 @@ import { WebCube } from "./web-cube.ts";
 
 export { WebCube };
 
-export type { FlatState } from "./state.ts";
+export type { FlatState, FlatStickerRotations, StickerRotation } from "./state.ts";
 export type { RotationEvent, StateChangeEvent } from "./cube-events.ts";
 export * from "./utils.ts";
 

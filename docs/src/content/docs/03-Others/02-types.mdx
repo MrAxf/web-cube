@@ -34,6 +34,28 @@ The `FlatState` type is an object that represents a flat representation of the s
 - `[Face.Right]`: A 2D array of [`Face`](#face-enum) values representing the right face of the cube.
 - `[Face.Front]`: A 2D array of [`Face`](#face-enum) values representing the front face of the cube.
 - `[Face.Back]`: A 2D array of [`Face`](#face-enum) values representing the back face of the cube.
+- `rotations?`: Optional [`FlatStickerRotations`](#flatstickerrotations-type) data for persistent sticker orientation.
+
+When `FlatState` is returned by `getState`, `rotations` is included. When a
+state without `rotations` is passed to `setState`, every sticker orientation is
+reset to `0`.
+
+### `StickerRotation` Type
+
+The `StickerRotation` type represents a sticker's visible quarter-turn orientation.
+
+- Type: `0 | 90 | 180 | 270`
+
+### `FlatStickerRotations` Type
+
+The `FlatStickerRotations` type mirrors `FlatState` but stores [`StickerRotation`](#stickerrotation-type) values instead of face colors.
+
+- `[Face.Up]`: A 2D array of sticker rotations for the top face.
+- `[Face.Down]`: A 2D array of sticker rotations for the bottom face.
+- `[Face.Left]`: A 2D array of sticker rotations for the left face.
+- `[Face.Right]`: A 2D array of sticker rotations for the right face.
+- `[Face.Front]`: A 2D array of sticker rotations for the front face.
+- `[Face.Back]`: A 2D array of sticker rotations for the back face.
 
 ## Rotation options types
 

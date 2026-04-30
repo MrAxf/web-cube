@@ -64,6 +64,9 @@ Triggered whenever the cube state changes because of:
 
 - `detail.state`: current [`FlatState`](/docs/others/types#flatstate-type)
 
+The state includes `rotations`, so listeners can persist or inspect sticker
+orientation after cube, layer, and pointer-triggered moves.
+
 ## Event listener example
 
 ```typescript title="index.ts"

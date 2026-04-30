@@ -106,11 +106,13 @@ export const style = /* css */ `
                             content: "";
                             display: block;
                             position: absolute;
+                            z-index: 0;
                             width: 80%;
                             height: 80%;
                             margin: 10%;
                             border-radius: 10%;
                             background-color: var(--sticker-color);
+                            transform: rotate(var(--sticker-rotation, 0deg));
                         }
                     }
                 }

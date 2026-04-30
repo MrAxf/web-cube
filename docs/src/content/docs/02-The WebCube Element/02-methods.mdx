@@ -22,6 +22,9 @@ The new state of the cube.
 - Type: [`FlatState`](/docs/others/types#flatstate-type)
 - Required: Yes
 
+If `newState.rotations` is provided, sticker orientations are restored with the
+color state. If it is omitted, sticker orientations are reset to `0`.
+
 ### Example
 
 ```typescript title="index.ts"
@@ -63,6 +66,10 @@ Gets the state of the cube.
 ### Returns
 
 - Type: [`FlatState`](/docs/others/types#flatstate-type)
+
+The returned state includes `rotations`, a serializable map of each visible
+sticker orientation. Passing the returned value to `setState` preserves both
+colors and sticker orientation.
 
 ### Example
 

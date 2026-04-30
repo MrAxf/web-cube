@@ -10,6 +10,26 @@ export interface State {
   [Face.Back]: Observable<Face>[][];
 }
 
+export type StickerRotation = 0 | 90 | 180 | 270;
+
+export interface StickerRotationState {
+  [Face.Up]: Observable<StickerRotation>[][];
+  [Face.Down]: Observable<StickerRotation>[][];
+  [Face.Left]: Observable<StickerRotation>[][];
+  [Face.Right]: Observable<StickerRotation>[][];
+  [Face.Front]: Observable<StickerRotation>[][];
+  [Face.Back]: Observable<StickerRotation>[][];
+}
+
+export interface FlatStickerRotations {
+  [Face.Up]: StickerRotation[][];
+  [Face.Down]: StickerRotation[][];
+  [Face.Left]: StickerRotation[][];
+  [Face.Right]: StickerRotation[][];
+  [Face.Front]: StickerRotation[][];
+  [Face.Back]: StickerRotation[][];
+}
+
 /**
  * A flat representation of the state of a cube.
  */
@@ -20,6 +40,114 @@ export interface FlatState {
   [Face.Right]: Face[][];
   [Face.Front]: Face[][];
   [Face.Back]: Face[][];
+  rotations?: FlatStickerRotations;
+}
+
+type Axis = "x" | "y" | "z";
+
+interface Vector {
+  x: -1 | 0 | 1;
+  y: -1 | 0 | 1;
+  z: -1 | 0 | 1;
+}
+
+interface FaceBasis {
+  right: Vector;
+  down: Vector;
+}
+
+const FACE_BASIS: Record<Face, FaceBasis> = {
+  [Face.Front]: {
+    right: { x: 1, y: 0, z: 0 },
+    down: { x: 0, y: 1, z: 0 },
+  },
+  [Face.Back]: {
+    right: { x: 1, y: 0, z: 0 },
+    down: { x: 0, y: -1, z: 0 },
+  },
+  [Face.Left]: {
+    right: { x: 0, y: 0, z: 1 },
+    down: { x: 0, y: 1, z: 0 },
+  },
+  [Face.Right]: {
+    right: { x: 0, y: 0, z: -1 },
+    down: { x: 0, y: 1, z: 0 },
+  },
+  [Face.Up]: {
+    right: { x: 1, y: 0, z: 0 },
+    down: { x: 0, y: 0, z: 1 },
+  },
+  [Face.Down]: {
+    right: { x: 1, y: 0, z: 0 },
+    down: { x: 0, y: 0, z: -1 },
+  },
+};
+
+function negate(vector: Vector): Vector {
+  return {
+    x: -vector.x as -1 | 0 | 1,
+    y: -vector.y as -1 | 0 | 1,
+    z: -vector.z as -1 | 0 | 1,
+  };
+}
+
+function isSameVector(a: Vector, b: Vector): boolean {
+  return a.x === b.x && a.y === b.y && a.z === b.z;
+}
+
+function normalizeAngle(angle: number): StickerRotation {
+  return (((angle % 360) + 360) % 360) as StickerRotation;
+}
+
+function rotateVector(vector: Vector, axis: Axis, angle: number): Vector {
+  const normalizedAngle = normalizeAngle(angle);
+  if (normalizedAngle === 0) {
+    return vector;
+  }
+  if (normalizedAngle === 180) {
+    if (axis === "x") return { x: vector.x, y: -vector.y as -1 | 0 | 1, z: -vector.z as -1 | 0 | 1 };
+    if (axis === "y") return { x: -vector.x as -1 | 0 | 1, y: vector.y, z: -vector.z as -1 | 0 | 1 };
+    return { x: -vector.x as -1 | 0 | 1, y: -vector.y as -1 | 0 | 1, z: vector.z };
+  }
+
+  const sign = normalizedAngle === 90 ? 1 : -1;
+  if (axis === "x") {
+    return { x: vector.x, y: -sign * vector.z as -1 | 0 | 1, z: sign * vector.y as -1 | 0 | 1 };
+  }
+  if (axis === "y") {
+    return { x: sign * vector.z as -1 | 0 | 1, y: vector.y, z: -sign * vector.x as -1 | 0 | 1 };
+  }
+  return { x: -sign * vector.y as -1 | 0 | 1, y: sign * vector.x as -1 | 0 | 1, z: vector.z };
+}
+
+function getStickerTopVector(face: Face, rotation: StickerRotation): Vector {
+  const { right, down } = FACE_BASIS[face];
+  if (rotation === 0) return negate(down);
+  if (rotation === 90) return right;
+  if (rotation === 180) return down;
+  return negate(right);
+}
+
+export function transformStickerRotation(
+  sourceFace: Face,
+  targetFace: Face,
+  rotation: StickerRotation,
+  axis: Axis,
+  angle: number,
+): StickerRotation {
+  const transformedTop = rotateVector(
+    getStickerTopVector(sourceFace, rotation),
+    axis,
+    angle,
+  );
+  const { right, down } = FACE_BASIS[targetFace];
+
+  if (isSameVector(transformedTop, negate(down))) return 0;
+  if (isSameVector(transformedTop, right)) return 90;
+  if (isSameVector(transformedTop, down)) return 180;
+  if (isSameVector(transformedTop, negate(right))) return 270;
+
+  throw new Error("Invalid sticker rotation transform");
 }
 
 function createFaces(ctx: ObservableContext, size: number, face: Face) {
@@ -35,6 +163,19 @@ function createFaces(ctx: ObservableContext, size: number, face: Face) {
   return faces;
 }
 
+function createRotationFaces(ctx: ObservableContext, size: number) {
+  const rotations: Observable<StickerRotation>[][] = [];
+  const { observableOf } = ctx;
+
+  for (let x = 0; x < size; x++) {
+    rotations[x] = [];
+    for (let y = 0; y < size; y++) {
+      rotations[x][y] = observableOf(0);
+    }
+  }
+  return rotations;
+}
+
 export function createState(ctx: ObservableContext, size: number): State {
   return {
     [Face.Up]: createFaces(ctx, size, Face.Up),
@@ -46,8 +187,38 @@ export function createState(ctx: ObservableContext, size: number): State {
   };
 }
 
-export function getCurrentState(state: State): FlatState {
+export function createStickerRotationState(
+  ctx: ObservableContext,
+  size: number,
+): StickerRotationState {
   return {
+    [Face.Up]: createRotationFaces(ctx, size),
+    [Face.Down]: createRotationFaces(ctx, size),
+    [Face.Left]: createRotationFaces(ctx, size),
+    [Face.Right]: createRotationFaces(ctx, size),
+    [Face.Front]: createRotationFaces(ctx, size),
+    [Face.Back]: createRotationFaces(ctx, size),
+  };
+}
+
+export function getCurrentStickerRotations(
+  rotationState: StickerRotationState,
+): FlatStickerRotations {
+  return {
+    [Face.Up]: rotationState[Face.Up].map((row) => row.map((rotation) => rotation.value)),
+    [Face.Down]: rotationState[Face.Down].map((row) => row.map((rotation) => rotation.value)),
+    [Face.Left]: rotationState[Face.Left].map((row) => row.map((rotation) => rotation.value)),
+    [Face.Right]: rotationState[Face.Right].map((row) => row.map((rotation) => rotation.value)),
+    [Face.Front]: rotationState[Face.Front].map((row) => row.map((rotation) => rotation.value)),
+    [Face.Back]: rotationState[Face.Back].map((row) => row.map((rotation) => rotation.value)),
+  };
+}
+
+export function getCurrentState(
+  state: State,
+  rotationState?: StickerRotationState,
+): FlatState {
+  const currentState: FlatState = {
     [Face.Up]: state[Face.Up].map((row) => row.map((face) => face.value)),
     [Face.Down]: state[Face.Down].map((row) => row.map((face) => face.value)),
     [Face.Left]: state[Face.Left].map((row) => row.map((face) => face.value)),
@@ -55,9 +226,40 @@ export function getCurrentState(state: State): FlatState {
     [Face.Front]: state[Face.Front].map((row) => row.map((face) => face.value)),
     [Face.Back]: state[Face.Back].map((row) => row.map((face) => face.value)),
   };
+  if (rotationState) {
+    currentState.rotations = getCurrentStickerRotations(rotationState);
+  }
+  return currentState;
 }
 
-export function setState(state: State, newState: FlatState) {
+export function setStickerRotations(
+  rotationState: StickerRotationState,
+  newRotations: FlatStickerRotations,
+) {
+  faceList.forEach((face) => {
+    for (let x = 0; x < newRotations[Face.Up].length; x++) {
+      for (let y = 0; y < newRotations[Face.Up].length; y++) {
+        rotationState[face][x][y].value = newRotations[face][x][y];
+      }
+    }
+  });
+}
+
+export function resetStickerRotations(rotationState: StickerRotationState) {
+  faceList.forEach((face) => {
+    for (let x = 0; x < rotationState[Face.Up].length; x++) {
+      for (let y = 0; y < rotationState[Face.Up].length; y++) {
+        rotationState[face][x][y].value = 0;
+      }
+    }
+  });
+}
+
+export function setState(
+  state: State,
+  newState: FlatState,
+  rotationState?: StickerRotationState,
+) {
   faceList.forEach((face) => {
     for (let x = 0; x < newState[Face.Up].length; x++) {
       for (let y = 0; y < newState[Face.Up].length; y++) {
@@ -65,338 +267,538 @@ export function setState(state: State, newState: FlatState) {
       }
     }
   });
+  if (!rotationState) return;
+  if (newState.rotations) {
+    setStickerRotations(rotationState, newState.rotations);
+  } else {
+    resetStickerRotations(rotationState);
+  }
 }
 
-function rotateFace90(state: State, oldState: FlatState, face: Face) {
+function setRotatedSticker(
+  state: State,
+  rotationState: StickerRotationState,
+  oldState: FlatState,
+  oldRotations: FlatStickerRotations,
+  targetFace: Face,
+  targetX: number,
+  targetY: number,
+  sourceFace: Face,
+  sourceX: number,
+  sourceY: number,
+  axis: Axis,
+  angle: number,
+) {
+  state[targetFace][targetX][targetY].value = oldState[sourceFace][sourceX][sourceY];
+  rotationState[targetFace][targetX][targetY].value = transformStickerRotation(
+    sourceFace,
+    targetFace,
+    oldRotations[sourceFace][sourceX][sourceY],
+    axis,
+    angle,
+  );
+}
+
+function rotateFace90(
+  state: State,
+  rotationState: StickerRotationState,
+  oldState: FlatState,
+  oldRotations: FlatStickerRotations,
+  face: Face,
+  axis: Axis,
+  angle: number,
+) {
   const size = oldState[Face.Up].length;
   for (let x = 0; x < size; x++) {
     for (let y = 0; y < size; y++) {
-      state[face][x][y].value = oldState[face][size - 1 - y][x];
+      setRotatedSticker(
+        state,
+        rotationState,
+        oldState,
+        oldRotations,
+        face,
+        x,
+        y,
+        face,
+        size - 1 - y,
+        x,
+        axis,
+        angle,
+      );
     }
   }
 }
 
-function rotateFaceNegative90(state: State, oldState: FlatState, face: Face) {
+function rotateFaceNegative90(
+  state: State,
+  rotationState: StickerRotationState,
+  oldState: FlatState,
+  oldRotations: FlatStickerRotations,
+  face: Face,
+  axis: Axis,
+  angle: number,
+) {
   const size = oldState[Face.Up].length;
   for (let x = 0; x < size; x++) {
     for (let y = 0; y < size; y++) {
-      state[face][x][y].value = oldState[face][y][size - 1 - x];
+      setRotatedSticker(
+        state,
+        rotationState,
+        oldState,
+        oldRotations,
+        face,
+        x,
+        y,
+        face,
+        y,
+        size - 1 - x,
+        axis,
+        angle,
+      );
     }
   }
 }
 
-function rotateFace180(state: State, oldState: FlatState, face: Face) {
+function rotateFace180(
+  state: State,
+  rotationState: StickerRotationState,
+  oldState: FlatState,
+  oldRotations: FlatStickerRotations,
+  face: Face,
+  axis: Axis,
+  angle: number,
+) {
   const size = oldState[Face.Up].length;
   for (let x = 0; x < size; x++) {
     for (let y = 0; y < size; y++) {
-      state[face][x][y].value = oldState[face][size - 1 - x][size - 1 - y];
+      setRotatedSticker(
+        state,
+        rotationState,
+        oldState,
+        oldRotations,
+        face,
+        x,
+        y,
+        face,
+        size - 1 - x,
+        size - 1 - y,
+        axis,
+        angle,
+      );
     }
   }
 }
 
-function rotateXLayer90(state: State, oldState: FlatState, layer: number) {
+function rotateXLayer90(
+  state: State,
+  rotationState: StickerRotationState,
+  oldState: FlatState,
+  oldRotations: FlatStickerRotations,
+  layer: number,
+) {
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    state[Face.Up][layer][i].value = oldState[Face.Front][layer][i];
-    state[Face.Front][layer][i].value = oldState[Face.Down][layer][i];
-    state[Face.Down][layer][i].value = oldState[Face.Back][layer][i];
-    state[Face.Back][layer][i].value = oldState[Face.Up][layer][i];
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Up, layer, i, Face.Front, layer, i, "x", 90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Front, layer, i, Face.Down, layer, i, "x", 90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Down, layer, i, Face.Back, layer, i, "x", 90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Back, layer, i, Face.Up, layer, i, "x", 90);
   }
 }
 
 function rotateXLayer90Backwards(
   state: State,
+  rotationState: StickerRotationState,
   oldState: FlatState,
+  oldRotations: FlatStickerRotations,
   layer: number,
 ) {
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    state[Face.Up][layer][i].value = oldState[Face.Back][layer][i];
-    state[Face.Front][layer][i].value = oldState[Face.Up][layer][i];
-    state[Face.Down][layer][i].value = oldState[Face.Front][layer][i];
-    state[Face.Back][layer][i].value = oldState[Face.Down][layer][i];
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Up, layer, i, Face.Back, layer, i, "x", -90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Front, layer, i, Face.Up, layer, i, "x", -90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Down, layer, i, Face.Front, layer, i, "x", -90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Back, layer, i, Face.Down, layer, i, "x", -90);
   }
 }
 
-function rotateXLayer180(state: State, oldState: FlatState, layer: number) {
+function rotateXLayer180(
+  state: State,
+  rotationState: StickerRotationState,
+  oldState: FlatState,
+  oldRotations: FlatStickerRotations,
+  layer: number,
+) {
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    state[Face.Up][layer][i].value = oldState[Face.Down][layer][i];
-    state[Face.Front][layer][i].value = oldState[Face.Back][layer][i];
-    state[Face.Down][layer][i].value = oldState[Face.Up][layer][i];
-    state[Face.Back][layer][i].value = oldState[Face.Front][layer][i];
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Up, layer, i, Face.Down, layer, i, "x", 180);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Front, layer, i, Face.Back, layer, i, "x", 180);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Down, layer, i, Face.Up, layer, i, "x", 180);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Back, layer, i, Face.Front, layer, i, "x", 180);
   }
 }
 
-export function rotateX90(state: State, layer: number): void {
+export function rotateX90(
+  state: State,
+  rotationState: StickerRotationState,
+  layer: number,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
-  rotateXLayer90(state, oldState, layer);
+  rotateXLayer90(state, rotationState, oldState, oldRotations, layer);
   if (layer === 0) {
-    rotateFace90(state, oldState, Face.Left);
+    rotateFace90(state, rotationState, oldState, oldRotations, Face.Left, "x", 90);
   } else if (layer === size - 1) {
-    rotateFaceNegative90(state, oldState, Face.Right);
+    rotateFaceNegative90(state, rotationState, oldState, oldRotations, Face.Right, "x", 90);
   }
 }
 
-export function rotateX90Backwards(state: State, layer: number): void {
+export function rotateX90Backwards(
+  state: State,
+  rotationState: StickerRotationState,
+  layer: number,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
-  rotateXLayer90Backwards(state, oldState, layer);
+  rotateXLayer90Backwards(state, rotationState, oldState, oldRotations, layer);
   if (layer === 0) {
-    rotateFaceNegative90(state, oldState, Face.Left);
+    rotateFaceNegative90(state, rotationState, oldState, oldRotations, Face.Left, "x", -90);
   } else if (layer === size - 1) {
-    rotateFace90(state, oldState, Face.Right);
+    rotateFace90(state, rotationState, oldState, oldRotations, Face.Right, "x", -90);
   }
 }
 
-export function rotateX180(state: State, layer: number): void {
+export function rotateX180(
+  state: State,
+  rotationState: StickerRotationState,
+  layer: number,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
-  rotateXLayer180(state, oldState, layer);
+  rotateXLayer180(state, rotationState, oldState, oldRotations, layer);
   if (layer === 0) {
-    rotateFace180(state, oldState, Face.Left);
+    rotateFace180(state, rotationState, oldState, oldRotations, Face.Left, "x", 180);
   } else if (layer === size - 1) {
-    rotateFace180(state, oldState, Face.Right);
+    rotateFace180(state, rotationState, oldState, oldRotations, Face.Right, "x", 180);
   }
 }
 
-export function rotateCubeX90(state: State): void {
+export function rotateCubeX90(
+  state: State,
+  rotationState: StickerRotationState,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    rotateXLayer90(state, oldState, i);
+    rotateXLayer90(state, rotationState, oldState, oldRotations, i);
   }
-  rotateFace90(state, oldState, Face.Left);
-  rotateFaceNegative90(state, oldState, Face.Right);
+  rotateFace90(state, rotationState, oldState, oldRotations, Face.Left, "x", 90);
+  rotateFaceNegative90(state, rotationState, oldState, oldRotations, Face.Right, "x", 90);
 }
 
-export function rotateCubeX90Backwards(state: State): void {
+export function rotateCubeX90Backwards(
+  state: State,
+  rotationState: StickerRotationState,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    rotateXLayer90Backwards(state, oldState, i);
+    rotateXLayer90Backwards(state, rotationState, oldState, oldRotations, i);
   }
-  rotateFaceNegative90(state, oldState, Face.Left);
-  rotateFace90(state, oldState, Face.Right);
+  rotateFaceNegative90(state, rotationState, oldState, oldRotations, Face.Left, "x", -90);
+  rotateFace90(state, rotationState, oldState, oldRotations, Face.Right, "x", -90);
 }
 
-export function rotateCubeX180(state: State): void {
+export function rotateCubeX180(
+  state: State,
+  rotationState: StickerRotationState,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    rotateXLayer180(state, oldState, i);
+    rotateXLayer180(state, rotationState, oldState, oldRotations, i);
   }
-  rotateFace180(state, oldState, Face.Left);
-  rotateFace180(state, oldState, Face.Right);
+  rotateFace180(state, rotationState, oldState, oldRotations, Face.Left, "x", 180);
+  rotateFace180(state, rotationState, oldState, oldRotations, Face.Right, "x", 180);
 }
 
-function rotateYLayer90(state: State, oldState: FlatState, layer: number) {
+function rotateYLayer90(
+  state: State,
+  rotationState: StickerRotationState,
+  oldState: FlatState,
+  oldRotations: FlatStickerRotations,
+  layer: number,
+) {
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    state[Face.Front][i][layer].value = oldState[Face.Left][i][layer];
-    state[Face.Right][i][layer].value = oldState[Face.Front][i][layer];
-    state[Face.Back][size - 1 - i][size - 1 - layer].value =
-      oldState[Face.Right][i][layer];
-    state[Face.Left][i][layer].value =
-      oldState[Face.Back][size - 1 - i][size - 1 - layer];
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Front, i, layer, Face.Left, i, layer, "y", 90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Right, i, layer, Face.Front, i, layer, "y", 90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Back, size - 1 - i, size - 1 - layer, Face.Right, i, layer, "y", 90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Left, i, layer, Face.Back, size - 1 - i, size - 1 - layer, "y", 90);
   }
 }
 
 function rotateYLayer90Backwards(
   state: State,
+  rotationState: StickerRotationState,
   oldState: FlatState,
+  oldRotations: FlatStickerRotations,
   layer: number,
 ) {
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    state[Face.Front][i][layer].value = oldState[Face.Right][i][layer];
-
-    state[Face.Right][i][layer].value =
-      oldState[Face.Back][size - 1 - i][size - 1 - layer];
-
-    state[Face.Back][size - 1 - i][size - 1 - layer].value =
-      oldState[Face.Left][i][layer];
-
-    state[Face.Left][i][layer].value = oldState[Face.Front][i][layer];
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Front, i, layer, Face.Right, i, layer, "y", -90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Right, i, layer, Face.Back, size - 1 - i, size - 1 - layer, "y", -90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Back, size - 1 - i, size - 1 - layer, Face.Left, i, layer, "y", -90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Left, i, layer, Face.Front, i, layer, "y", -90);
   }
 }
 
-function rotateYLayer180(state: State, oldState: FlatState, layer: number) {
+function rotateYLayer180(
+  state: State,
+  rotationState: StickerRotationState,
+  oldState: FlatState,
+  oldRotations: FlatStickerRotations,
+  layer: number,
+) {
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    state[Face.Front][i][layer].value =
-      oldState[Face.Back][size - 1 - i][size - 1 - layer];
-    state[Face.Right][i][layer].value = oldState[Face.Left][i][layer];
-    state[Face.Back][size - 1 - i][size - 1 - layer].value =
-      oldState[Face.Front][i][layer];
-    state[Face.Left][i][layer].value = oldState[Face.Right][i][layer];
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Front, i, layer, Face.Back, size - 1 - i, size - 1 - layer, "y", 180);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Right, i, layer, Face.Left, i, layer, "y", 180);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Back, size - 1 - i, size - 1 - layer, Face.Front, i, layer, "y", 180);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Left, i, layer, Face.Right, i, layer, "y", 180);
   }
 }
 
-export function rotateY90(state: State, layer: number): void {
+export function rotateY90(
+  state: State,
+  rotationState: StickerRotationState,
+  layer: number,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
-  rotateYLayer90(state, oldState, layer);
+  rotateYLayer90(state, rotationState, oldState, oldRotations, layer);
   if (layer === 0) {
-    rotateFace90(state, oldState, Face.Up);
+    rotateFace90(state, rotationState, oldState, oldRotations, Face.Up, "y", 90);
   } else if (layer === size - 1) {
-    rotateFaceNegative90(state, oldState, Face.Down);
+    rotateFaceNegative90(state, rotationState, oldState, oldRotations, Face.Down, "y", 90);
   }
 }
 
-export function rotateY90Backwards(state: State, layer: number): void {
+export function rotateY90Backwards(
+  state: State,
+  rotationState: StickerRotationState,
+  layer: number,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
-  rotateYLayer90Backwards(state, oldState, layer);
+  rotateYLayer90Backwards(state, rotationState, oldState, oldRotations, layer);
   if (layer === 0) {
-    rotateFaceNegative90(state, oldState, Face.Up);
+    rotateFaceNegative90(state, rotationState, oldState, oldRotations, Face.Up, "y", -90);
   } else if (layer === size - 1) {
-    rotateFace90(state, oldState, Face.Down);
+    rotateFace90(state, rotationState, oldState, oldRotations, Face.Down, "y", -90);
   }
 }
 
-export function rotateY180(state: State, layer: number): void {
+export function rotateY180(
+  state: State,
+  rotationState: StickerRotationState,
+  layer: number,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
-  rotateYLayer180(state, oldState, layer);
+  rotateYLayer180(state, rotationState, oldState, oldRotations, layer);
   if (layer === 0) {
-    rotateFace180(state, oldState, Face.Up);
+    rotateFace180(state, rotationState, oldState, oldRotations, Face.Up, "y", 180);
   } else if (layer === size - 1) {
-    rotateFace180(state, oldState, Face.Down);
+    rotateFace180(state, rotationState, oldState, oldRotations, Face.Down, "y", 180);
   }
 }
 
-export function rotateCubeY90(state: State): void {
+export function rotateCubeY90(
+  state: State,
+  rotationState: StickerRotationState,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    rotateYLayer90(state, oldState, i);
+    rotateYLayer90(state, rotationState, oldState, oldRotations, i);
   }
-  rotateFace90(state, oldState, Face.Up);
-  rotateFaceNegative90(state, oldState, Face.Down);
+  rotateFace90(state, rotationState, oldState, oldRotations, Face.Up, "y", 90);
+  rotateFaceNegative90(state, rotationState, oldState, oldRotations, Face.Down, "y", 90);
 }
 
-export function rotateCubeY90Backwards(state: State): void {
+export function rotateCubeY90Backwards(
+  state: State,
+  rotationState: StickerRotationState,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    rotateYLayer90Backwards(state, oldState, i);
+    rotateYLayer90Backwards(state, rotationState, oldState, oldRotations, i);
   }
-  rotateFaceNegative90(state, oldState, Face.Up);
-  rotateFace90(state, oldState, Face.Down);
+  rotateFaceNegative90(state, rotationState, oldState, oldRotations, Face.Up, "y", -90);
+  rotateFace90(state, rotationState, oldState, oldRotations, Face.Down, "y", -90);
 }
 
-export function rotateCubeY180(state: State): void {
+export function rotateCubeY180(
+  state: State,
+  rotationState: StickerRotationState,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    rotateYLayer180(state, oldState, i);
+    rotateYLayer180(state, rotationState, oldState, oldRotations, i);
   }
-  rotateFace180(state, oldState, Face.Up);
-  rotateFace180(state, oldState, Face.Down);
+  rotateFace180(state, rotationState, oldState, oldRotations, Face.Up, "y", 180);
+  rotateFace180(state, rotationState, oldState, oldRotations, Face.Down, "y", 180);
 }
 
-function rotateZLayer90(state: State, oldState: FlatState, layer: number) {
+function rotateZLayer90(
+  state: State,
+  rotationState: StickerRotationState,
+  oldState: FlatState,
+  oldRotations: FlatStickerRotations,
+  layer: number,
+) {
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    state[Face.Up][size - 1 - i][layer].value = oldState[Face.Left][layer][i];
-    state[Face.Left][layer][i].value = oldState[Face.Down][i][size - 1 - layer];
-    state[Face.Down][i][size - 1 - layer].value =
-      oldState[Face.Right][size - 1 - layer][size - 1 - i];
-    state[Face.Right][size - 1 - layer][i].value = oldState[Face.Up][i][layer];
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Up, size - 1 - i, layer, Face.Left, layer, i, "z", 90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Left, layer, i, Face.Down, i, size - 1 - layer, "z", 90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Down, i, size - 1 - layer, Face.Right, size - 1 - layer, size - 1 - i, "z", 90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Right, size - 1 - layer, i, Face.Up, i, layer, "z", 90);
   }
 }
 
 function rotateZLayer90Backwards(
   state: State,
+  rotationState: StickerRotationState,
   oldState: FlatState,
+  oldRotations: FlatStickerRotations,
   layer: number,
 ) {
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    state[Face.Up][size - 1 - i][layer].value =
-      oldState[Face.Right][size - 1 - layer][size - 1 - i];
-    state[Face.Left][layer][i].value = oldState[Face.Up][size - 1 - i][layer];
-    state[Face.Down][i][size - 1 - layer].value = oldState[Face.Left][layer][i];
-    state[Face.Right][size - 1 - layer][i].value =
-      oldState[Face.Down][size - 1 - i][size - 1 - layer];
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Up, size - 1 - i, layer, Face.Right, size - 1 - layer, size - 1 - i, "z", -90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Left, layer, i, Face.Up, size - 1 - i, layer, "z", -90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Down, i, size - 1 - layer, Face.Left, layer, i, "z", -90);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Right, size - 1 - layer, i, Face.Down, size - 1 - i, size - 1 - layer, "z", -90);
   }
 }
 
-function rotateZLayer180(state: State, oldState: FlatState, layer: number) {
+function rotateZLayer180(
+  state: State,
+  rotationState: StickerRotationState,
+  oldState: FlatState,
+  oldRotations: FlatStickerRotations,
+  layer: number,
+) {
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    state[Face.Up][size - 1 - i][layer].value =
-      oldState[Face.Down][i][size - 1 - layer];
-    state[Face.Left][layer][i].value =
-      oldState[Face.Right][size - 1 - layer][size - 1 - i];
-    state[Face.Down][i][size - 1 - layer].value =
-      oldState[Face.Up][size - 1 - i][layer];
-    state[Face.Right][size - 1 - layer][size - 1 - i].value =
-      oldState[Face.Left][layer][i];
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Up, size - 1 - i, layer, Face.Down, i, size - 1 - layer, "z", 180);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Left, layer, i, Face.Right, size - 1 - layer, size - 1 - i, "z", 180);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Down, i, size - 1 - layer, Face.Up, size - 1 - i, layer, "z", 180);
+    setRotatedSticker(state, rotationState, oldState, oldRotations, Face.Right, size - 1 - layer, size - 1 - i, Face.Left, layer, i, "z", 180);
   }
 }
 
-export function rotateZ90(state: State, layer: number): void {
+export function rotateZ90(
+  state: State,
+  rotationState: StickerRotationState,
+  layer: number,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
-  rotateZLayer90(state, oldState, layer);
+  rotateZLayer90(state, rotationState, oldState, oldRotations, layer);
   if (layer === 0) {
-    rotateFace90(state, oldState, Face.Back);
+    rotateFace90(state, rotationState, oldState, oldRotations, Face.Back, "z", 90);
   } else if (layer === size - 1) {
-    rotateFaceNegative90(state, oldState, Face.Front);
+    rotateFaceNegative90(state, rotationState, oldState, oldRotations, Face.Front, "z", 90);
   }
 }
 
-export function rotateZ90Backwards(state: State, layer: number): void {
+export function rotateZ90Backwards(
+  state: State,
+  rotationState: StickerRotationState,
+  layer: number,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
-  rotateZLayer90Backwards(state, oldState, layer);
+  rotateZLayer90Backwards(state, rotationState, oldState, oldRotations, layer);
   if (layer === 0) {
-    rotateFaceNegative90(state, oldState, Face.Back);
+    rotateFaceNegative90(state, rotationState, oldState, oldRotations, Face.Back, "z", -90);
   } else if (layer === size - 1) {
-    rotateFace90(state, oldState, Face.Front);
+    rotateFace90(state, rotationState, oldState, oldRotations, Face.Front, "z", -90);
   }
 }
 
-export function rotateZ180(state: State, layer: number): void {
+export function rotateZ180(
+  state: State,
+  rotationState: StickerRotationState,
+  layer: number,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
-  rotateZLayer180(state, oldState, layer);
+  rotateZLayer180(state, rotationState, oldState, oldRotations, layer);
   if (layer === 0) {
-    rotateFace180(state, oldState, Face.Back);
+    rotateFace180(state, rotationState, oldState, oldRotations, Face.Back, "z", 180);
   } else if (layer === size - 1) {
-    rotateFace180(state, oldState, Face.Front);
+    rotateFace180(state, rotationState, oldState, oldRotations, Face.Front, "z", 180);
   }
 }
 
-export function rotateCubeZ90(state: State): void {
+export function rotateCubeZ90(
+  state: State,
+  rotationState: StickerRotationState,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    rotateZLayer90(state, oldState, i);
+    rotateZLayer90(state, rotationState, oldState, oldRotations, i);
   }
-  rotateFace90(state, oldState, Face.Back);
-  rotateFaceNegative90(state, oldState, Face.Front);
+  rotateFace90(state, rotationState, oldState, oldRotations, Face.Back, "z", 90);
+  rotateFaceNegative90(state, rotationState, oldState, oldRotations, Face.Front, "z", 90);
 }
 
-export function rotateCubeZ90Backwards(state: State): void {
+export function rotateCubeZ90Backwards(
+  state: State,
+  rotationState: StickerRotationState,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    rotateZLayer90Backwards(state, oldState, i);
+    rotateZLayer90Backwards(state, rotationState, oldState, oldRotations, i);
   }
-  rotateFaceNegative90(state, oldState, Face.Back);
-  rotateFace90(state, oldState, Face.Front);
+  rotateFaceNegative90(state, rotationState, oldState, oldRotations, Face.Back, "z", -90);
+  rotateFace90(state, rotationState, oldState, oldRotations, Face.Front, "z", -90);
 }
 
-export function rotateCubeZ180(state: State): void {
+export function rotateCubeZ180(
+  state: State,
+  rotationState: StickerRotationState,
+): void {
   const oldState = getCurrentState(state);
+  const oldRotations = getCurrentStickerRotations(rotationState);
   const size = oldState[Face.Up].length;
   for (let i = 0; i < size; i++) {
-    rotateZLayer180(state, oldState, i);
+    rotateZLayer180(state, rotationState, oldState, oldRotations, i);
   }
-  rotateFace180(state, oldState, Face.Back);
-  rotateFace180(state, oldState, Face.Front);
+  rotateFace180(state, rotationState, oldState, oldRotations, Face.Back, "z", 180);
+  rotateFace180(state, rotationState, oldState, oldRotations, Face.Front, "z", 180);
 }

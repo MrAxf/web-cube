@@ -14,6 +14,7 @@ import {
 import { createObservableContext, ObservableContext } from "./observable.ts";
 import {
   createState,
+  createStickerRotationState,
   FlatState,
   getCurrentState,
   rotateCubeX90,
@@ -36,6 +37,7 @@ import {
   rotateZ180,
   setState,
   State,
+  StickerRotationState,
 } from "./state.ts";
 import { style } from "./style.ts";
 import { CubeRotationOptions, Face, LayerRotationOptions } from "./utils.ts";
@@ -112,6 +114,8 @@ export class WebCube extends HTMLElement {
 
   // State
   #state: State | null = null;
+
+  #rotationState: StickerRotationState | null = null;
 
   #isRotating = false;
 
@@ -219,9 +223,10 @@ export class WebCube extends HTMLElement {
 
     this.#observableCtx = createObservableContext();
     this.#state = createState(this.#observableCtx, this.#size);
+    this.#rotationState = createStickerRotationState(this.#observableCtx, this.#size);
 
     if (this.#observableCtx.tick() > 0) {
-      this.dispatchEvent(stateChanged(getCurrentState(this.#state)));
+      this.dispatchEvent(stateChanged(getCurrentState(this.#state, this.#rotationState)));
     }
 
     this.#$viewport = document.createElement("div");
@@ -250,7 +255,7 @@ export class WebCube extends HTMLElement {
     $mainCube.classList.add("main-cube");
     this.#$mainCube = $mainCube;
 
-    const [cubes, cubeGroups] = createCubes(this.#size, this.#state!);
+    const [cubes, cubeGroups] = createCubes(this.#size, this.#state!, this.#rotationState!);
     this.#cubeGroups = cubeGroups;
     $mainCube.append(...cubes);
 
@@ -281,6 +286,7 @@ export class WebCube extends HTMLElement {
     this.#$mainCube = null;
     this.#cubeGroups = null;
     this.#state = null;
+    this.#rotationState = null;
     this.#observableCtx = null;
     this.#isRotating = false;
   }
@@ -606,7 +612,9 @@ export class WebCube extends HTMLElement {
     speed?: number;
     triggeredBy: RotationTrigger;
   }) {
-    let rotation: ((state: State, layer: number) => void) | null = null;
+    let rotation:
+      | ((state: State, rotationState: StickerRotationState, layer: number) => void)
+      | null = null;
 
     const realAngle = angle * (backwards ? -1 : 1);
 
@@ -643,7 +651,7 @@ export class WebCube extends HTMLElement {
     this.dispatchEvent(beforeLayerRotate(evDetail));
 
     if (rotation) {
-      rotation(this.#state!, layer);
+      rotation(this.#state!, this.#rotationState!, layer);
     }
 
     const animationSignal = this.#createAnimationSignal();
@@ -669,7 +677,7 @@ export class WebCube extends HTMLElement {
     this.#resetCubesRotate(axis, layer);
     this.style.setProperty("--spin-angle", "0deg");
     if (this.#observableCtx!.tick() > 0) {
-      this.dispatchEvent(stateChanged(getCurrentState(this.#state!)));
+      this.dispatchEvent(stateChanged(getCurrentState(this.#state!, this.#rotationState!)));
     }
 
     this.dispatchEvent(afterRotate(evDetail));
@@ -691,7 +699,9 @@ export class WebCube extends HTMLElement {
     speed?: number;
     triggeredBy: RotationTrigger;
   }) {
-    let rotation: ((state: State) => void) | null = null;
+    let rotation:
+      | ((state: State, rotationState: StickerRotationState) => void)
+      | null = null;
 
     const realAngle = angle * (backwards ? -1 : 1);
 
@@ -727,7 +737,7 @@ export class WebCube extends HTMLElement {
     this.dispatchEvent(beforeCubeRotate(evDetail));
 
     if (rotation) {
-      rotation(this.#state!);
+      rotation(this.#state!, this.#rotationState!);
     }
 
     const animationSignal = this.#createAnimationSignal();
@@ -757,7 +767,7 @@ export class WebCube extends HTMLElement {
     this.#$mainCube!.style.removeProperty(`--cube-rotation-${axis}`);
     this.style.setProperty("--spin-angle", "0deg");
     if (this.#observableCtx!.tick() > 0) {
-      this.dispatchEvent(stateChanged(getCurrentState(this.#state!)));
+      this.dispatchEvent(stateChanged(getCurrentState(this.#state!, this.#rotationState!)));
     }
 
     this.dispatchEvent(afterRotate(evDetail));
@@ -782,9 +792,9 @@ export class WebCube extends HTMLElement {
    * @param newState The new state of the cube.
    */
   setState(newState: FlatState) {
-    setState(this.#state!, newState);
+    setState(this.#state!, newState, this.#rotationState!);
     if (this.#observableCtx!.tick() > 0) {
-      this.dispatchEvent(stateChanged(getCurrentState(this.#state!)));
+      this.dispatchEvent(stateChanged(getCurrentState(this.#state!, this.#rotationState!)));
     }
   }
 
@@ -793,7 +803,7 @@ export class WebCube extends HTMLElement {
    * @returns The current state of the cube.
    */
   getState(): FlatState {
-    return getCurrentState(this.#state!);
+    return getCurrentState(this.#state!, this.#rotationState!);
   }
 
   /**

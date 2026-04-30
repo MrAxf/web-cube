@@ -1,4 +1,4 @@
-import { State } from "./state.ts";
+import { State, StickerRotationState } from "./state.ts";
 import { Face } from "./utils.ts";
 
 const colors = {
@@ -14,6 +14,7 @@ interface CreateFaceParams {
   x: number;
   y: number;
   state: State;
+  rotationState: StickerRotationState;
   face: Face;
   isFace: boolean;
   cubeLayerX: number;
@@ -25,6 +26,7 @@ function createFace({
   x,
   y,
   state,
+  rotationState,
   face,
   isFace,
   cubeLayerX,
@@ -43,6 +45,9 @@ function createFace({
     state[face][x][y].subscribe((suscribaleFace) => {
       $face.style.setProperty("--sticker-color", colors[suscribaleFace]);
     });
+    rotationState[face][x][y].subscribe((rotation) => {
+      $face.style.setProperty("--sticker-rotation", `${rotation}deg`);
+    });
   }
   return $face;
 }
@@ -53,6 +58,7 @@ function createCube(
   z: number,
   size: number,
   state: State,
+  rotationState: StickerRotationState,
 ) {
   const $cube = document.createElement("div");
   $cube.classList.add("cube");
@@ -70,6 +76,7 @@ function createCube(
     x,
     y,
     state,
+    rotationState,
     face: Face.Front,
     isFace: z === size - 1,
     cubeLayerX: x,
@@ -80,6 +87,7 @@ function createCube(
     x: reversedSize - z,
     y,
     state,
+    rotationState,
     face: Face.Right,
     isFace: x === size - 1,
     cubeLayerX: x,
@@ -90,6 +98,7 @@ function createCube(
     x,
     y: reversedSize - y,
     state,
+    rotationState,
     face: Face.Back,
     isFace: z === 0,
     cubeLayerX: x,
@@ -100,6 +109,7 @@ function createCube(
     x: z,
     y,
     state,
+    rotationState,
     face: Face.Left,
     isFace: x === 0,
     cubeLayerX: x,
@@ -110,6 +120,7 @@ function createCube(
     x,
     y: z,
     state,
+    rotationState,
     face: Face.Up,
     isFace: y === 0,
     cubeLayerX: x,
@@ -120,6 +131,7 @@ function createCube(
     x,
     y: reversedSize - z,
     state,
+    rotationState,
     face: Face.Down,
     isFace: y === size - 1,
     cubeLayerX: x,
@@ -142,6 +154,7 @@ function createCube(
 export function createCubes(
   size: number,
   state: State,
+  rotationState: StickerRotationState,
 ): [HTMLDivElement[], { [key: string]: HTMLDivElement[][] }] {
   const cubes: HTMLDivElement[] = [];
   const cubeGroups = {
@@ -165,7 +178,7 @@ export function createCubes(
         ) {
           continue;
         }
-        const $cube = createCube(x, y, z, size, state);
+        const $cube = createCube(x, y, z, size, state, rotationState);
         cubeGroups.x[x].push($cube);
         cubeGroups.y[y].push($cube);
         cubeGroups.z[z].push($cube);
